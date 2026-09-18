@@ -1,18 +1,9 @@
 /**
  * Currency + misc formatters for City Line Property.
- * PKR uses South-Asian numbering: Crore (10M) and Lakh (100K).
- * USD is a fixed-rate display conversion driven by the store toggle.
+ * PKR only (South-Asian numbering: Crore = 10M, Lakh = 100K).
  */
-import { useAppStore } from "@/lib/store";
-
-/** Fixed display rate for the PKR ⇄ USD toggle (not a live FX quote). */
-export const PKR_PER_USD = 278;
 
 export function formatPKR(price: number, perMonth = false): string {
-  if (useAppStore.getState().currency === "USD") {
-    return `${formatUSD(price)}${perMonth ? "/mo" : ""}`;
-  }
-
   const abs = Math.abs(price);
   let text: string;
 
@@ -29,14 +20,16 @@ export function formatPKR(price: number, perMonth = false): string {
   return `PKR ${text}${perMonth ? "/mo" : ""}`;
 }
 
-/** Compact USD rendering of a PKR amount, e.g. $342K, $1.25M, $340/mo. */
-export function formatUSD(pkr: number): string {
-  const usd = pkr / PKR_PER_USD;
-  const abs = Math.abs(usd);
-
-  if (abs >= 1_000_000) return `$${trimZero((usd / 1_000_000).toFixed(2))}M`;
-  if (abs >= 1_000) return `$${trimZero((usd / 1_000).toFixed(abs >= 100_000 ? 0 : 1))}K`;
-  return `$${new Intl.NumberFormat("en-US").format(Math.round(usd))}`;
+/** Ultra-short price label for map pins / tight chips: "1.6 Cr" / "85 L". */
+export function compactPKR(price: number): string {
+  const abs = Math.abs(price);
+  if (abs >= 10_000_000) {
+    return `${trimZero((price / 10_000_000).toFixed(1))} Cr`;
+  }
+  if (abs >= 100_000) {
+    return `${trimZero((price / 100_000).toFixed(price >= 1_000_000 ? 0 : 1))} L`;
+  }
+  return new Intl.NumberFormat("en-PK").format(Math.round(price));
 }
 
 function trimZero(v: string): string {

@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
     const sort = sp.get("sort") ?? "newest";
     const limit = Math.min(Number(sp.get("limit") ?? 60), 100);
     const offset = Math.max(Number(sp.get("offset") ?? 0), 0);
-    const agentId = sp.get("agentId") ?? "";
     const ids = sp.get("ids");
 
     const where: Record<string, unknown> = { published: true };
@@ -50,7 +49,6 @@ export async function GET(req: NextRequest) {
       };
     }
     if (featured) where.featured = true;
-    if (agentId) where.agentId = agentId;
 
     const orderBy: Record<string, "asc" | "desc"> =
       sort === "price-asc"
@@ -64,7 +62,6 @@ export async function GET(req: NextRequest) {
     const [rows, total] = await Promise.all([
       db.property.findMany({
         where,
-        include: { agent: true },
         orderBy,
         take: limit,
         skip: offset,

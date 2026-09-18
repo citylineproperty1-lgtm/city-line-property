@@ -62,12 +62,6 @@ interface AdminCategory {
   color: string;
 }
 
-interface AgentOption {
-  id: string;
-  name: string;
-  title: string;
-}
-
 interface ListingForm {
   title: string;
   description: string;
@@ -84,7 +78,6 @@ interface ListingForm {
   listingState: string;
   published: boolean;
   featured: boolean;
-  agentId: string;
   amenities: string[];
   images: string[];
 }
@@ -106,7 +99,6 @@ function formFrom(p: Property | null): ListingForm {
     listingState: p?.listingState ?? "AVAILABLE",
     published: p?.published ?? true,
     featured: p?.featured ?? false,
-    agentId: p?.agent?.id ?? "",
     amenities: p?.amenities ?? [],
     images: p?.images ?? [],
   };
@@ -128,7 +120,6 @@ export function AdminListingDrawer({
   onSaved: (property: Property) => void;
 }) {
   const [form, setForm] = useState<ListingForm>(() => formFrom(listing));
-  const [agents, setAgents] = useState<AgentOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [amenityDraft, setAmenityDraft] = useState("");
@@ -138,18 +129,6 @@ export function AdminListingDrawer({
 
   const set = <K extends keyof ListingForm>(k: K, v: ListingForm[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
-
-  useEffect(() => {
-    let alive = true;
-    api<{ agents: AgentOption[] }>("/api/agents")
-      .then((d) => {
-        if (alive) setAgents(d.agents);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [api]);
 
   const addAmenity = () => {
     const name = amenityDraft.trim();
@@ -230,7 +209,6 @@ export function AdminListingDrawer({
       listingState: form.listingState,
       published: form.published,
       featured: form.featured,
-      agentId: form.agentId || undefined,
       amenities: form.amenities,
       images: form.images,
     };
@@ -443,21 +421,6 @@ export function AdminListingDrawer({
                   {LISTING_STATES.map((s) => (
                     <SelectItem key={s} value={s}>
                       {LISTING_STATE_META[s]?.label ?? s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[12px] text-neutral-500">Assigned agent</Label>
-              <Select value={form.agentId} onValueChange={(v) => set("agentId", v)}>
-                <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35">
-                  <SelectValue placeholder="Auto-assign" />
-                </SelectTrigger>
-                <SelectContent>
-                  {agents.map((a) => (
-                    <SelectItem key={a.id} value={a.id}>
-                      {a.name} — {a.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

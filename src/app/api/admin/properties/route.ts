@@ -39,7 +39,6 @@ export async function GET(req: NextRequest) {
 
     const rows = await db.property.findMany({
       where,
-      include: { agent: true },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ properties: rows.map(serializeProperty) });
@@ -73,12 +72,6 @@ export async function POST(req: NextRequest) {
     if (!type) return NextResponse.json({ error: "Category is required." }, { status: 400 });
     if (!district) return NextResponse.json({ error: "Area is required." }, { status: 400 });
 
-    const agents = await db.agent.findMany({ take: 1 });
-    const agentId = (body.agentId ?? "").toString() || agents[0]?.id;
-    if (!agentId) {
-      return NextResponse.json({ error: "No team member available — create an agent first." }, { status: 400 });
-    }
-
     const count = await db.property.count();
     const reference = `CLP-${101 + count}`;
     const slug = `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`;
@@ -110,9 +103,7 @@ export async function POST(req: NextRequest) {
           : "AVAILABLE",
         yearBuilt: Number(body.yearBuilt ?? 2024) | 0,
         parking: Math.max(0, Number(body.parking ?? 0) | 0),
-        agentId,
       },
-      include: { agent: true },
     });
     return NextResponse.json({ property: serializeProperty(row) }, { status: 201 });
   } catch (e) {

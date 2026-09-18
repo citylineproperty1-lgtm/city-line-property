@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -43,109 +44,91 @@
 }
 
 /*
- * City Line Property — iOS-gold theme (Task 7-a)
- * Warm iOS systemGroupedBackground, white cards, hairline separators,
- * iOS system accents and a brand GOLD primary.
+ * City Line Property — "paper & emerald" theme
+ * Inspired by modern product sites (family.co): pure white canvas, near-black
+ * ink type, hairline borders, generous whitespace and a single deep-emerald
+ * brand accent. No gold, no ivory — crisp catalog feel.
  * The shadcn CSS variable contract is unchanged — only the values were re-themed.
  */
 :root {
-  --radius: 0.875rem;
+  --radius: 1rem;
 
-  /* Warm ivory canvas (iOS systemGroupedBackground, gold-tinted) */
-  --background: #f6f4ee;
-  --foreground: #201b10;
+  /* Pure white canvas */
+  --background: #ffffff;
+  --foreground: #0c1210;
 
   --card: #ffffff;
-  --card-foreground: #201b10;
+  --card-foreground: #0c1210;
   --popover: #ffffff;
-  --popover-foreground: #201b10;
+  --popover-foreground: #0c1210;
 
-  /* Brand gold */
-  --primary: #c9a227;
+  /* Brand deep emerald */
+  --primary: #0f766e;
   --primary-foreground: #ffffff;
 
-  --secondary: #f4f1e8;
-  --secondary-foreground: #3f3828;
-  --muted: #f4f1e8;
-  --muted-foreground: #6f6a5c;
+  --secondary: #f4f6f5;
+  --secondary-foreground: #1f2937;
+  --muted: #f4f6f5;
+  --muted-foreground: #64707c;
 
-  /* Soft gold-tinted accent (active pills, hover states) */
-  --accent: #f5edd7;
-  --accent-foreground: #8c6d1f;
+  /* Soft emerald accent (active pills, hover states) */
+  --accent: #e7f4f0;
+  --accent-foreground: #0b6b5d;
 
-  /* iOS red */
-  --destructive: #ff3b30;
+  --destructive: #e5484d;
 
-  /* iOS hairline separator */
-  --border: rgba(60, 60, 67, 0.14);
-  --input: rgba(60, 60, 67, 0.2);
-  --ring: #c9a227;
+  /* Hairline separator */
+  --border: rgba(15, 23, 42, 0.09);
+  --input: rgba(15, 23, 42, 0.14);
+  --ring: #0f766e;
 
-  --chart-1: #c9a227; /* gold */
-  --chart-2: #007aff; /* iOS blue */
-  --chart-3: #34c759; /* iOS green */
-  --chart-4: #ff9500; /* iOS orange */
-  --chart-5: #af52de; /* iOS purple */
+  --chart-1: #0f766e; /* brand emerald */
+  --chart-2: #0c1210; /* ink */
+  --chart-3: #22c55e; /* green */
+  --chart-4: #f59e0b; /* amber */
+  --chart-5: #8b5cf6; /* violet */
 
-  --sidebar: #fbf9f3;
-  --sidebar-foreground: #201b10;
-  --sidebar-primary: #c9a227;
+  --sidebar: #fafbfa;
+  --sidebar-foreground: #0c1210;
+  --sidebar-primary: #0f766e;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5edd7;
-  --sidebar-accent-foreground: #8c6d1f;
-  --sidebar-border: rgba(60, 60, 67, 0.14);
-  --sidebar-ring: #c9a227;
+  --sidebar-accent: #e7f4f0;
+  --sidebar-accent-foreground: #0b6b5d;
+  --sidebar-border: rgba(15, 23, 42, 0.09);
+  --sidebar-ring: #0f766e;
 
-  /* Brand gold ramp */
-  --gold-light: #e9ce7a;
-  --gold: #c9a227;
-  --gold-dark: #9a7b1a;
-  --gold-deep: #8c6d1f;
+  /* Brand emerald ramp */
+  --brand-light: #5eb9a9;
+  --brand: #0f766e;
+  --brand-dark: #0b5d56;
+  --brand-deep: #084c46;
 
-  /* iOS system accents — exposed for feature components */
-  --ios-blue: #007aff;
-  --ios-green: #34c759;
-  --ios-orange: #ff9500;
-  --ios-teal: #30b0c7;
-  --ios-purple: #af52de;
-  --ios-pink: #ff2d55;
-  --ios-brown: #a2845e;
-  --ios-gray: #8e8e93;
-  --ios-red: #ff3b30;
+  /* WhatsApp green (float + deep links) */
+  --wa: #22c55e;
+
+  /* Neutral ink chip for overlays */
+  --ink-chip: rgba(12, 18, 16, 0.72);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0b0f0e;
+  --foreground: #f3f6f5;
+  --card: #121715;
+  --card-foreground: #f3f6f5;
+  --popover: #121715;
+  --popover-foreground: #f3f6f5;
+  --primary: #2dd4bf;
+  --primary-foreground: #06251f;
+  --secondary: #1a211e;
+  --secondary-foreground: #e5eae8;
+  --muted: #1a211e;
+  --muted-foreground: #94a3ab;
+  --accent: #12332e;
+  --accent-foreground: #7fe0cd;
+  --destructive: #ff6369;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #2dd4bf;
 }
 
 @layer base {
@@ -162,14 +145,13 @@
     letter-spacing: -0.011em;
     text-rendering: optimizeLegibility;
   }
-  /* Gold selection */
   ::selection {
-    background: rgba(201, 162, 39, 0.28);
-    color: #5c470f;
+    background: rgba(15, 118, 110, 0.18);
+    color: #084c46;
   }
 }
 
-/* Warm gold scrollbar */
+/* Neutral hairline scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -178,14 +160,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(201, 162, 39, 0.35);
+  background: rgba(15, 23, 42, 0.18);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(154, 123, 26, 0.55);
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(201, 162, 39, 0.3);
+  background: rgba(15, 23, 42, 0.32);
 }
 
 @utility no-scrollbar {
@@ -196,47 +175,59 @@
   }
 }
 
-/* ---------- Brand gold helpers (Task 7-a) ---------- */
+/* ---------- Brand helpers ---------- */
 
-/* Gold gradient surface (CTAs, badges, active segments) */
+/* Emerald gradient surface (CTAs, badges, active segments) */
+@utility brand-gradient {
+  background-image: linear-gradient(135deg, #14a08f 0%, #0f766e 52%, #0b5d56 100%);
+}
+
+/* Legacy alias — components still referencing gold utilities render in the
+   new brand colors until the redesign sweep renames them. */
 @utility gold-gradient {
-  background-image: linear-gradient(135deg, #e9ce7a 0%, #c9a227 52%, #9a7b1a 100%);
+  background-image: linear-gradient(135deg, #14a08f 0%, #0f766e 52%, #0b5d56 100%);
 }
 
-/* Gold gradient text — readable on light backgrounds */
+/* Emerald gradient text — readable on light backgrounds */
+@utility text-brand-gradient {
+  background-image: linear-gradient(120deg, #0f766e 0%, #0b5d56 55%, #084c46 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 @utility text-gold-gradient {
-  background-image: linear-gradient(120deg, #c9a227 0%, #a8851e 45%, #8c6d1f 100%);
+  background-image: linear-gradient(120deg, #0f766e 0%, #0b5d56 55%, #084c46 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Gold gradient text — lighter ramp for dark surfaces (footer, hero bands) */
 @utility text-gold-gradient-dark {
-  background-image: linear-gradient(120deg, #f0dfa8 0%, #e9ce7a 45%, #c9a227 100%);
+  background-image: linear-gradient(120deg, #5eb9a9 0%, #14a08f 55%, #0f766e 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* iOS frosted glass */
+/* Frosted glass (sticky header on white) */
 @utility glass {
-  background-color: rgba(255, 255, 255, 0.7);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
 }
 
-/* Soft layered iOS card shadow with a warm gold undertone */
+/* Soft layered card shadow */
 @utility card-shadow {
   box-shadow:
-    0 1px 2px rgba(60, 60, 67, 0.06),
-    0 4px 14px -4px rgba(60, 60, 67, 0.1),
-    0 16px 40px -12px rgba(154, 123, 26, 0.14);
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 4px 16px -4px rgba(15, 23, 42, 0.08),
+    0 16px 40px -12px rgba(15, 118, 110, 0.1);
 }
 
-/* Subtle gold-tinted dotted backdrop (hero sections) */
+/* Subtle emerald-tinted dotted backdrop (hero sections) */
 @utility bg-dots {
-  background-image: radial-gradient(rgba(201, 162, 39, 0.18) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(15, 118, 110, 0.14) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
@@ -258,18 +249,28 @@
     transform: translateY(-6px);
   }
 }
-@keyframes gold-pulse {
+@keyframes brand-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.5);
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.45);
   }
   70% {
-    box-shadow: 0 0 0 14px rgba(201, 162, 39, 0);
+    box-shadow: 0 0 0 14px rgba(15, 118, 110, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0);
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
   }
 }
-/* Pair with a gold gradient background + background-size 200% (e.g. gold-gradient) */
+@keyframes gold-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(15, 118, 110, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
+  }
+}
 @utility animate-shimmer {
   background-size: 200% 100%;
   animation: shimmer 2.8s linear infinite;
@@ -278,15 +279,44 @@
   animation: float 5s ease-in-out infinite;
 }
 @utility animate-gold-pulse {
-  animation: gold-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: brand-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* The SPA shell div in page.tsx hardcodes bg-white; redirect it to the warm
-   ivory canvas without touching that file (owned by another agent).
-   Unlayered rule wins over the bg-white utility. Safe to delete once
-   page.tsx uses bg-background. */
-body > div:first-of-type {
-  background-color: var(--background);
+/* ---------- Leaflet integration ---------- */
+
+/* Map pins rendered as div icons */
+.clp-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Keep Leaflet chrome consistent with the app (white, hairline, Inter) */
+.leaflet-container {
+  font-family: inherit;
+  background: #eef2f1;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+}
+.leaflet-popup-content {
+  margin: 12px 14px;
+  line-height: 1.35;
+}
+.leaflet-control-zoom a {
+  border-radius: 8px !important;
+  color: #0c1210 !important;
+}
+.leaflet-bar {
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08) !important;
+  overflow: hidden;
+}
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: #64707c;
+  font-size: 10px;
 }
 
 /* Print: turn the property page into a clean flyer.

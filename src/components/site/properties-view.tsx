@@ -16,7 +16,7 @@ import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { AREAS } from "@/lib/business";
 import { CATEGORIES, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
-import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2, BellPlus } from "lucide-react";
+import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRICE_STEPS = [
@@ -47,8 +47,7 @@ const STATUS_TABS = [
 const PAGE_SIZE = 9;
 
 export function PropertiesView() {
-  const { listingsFilters: f, setFilters, resetFilters, favorites, savedSearches, saveSearch } =
-    useAppStore();
+  const { listingsFilters: f, setFilters, resetFilters, favorites } = useAppStore();
   const [properties, setProperties] = useState<Property[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -168,36 +167,8 @@ export function PropertiesView() {
                 }`}
           </p>
         </div>
-        {/* Save search + Sort */}
+        {/* Sort */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              const ok = saveSearch();
-              if (ok) {
-                toast.success("Search saved", {
-                  description: "New matches will be flagged in your Saved page.",
-                });
-              } else {
-                toast.info("This search is already saved");
-              }
-            }}
-            className={cn(
-              "flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[12.5px] font-semibold transition-all",
-              savedSearches.length > 0
-                ? "border-[#C9A227]/45 bg-[#F5EDD7]/70 text-[#8C6D1F] hover:bg-[#F5EDD7]"
-                : "border-neutral-200 bg-white text-neutral-600 hover:border-[#C9A227]/40 hover:text-[#8C6D1F]"
-            )}
-            aria-label="Save this search"
-            title="Save this search — get alerted about new matches"
-          >
-            <BellPlus className="h-4 w-4" />
-            <span className="hidden md:inline">Save search</span>
-            {savedSearches.length > 0 && (
-              <span className="rounded-full bg-[#C9A227] px-1.5 text-[10px] font-bold leading-4 text-white">
-                {savedSearches.length}
-              </span>
-            )}
-          </button>
           <SlidersHorizontal className="h-4 w-4 text-neutral-400" />
           <Select value={f.sort} onValueChange={(v) => setFilters({ sort: v })}>
             <SelectTrigger className="h-10 w-[190px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">

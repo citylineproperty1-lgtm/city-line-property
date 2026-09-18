@@ -14,18 +14,17 @@ import {
 } from "@/components/ui/select";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { AnimatedNumber } from "@/components/site/animated-number";
-import { AreaMap } from "@/components/site/area-map";
-import { RecentStrip } from "@/components/site/recent-strip";
+import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { AREAS, BUSINESS, waLink } from "@/lib/business";
+import { AREAS, AREA_COORDS, BUSINESS, waLink } from "@/lib/business";
+import { areaSlug } from "@/lib/areas";
 import {
   CATEGORIES,
   type CategoryDef,
   type PlatformStats,
   type Property,
-  type TestimonialItem,
 } from "@/lib/types";
 import {
   Search,
@@ -52,22 +51,7 @@ import {
   BedDouble,
   Sparkles,
   ArrowRight,
-  Newspaper,
-  Clock3,
-  CalendarDays,
 } from "lucide-react";
-
-/** Light shape of a digest post as served by /api/posts. */
-interface DigestPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  cover: string | null;
-  tag: string;
-  views: number;
-  createdAt: string;
-}
 
 /* ------------------------------------------------------------------ */
 /* Animation primitives — frame-by-frame stagger everywhere            */
@@ -280,22 +264,15 @@ export function HomeView() {
 
   /* ---------- data (derived-loading fetch pattern) ---------- */
   const [featured, setFeatured] = useState<Property[]>([]);
-  const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
   const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
-  const [digest, setDigest] = useState<DigestPost[]>([]);
 
   useEffect(() => {
     fetch("/api/properties?featured=true&limit=6")
       .then((r) => r.json())
       .then((d) => setFeatured(d.properties ?? []))
       .catch(() => setFeatured([]));
-
-    fetch("/api/testimonials")
-      .then((r) => r.json())
-      .then((d) => setTestimonials(d.testimonials ?? []))
-      .catch(() => setTestimonials([]));
 
     fetch("/api/stats")
       .then((r) => r.json())
@@ -310,19 +287,16 @@ export function HomeView() {
       })
       .catch(() => setCats(CATEGORIES));
 
-    fetch("/api/insights")
+    fetch("/api/properties?limit=300")
       .then((r) => r.json())
       .then((d) => {
         const rec: Record<string, number> = {};
-        for (const t of d.insights?.typeMix ?? []) rec[t.type] = t.count;
+        for (const p of (d.properties ?? []) as Property[]) {
+          rec[p.type] = (rec[p.type] ?? 0) + 1;
+        }
         setTypeCounts(rec);
       })
       .catch(() => setTypeCounts({}));
-
-    fetch("/api/posts?limit=3")
-      .then((r) => r.json())
-      .then((d) => setDigest(d.posts ?? []))
-      .catch(() => setDigest([]));
   }, []);
 
   /* ---------- hero search ---------- */
@@ -829,8 +803,52 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* ================= AREAS (interactive map) ================= */}
-      <AreaMap />
+      {/* ================= AREAS (real interactive map) ================= */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Explore the areas on the map">
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
+          <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[13px] font-semibold uppercase tracking-wider text-[#0B6B5D]">On the map</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                Real streets. Real files.
+              </h2>
+            </div>
+            <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
+              Every deal we close sits inside this pocket of Raiwind Road, Lahore —
+              tap a pin to open its area guide.
+            </p>
+          </motion.div>
+          <motion.div variants={item} className="mt-7">
+            <RealMap
+              className="h-[380px] w-full sm:h-[460px]"
+              zoom={14}
+              fitMarkers
+              markers={[
+                ...AREAS.map((a) => ({
+                  id: a,
+                  lat: AREA_COORDS[a]?.lat ?? 31.4408,
+                  lng: AREA_COORDS[a]?.lng ?? 74.2309,
+                  title: a,
+                  subtitle: "Tap “View details” to open the area guide",
+                  kind: "area" as const,
+                })),
+                {
+                  id: "office",
+                  lat: 31.4408,
+                  lng: 74.2309,
+                  title: "City Line Property — Office",
+                  subtitle: BUSINESS.officeAddress,
+                  kind: "office" as const,
+                },
+              ]}
+              onSelect={(id) => {
+                const slug = areaSlug(id);
+                if (slug) navigate({ name: "area", slug });
+              }}
+            />
+          </motion.div>
+        </motion.div>
+      </section>
 
       {/* ================= WHY US ================= */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Why choose City Line Property">
@@ -907,135 +925,6 @@ export function HomeView() {
         </motion.div>
       </section>
 
-      {/* ================= TESTIMONIALS ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Client testimonials">
-        <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
-          <motion.div variants={item} className="text-center">
-            <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">Client words</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-              Deals that ended in handshakes.
-            </h2>
-          </motion.div>
-
-          <div className="mt-9 grid gap-4 sm:grid-cols-2">
-            {(testimonials.length
-              ? testimonials
-              : Array.from({ length: 4 }).map(() => null)
-            ).map((t, i) =>
-              t === null ? (
-                <div key={i} className="h-44 animate-pulse rounded-2xl bg-white/70" />
-              ) : (
-                <motion.figure
-                  key={t.id}
-                  variants={item}
-                  className="flex flex-col rounded-2xl border border-white/70 bg-white/80 p-6 shadow-[0_16px_44px_-28px_rgba(140,105,25,0.45)] backdrop-blur"
-                >
-                  <div className="flex items-center justify-between">
-                    <Quote className="h-5 w-5 text-[#C9A227]/60" />
-                    <span className="flex gap-0.5" aria-label={`${t.rating} star rating`}>
-                      {Array.from({ length: t.rating }).map((_, s) => (
-                        <Star key={s} className="h-3.5 w-3.5 fill-[#C9A227] text-[#C9A227]" />
-                      ))}
-                    </span>
-                  </div>
-                  <blockquote className="mt-3 flex-1 text-[13.5px] leading-relaxed text-neutral-600">
-                    &ldquo;{t.content}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-5 flex items-center gap-3 border-t border-neutral-100 pt-4">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#DCBB55] to-[#A8851D] text-[11px] font-bold text-white">
-                      {t.initials}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-[13px] font-semibold text-neutral-900">{t.name}</p>
-                      <p className="truncate text-[12px] text-neutral-400">{t.role}</p>
-                    </div>
-                  </figcaption>
-                </motion.figure>
-              )
-            )}
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ================= FROM THE DIGEST ================= */}
-      {digest.length > 0 && (
-        <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="From the Property Digest">
-          <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
-            <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
-                  <Newspaper className="h-4 w-4" />
-                  Property Digest
-                </p>
-                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-                  Notes from the office.
-                </h2>
-              </div>
-              <button
-                onClick={() => navigate({ name: "digest" })}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-[#F5EDD7]/60 px-4 py-2 text-[12.5px] font-semibold text-[#8C6D1F] transition-all hover:border-[#C9A227]/60 hover:bg-[#F5EDD7]"
-              >
-                Read the digest
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </button>
-            </motion.div>
-
-            <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {digest.map((post) => (
-                <motion.article
-                  key={post.id}
-                  variants={item}
-                  whileHover={{ y: -6 }}
-                  transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
-                  className="group cursor-pointer overflow-hidden rounded-3xl border border-white/70 bg-white shadow-[0_16px_44px_-28px_rgba(140,105,25,0.45)]"
-                  onClick={() => navigate({ name: "digest", slug: post.slug })}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    {post.cover ? (
-                      <Image
-                        src={post.cover}
-                        alt={post.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                      />
-                    ) : (
-                      <div className="gold-gradient flex h-full items-center justify-center">
-                        <Newspaper className="h-8 w-8 text-white/80" />
-                      </div>
-                    )}
-                    <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#8C6D1F] backdrop-blur">
-                      {post.tag}
-                    </span>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="line-clamp-2 text-[15.5px] font-semibold leading-snug tracking-tight text-neutral-900 transition-colors group-hover:text-[#8C6D1F]">
-                      {post.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-neutral-500">
-                      {post.excerpt}
-                    </p>
-                    <div className="mt-4 flex items-center gap-3 border-t border-neutral-100 pt-3.5 text-[11.5px] font-medium text-neutral-400">
-                      <span className="inline-flex items-center gap-1.5">
-                        <CalendarDays className="h-3.5 w-3.5" />
-                        {new Date(post.createdAt).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock3 className="h-3.5 w-3.5" />
-                        {Math.max(1, Math.round(post.excerpt.split(/\s+/).length / 3))} min read
-                      </span>
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-      )}
-
       {/* ================= REQUIREMENT FORM ================= */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Post your requirement">
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr]">
@@ -1091,7 +980,6 @@ export function HomeView() {
         </div>
       </section>
 
-      <RecentStrip />
 
       {/* ================= FINAL CTA BAND ================= */}
       <section className="mx-auto w-full max-w-6xl px-4 pb-6 pt-16 sm:px-6 sm:pt-20" aria-label="Visit our office">

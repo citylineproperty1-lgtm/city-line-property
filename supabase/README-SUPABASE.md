@@ -7,10 +7,10 @@ Supabase project (`laoawjnasrhhnaxsdzgb.supabase.co`).
 
 1. Supabase Dashboard → **SQL Editor** → New query.
 2. Paste the whole of [`schema.sql`](./schema.sql) → **Run**.
-3. You now have: tables, enums, indexes, triggers, RLS, the
-   `property-images` storage bucket, and full seed data
-   (7 categories · 3 team members · 16 Lahore listings · 4 testimonials ·
-   settings · admin account · 3 sample leads).
+3. You now have: tables, indexes, triggers, RLS, the
+   `property-media` storage bucket, and full seed data
+   (7 categories · 16 Lahore listings · settings · admin account).
+   No agents/testimonials/blog — the platform is a focused catalog + CRM.
 
 ## 2. Admin account
 

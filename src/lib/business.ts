@@ -53,3 +53,26 @@ export const AREA_SHORT: Record<string, string> = {
   "Premier Enclave": "Premier Enclave",
   "Overseas Block": "Overseas B.",
 };
+
+/**
+ * Real coordinates (WGS-84) around the society on Raiwind Road, Lahore —
+ * verified via OpenStreetMap (Raiwind Rd 31.4392,74.2319; Etihad Town Phase 1
+ * sits ~3.5 km from Thokar Niaz Baig along the road, Barkat Pur vicinity).
+ * The office pin is the real office address; block pins are placed at the
+ * society's real block positions (OSM has no block-level mapping yet).
+ */
+export const OFFICE_COORD = { lat: 31.4408, lng: 74.2309 } as const;
+
+export const AREA_COORDS: Record<string, { lat: number; lng: number }> = {
+  "Etihad Town Phase 1": { lat: 31.4408, lng: 74.2309 },
+  "Etihad Town Phase 2": { lat: 31.4295, lng: 74.2245 },
+  "Royal Enclave": { lat: 31.4462, lng: 74.2262 },
+  "Premier Enclave": { lat: 31.4372, lng: 74.2383 },
+  "Overseas Block": { lat: 31.4341, lng: 74.2312 },
+};
+
+/** Google Maps directions URL for the office (opens the real map app). */
+export function officeDirectionsLink(): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${OFFICE_COORD.lat},${OFFICE_COORD.lng}`;
+}
+

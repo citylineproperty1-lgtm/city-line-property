@@ -20,17 +20,6 @@ export type PropertyType =
   | "for-rent"
   | string;
 
-export interface Agent {
-  id: string;
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  initials: string;
-  accent: string;
-  bio: string;
-}
-
 export interface Property {
   id: string;
   title: string;
@@ -54,8 +43,6 @@ export interface Property {
   yearBuilt: number;
   parking: number;
   views: number;
-  rating: number;
-  agent: Agent;
   createdAt: string;
 }
 
@@ -121,7 +108,6 @@ export interface PropertyQuery {
   limit?: number;
   offset?: number;
   ids?: string;
-  agentId?: string;
 }
 
 export interface Lead {
@@ -160,15 +146,6 @@ export interface LeadInput {
   source?: string;
 }
 
-export interface TestimonialItem {
-  id: string;
-  name: string;
-  role: string;
-  content: string;
-  rating: number;
-  initials: string;
-}
-
 export interface PlatformStats {
   properties: number;
   forSale: number;
@@ -176,7 +153,6 @@ export interface PlatformStats {
   cities: number;
   districts: number;
   leads: number;
-  agents: number;
 }
 
 export const LEAD_STATUSES = ["NEW", "CONTACTED", "SITE_VISIT", "NEGOTIATION", "WON", "LOST"] as const;

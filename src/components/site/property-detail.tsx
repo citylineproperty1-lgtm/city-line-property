@@ -36,14 +36,13 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  GitCompareArrows,
   Check,
   Maximize2,
   Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { waLink } from "@/lib/business";
+import { BUSINESS, waLink } from "@/lib/business";
 import { Lightbox } from "@/components/site/lightbox";
 
 /** Clipboard write with a legacy fallback; returns false if both fail. */
@@ -69,7 +68,7 @@ async function copyLink(text: string): Promise<boolean> {
 }
 
 export function PropertyDetailView({ id }: { id: string }) {
-  const { navigate, setFilters, favorites, toggleFavorite, compare, toggleCompare, recordRecent } =
+  const { navigate, setFilters, favorites, toggleFavorite, recordRecent } =
     useAppStore();
   const [property, setProperty] = useState<Property | null>(null);
   const [similar, setSimilar] = useState<Property[]>([]);
@@ -157,7 +156,6 @@ export function PropertyDetailView({ id }: { id: string }) {
   }
 
   const isFav = favorites.includes(property.id);
-  const isComparing = compare.includes(property.id);
   const isRent = property.status === "RENT";
   const facts = [
     { icon: BedDouble, label: "Bedrooms", value: property.beds > 0 ? String(property.beds) : "—" },
@@ -296,10 +294,6 @@ export function PropertyDetailView({ id }: { id: string }) {
                     <BadgeCheck className="h-3.5 w-3.5" />
                     Verified listing
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-[12px] font-medium text-neutral-600">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    {property.rating.toFixed(1)}
-                  </span>
                 </div>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
                   {property.title}
@@ -310,24 +304,6 @@ export function PropertyDetailView({ id }: { id: string }) {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    const ok = toggleCompare(property.id);
-                    if (ok) toast.success("Added to compare");
-                    else if (!isComparing) toast.info("You can compare up to 4 properties");
-                  }}
-                  className={cn(
-                    "flex h-11 items-center gap-1.5 rounded-full border px-4 text-[13px] font-medium transition-all",
-                    isComparing
-                      ? "border-[#C9A227] bg-[#C9A227] text-white"
-                      : "border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
-                  )}
-                  aria-label={isComparing ? "Remove from compare" : "Add to compare"}
-                  aria-pressed={isComparing}
-                >
-                  {isComparing ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}
-                  {isComparing ? "Comparing" : "Compare"}
-                </button>
                 <button
                   onClick={() => {
                     const nowFav = !isFav;
@@ -464,7 +440,7 @@ export function PropertyDetailView({ id }: { id: string }) {
           transition={{ duration: 0.5, delay: 0.12 }}
           className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start print:hidden"
         >
-          <AgentCardWithForm property={property} />
+          <OfficeCardWithForm property={property} />
           <MortgageCalculator price={property.price} isRent={isRent} />
         </motion.aside>
       </div>
@@ -503,7 +479,7 @@ export function PropertyDetailView({ id }: { id: string }) {
   );
 }
 
-/* ---------------- Agent card + inquiry form ---------------- */
+/* ---------------- Office card + inquiry form ---------------- */
 
 function WhatsAppGlyph({ className }: { className?: string }) {
   return (
@@ -513,7 +489,7 @@ function WhatsAppGlyph({ className }: { className?: string }) {
   );
 }
 
-function AgentCardWithForm({ property }: { property: Property }) {
+function OfficeCardWithForm({ property }: { property: Property }) {
   const [open, setOpen] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -544,7 +520,7 @@ function AgentCardWithForm({ property }: { property: Property }) {
       if (!res.ok) throw new Error(data.error || "Failed to send");
       setSent(true);
       toast.success("Request sent!", {
-        description: `${property.agent.name} will reach out within a few hours.`,
+        description: "The City Line Property team will reach out within a few hours.",
       });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to send");
@@ -555,54 +531,48 @@ function AgentCardWithForm({ property }: { property: Property }) {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-sm">
-      {/* Agent */}
-      <button
-        onClick={() => navigate({ name: "agent", id: property.agent.id })}
-        className="group flex w-full items-center gap-4 border-b border-neutral-100 bg-neutral-50/50 p-5 text-left transition-colors hover:bg-neutral-100/70"
-        aria-label={`View ${property.agent.name}'s profile`}
-      >
-        <span
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white transition-transform group-hover:scale-105"
-          style={{ backgroundColor: property.agent.accent }}
-        >
-          {property.agent.initials}
+      {/* Office identity */}
+      <div className="flex items-center gap-4 border-b border-neutral-100 bg-neutral-50/50 p-5">
+        <span className="brand-gradient flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-white">
+          CL
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold text-neutral-900 group-hover:text-[#8C6D1F]">
-            {property.agent.name}
+          <p className="truncate text-[15px] font-semibold text-neutral-900">
+            {BUSINESS.name}
           </p>
-          <p className="truncate text-[13px] text-neutral-500">{property.agent.title}</p>
+          <p className="truncate text-[12.5px] font-medium text-[#0B6B5D]">
+            {BUSINESS.commissionLine} · direct dealing
+          </p>
         </div>
-        <span className="flex shrink-0 items-center gap-1 rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500 transition-colors group-hover:border-[#C9A227]/40 group-hover:text-[#8C6D1F]">
-          View profile
-          <ArrowRight className="h-3 w-3" />
+        <span className="inline-flex shrink-0 items-center rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[11px] font-semibold text-[#0B6B5D]">
+          <BadgeCheck className="mr-1 h-3.5 w-3.5" />
+          Office
         </span>
-      </button>
+      </div>
 
       <div className="p-5">
         <div className="grid grid-cols-1 gap-2">
           <a
-            href={`tel:${property.agent.phone.replace(/\s/g, "")}`}
+            href={`tel:${BUSINESS.telPrimary}`}
             className="flex h-10 items-center justify-center gap-2 rounded-full border border-neutral-200 text-[13.5px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
           >
             <Phone className="h-3.5 w-3.5" />
-            {property.agent.phone}
+            {BUSINESS.phonePrimary}
           </a>
           <a
-            href={`mailto:${property.agent.email}`}
+            href={`tel:${BUSINESS.telSecondary}`}
             className="flex h-10 items-center justify-center gap-2 rounded-full border border-neutral-200 text-[13.5px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
           >
-            <Mail className="h-3.5 w-3.5" />
-            {property.agent.email}
+            <Phone className="h-3.5 w-3.5" />
+            {BUSINESS.phoneSecondary}
           </a>
           <a
             href={waLink(
-              `Hi City Line Property! I'm interested in "${property.title}" (${property.reference}, ${formatPKR(property.price)}). Please share details.`,
-              "923094499940"
+              `Hi City Line Property! I'm interested in "${property.title}" (${property.reference}, ${formatPKR(property.price)}). Please share details.`
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-11 items-center justify-center gap-2 rounded-full bg-[#25D366] text-[13.5px] font-semibold text-white shadow-[0_6px_18px_-6px_rgba(37,211,102,0.6)] transition-all hover:bg-[#1FB855]"
+            className="flex h-11 items-center justify-center gap-2 rounded-full bg-[#22C55E] text-[13.5px] font-semibold text-white shadow-[0_6px_18px_-6px_rgba(34,197,94,0.55)] transition-all hover:bg-[#16A34A]"
             aria-label="Enquire about this property on WhatsApp"
           >
             <WhatsAppGlyph className="h-4 w-4" />
@@ -624,12 +594,12 @@ function AgentCardWithForm({ property }: { property: Property }) {
 
         {open && (
           sent ? (
-            <div className="mt-4 rounded-xl border border-[#C9A227]/40 bg-[#F7EFD4]/60 p-5 text-center">
-              <CheckCircle2 className="mx-auto h-8 w-8 text-[#A8851D]" />
-              <p className="mt-2 text-sm font-semibold text-[#8C6D1F]">Viewing requested</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-[#8C6D1F]">
-                We&rsquo;ve sent your details to {property.agent.name}. Expect a reply
-                within a few working hours.
+            <div className="mt-4 rounded-xl border border-[#0F766E]/30 bg-[#E7F4F0]/60 p-5 text-center">
+              <CheckCircle2 className="mx-auto h-8 w-8 text-[#0F766E]" />
+              <p className="mt-2 text-sm font-semibold text-[#0B6B5D]">Viewing requested</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-[#0B6B5D]">
+                We&rsquo;ve received your request — the team will call you within a few
+                working hours ({BUSINESS.hours}).
               </p>
             </div>
           ) : (
@@ -672,7 +642,7 @@ function AgentCardWithForm({ property }: { property: Property }) {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+92 3xx …"
+                    placeholder="03xx …"
                     className="h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
                   />
                 </div>
@@ -694,7 +664,7 @@ function AgentCardWithForm({ property }: { property: Property }) {
               <Button
                 type="submit"
                 disabled={sending}
-                className="h-11 w-full rounded-full bg-[#C9A227] text-sm font-medium hover:bg-[#A8851D]"
+                className="brand-gradient h-11 w-full rounded-full text-sm font-medium hover:opacity-95"
               >
                 {sending ? (
                   <>
@@ -706,7 +676,7 @@ function AgentCardWithForm({ property }: { property: Property }) {
                 )}
               </Button>
               <p className="text-center text-[11.5px] text-neutral-400">
-                No spam. Your details are only shared with this agent.
+                No spam. Your details go straight to our office — nothing else.
               </p>
             </form>
           )

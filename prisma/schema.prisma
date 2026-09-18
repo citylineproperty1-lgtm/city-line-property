@@ -1,5 +1,7 @@
 // City Line Property — Prisma schema
-// CRM-enabled schema: categories, inventory fields, leads, admin users, settings.
+// CRM-enabled schema: categories, inventory, leads, admin users, settings.
+// Extras (agents, testimonials, newsletter, view events, blog posts) removed —
+// the platform is a focused property catalog + CRM.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,54 +13,50 @@ datasource db {
 }
 
 model Property {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
   // Short inventory code, e.g. CLP-101 (auto-assigned on create)
-  reference   String   @unique
-  description String
+  reference    String   @unique
+  description  String
   // price in PKR (per month when status = RENT)
-  price       Float
+  price        Float
   // SALE | RENT
-  status      String
+  status       String
   // Category slug from Category table (residential-plots, houses, for-rent, ...)
-  type        String
-  beds        Int
-  baths       Int
+  type         String
+  beds         Int
+  baths        Int
   // area in sqft (plots: total sqft of the plot)
-  area        Int
-  address     String
-  city        String
+  area         Int
+  address      String
+  city         String
   // One of the 5 areas: Etihad Town Phase 1 | Etihad Town Phase 2 | Royal Enclave | Premier Enclave | Overseas Block
-  district    String
+  district     String
   // JSON string array of image paths
-  images      String
+  images       String
   // JSON string array of amenity names
-  amenities   String
-  featured    Boolean  @default(false)
+  amenities    String
+  featured     Boolean  @default(false)
   // Inventory availability: AVAILABLE | RESERVED | SOLD | RENTED
-  listingState String  @default("AVAILABLE")
+  listingState String   @default("AVAILABLE")
   // Draft listings are hidden from the public site
-  published   Boolean  @default(true)
-  yearBuilt   Int
-  parking     Int
-  views       Int      @default(0)
-  rating      Float    @default(4.6)
-  agentId     String
-  agent       Agent    @relation(fields: [agentId], references: [id])
-  leads       Lead[]
-  viewEvents  ViewEvent[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  published    Boolean  @default(true)
+  yearBuilt    Int
+  parking      Int
+  views        Int      @default(0)
+  leads        Lead[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
-// Managed from the admin panel — icons are lucide icon names, colors are iOS-palette hex.
+// Managed from the admin panel — icons are lucide icon names.
 model Category {
   id          String   @id @default(cuid())
   name        String   @unique
   slug        String   @unique
   icon        String   @default("Building2")
-  color       String   @default("#C9A227")
+  color       String   @default("#0F766E")
   description String   @default("")
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
@@ -110,59 +108,5 @@ model AdminUser {
 model Setting {
   key       String   @id
   value     String
-  updatedAt DateTime @updatedAt
-}
-
-model Agent {
-  id         String     @id @default(cuid())
-  name       String
-  title      String
-  email      String     @unique
-  phone      String
-  initials   String
-  accent     String
-  bio        String
-  properties Property[]
-  createdAt  DateTime   @default(now())
-}
-
-model Testimonial {
-  id       String @id @default(cuid())
-  name     String
-  role     String
-  content  String
-  rating   Int    @default(5)
-  initials String
-}
-
-model Newsletter {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-}
-
-// One row per property-detail view — powers the traffic chart in insights.
-model ViewEvent {
-  id         String   @id @default(cuid())
-  propertyId String
-  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-}
-
-// Property Digest editorial posts (market notes, guides, area updates).
-// NOTE: runtime CRUD uses raw SQL (src/lib/posts.ts) so the long-running dev
-// server never depends on a regenerated Prisma client — see worklog Task 9.
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique
-  excerpt   String   @default("")
-  content   String   @default("")
-  cover     String?
-  tag       String   @default("Market notes")
-  author    String   @default("City Line Property")
-  published Boolean  @default(true)
-  views     Int      @default(0)
-  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

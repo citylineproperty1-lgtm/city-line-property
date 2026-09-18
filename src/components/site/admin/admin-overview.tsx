@@ -19,6 +19,7 @@ import {
   TrendingUp,
   Eye,
   CalendarClock,
+  CalendarCheck,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -59,11 +60,8 @@ interface Overview {
     lost: number;
   };
   whatsapp: { sent: number; failed: number };
-  subscribers: number;
-  agents: number;
   byCategory: { slug: string; name: string; color: string; count: number }[];
   byArea: { area: string; count: number }[];
-  viewTrend: { label: string; count: number }[];
   leadTrend: { label: string; count: number }[];
   followUps: {
     overdue: number;
@@ -140,7 +138,6 @@ export function AdminOverview({
   if (!o) return null;
   const maxCat = Math.max(1, ...o.byCategory.map((c) => c.count));
   const maxArea = Math.max(1, ...o.byArea.map((a) => a.count));
-  const views14 = o.viewTrend.reduce((a, b) => a + b.count, 0);
   const leads14 = o.leadTrend.reduce((a, b) => a + b.count, 0);
 
   return (
@@ -199,10 +196,10 @@ export function AdminOverview({
           delay={0.16}
         />
         <StatCard
-          label="Subscribers"
-          value={o.subscribers}
-          icon={Mail}
-          hint={`${o.agents} team agents`}
+          label="Site visits booked"
+          value={o.leads.siteVisits}
+          icon={CalendarCheck}
+          hint={`${o.leads.negotiation} in negotiation`}
           delay={0.2}
         />
       </div>
@@ -216,20 +213,16 @@ export function AdminOverview({
                 <TrendingUp className="h-4 w-4 text-[#C9A227]" />
                 Last 14 days
               </h3>
-              <p className="mt-0.5 text-[12px] text-neutral-400">Listing views vs. new leads, day by day.</p>
+              <p className="mt-0.5 text-[12px] text-neutral-400">New leads captured, day by day.</p>
             </div>
             <div className="flex items-center gap-4 text-[11.5px] font-medium text-neutral-500">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#C9A227]" /> Views
-                <b className="tabular-nums text-neutral-800">{views14}</b>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#34C759]" /> Leads
+                <span className="h-2 w-2 rounded-full bg-[#0F766E]" /> Leads
                 <b className="tabular-nums text-neutral-800">{leads14}</b>
               </span>
             </div>
           </div>
-          <TrendChart views={o.viewTrend} leads={o.leadTrend} />
+          <TrendChart data={o.leadTrend} />
         </AdminCard>
       </motion.section>
 
@@ -494,13 +487,11 @@ function EmptyLine({ text }: { text: string }) {
   return <p className="mt-4 rounded-xl bg-neutral-50/70 px-4 py-6 text-center text-[12.5px] text-neutral-400">{text}</p>;
 }
 
-/** Dual-series SVG chart: gold views (area) + green leads (line), 14 days. */
+/** Single-series SVG chart: emerald leads (area + line), 14 days. */
 function TrendChart({
-  views,
-  leads,
+  data,
 }: {
-  views: { label: string; count: number }[];
-  leads: { label: string; count: number }[];
+  data: { label: string; count: number }[];
 }) {
   const W = 560;
   const H = 170;
@@ -509,29 +500,28 @@ function TrendChart({
   const PAD_BOTTOM = 26;
   const innerW = W - PAD_X * 2;
   const innerH = H - PAD_TOP - PAD_BOTTOM;
-  const max = Math.max(1, ...views.map((v) => v.count), ...leads.map((l) => l.count));
-  const step = views.length > 1 ? innerW / (views.length - 1) : 0;
+  const max = Math.max(1, ...data.map((v) => v.count));
+  const step = data.length > 1 ? innerW / (data.length - 1) : 0;
   const px = (i: number) => PAD_X + i * step;
   const py = (c: number) => PAD_TOP + innerH - (c / max) * innerH;
 
-  const linePath = (data: { count: number }[]) =>
+  const linePath = () =>
     data.map((d, i) => `${i === 0 ? "M" : "L"}${px(i).toFixed(1)},${py(d.count).toFixed(1)}`).join(" ");
   const areaPath =
-    `${linePath(views)} L${px(views.length - 1).toFixed(1)},${(PAD_TOP + innerH).toFixed(1)} L${px(0).toFixed(1)},${
+    `${linePath()} L${px(data.length - 1).toFixed(1)},${(PAD_TOP + innerH).toFixed(1)} L${px(0).toFixed(1)},${
       PAD_TOP + innerH
     } Z`;
 
-  const peakIdx = views.reduce((best, d, i) => (d.count > views[best].count ? i : best), 0);
-  const totalViews = views.reduce((a, b) => a + b.count, 0);
-  const totalLeads = leads.reduce((a, b) => a + b.count, 0);
+  const peakIdx = data.reduce((best, d, i) => (d.count > data[best].count ? i : best), 0);
+  const total = data.reduce((a, b) => a + b.count, 0);
 
   return (
     <div className="mt-4">
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-44 w-full" role="img" aria-label="Views and leads over the last 14 days">
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-44 w-full" role="img" aria-label="New leads over the last 14 days">
         <defs>
-          <linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#C9A227" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="#C9A227" stopOpacity="0.02" />
+          <linearGradient id="leadsFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0F766E" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#0F766E" stopOpacity="0.02" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75].map((f) => (
@@ -547,51 +537,35 @@ function TrendChart({
         ))}
         <motion.path
           d={areaPath}
-          fill="url(#viewsFill)"
+          fill="url(#leadsFill)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         />
         <motion.path
-          d={linePath(views)}
+          d={linePath()}
           fill="none"
-          stroke="#C9A227"
+          stroke="#0F766E"
           strokeWidth="2.5"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.1, ease: "easeOut", delay: 0.15 }}
         />
-        <motion.path
-          d={linePath(leads)}
-          fill="none"
-          stroke="#34C759"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeDasharray="1 0"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.1, ease: "easeOut", delay: 0.3 }}
-        />
-        {views.map((d, i) =>
+        {data.map((d, i) =>
           i === peakIdx && d.count > 0 ? (
             <g key={i}>
-              <circle cx={px(i)} cy={py(d.count)} r="4.5" fill="#C9A227" stroke="#fff" strokeWidth="2" />
+              <circle cx={px(i)} cy={py(d.count)} r="4.5" fill="#0F766E" stroke="#fff" strokeWidth="2" />
             </g>
           ) : null
         )}
-        {leads.map((d, i) =>
-          d.count > 0 ? (
-            <circle key={i} cx={px(i)} cy={py(d.count)} r="3" fill="#34C759" stroke="#fff" strokeWidth="1.5" />
-          ) : null
-        )}
-        {views.map((d, i) =>
-          i === 0 || i === views.length - 1 || i === Math.floor(views.length / 2) ? (
+        {data.map((d, i) =>
+          i === 0 || i === data.length - 1 || i === Math.floor(data.length / 2) ? (
             <text
               key={i}
               x={px(i)}
               y={H - 8}
-              textAnchor={i === 0 ? "start" : i === views.length - 1 ? "end" : "middle"}
+              textAnchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
               className="fill-neutral-400"
               fontSize="10"
             >
@@ -600,9 +574,9 @@ function TrendChart({
           ) : null
         )}
       </svg>
-      {totalViews === 0 && totalLeads === 0 && (
+      {total === 0 && (
         <p className="-mt-24 flex items-center justify-center gap-2 text-[12.5px] text-neutral-400">
-          <Eye className="h-4 w-4" /> No activity in the last 14 days yet.
+          <Eye className="h-4 w-4" /> No leads in the last 14 days yet.
         </p>
       )}
     </div>
@@ -613,11 +587,8 @@ const EMPTY: Overview = {
   properties: { total: 0, published: 0, available: 0, reserved: 0, sold: 0, rented: 0, featured: 0 },
   leads: { total: 0, new: 0, contacted: 0, siteVisits: 0, negotiation: 0, won: 0, lost: 0 },
   whatsapp: { sent: 0, failed: 0 },
-  subscribers: 0,
-  agents: 0,
   byCategory: [],
   byArea: [],
-  viewTrend: [],
   leadTrend: [],
   followUps: { overdue: 0, today: 0, upcoming: [] },
   recentLeads: [],

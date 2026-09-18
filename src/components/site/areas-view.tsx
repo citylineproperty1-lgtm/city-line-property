@@ -42,15 +42,36 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 } as const;
 
-/** Live per-area numbers from /api/insights (listings count + averages). */
+/** Live per-area numbers computed client-side from the public listings API. */
 function useDistrictStats(): DistrictStat[] | null {
   const [stats, setStats] = useState<DistrictStat[] | null>(null);
   useEffect(() => {
     let alive = true;
-    fetch("/api/insights")
+    fetch("/api/properties?limit=300")
       .then((r) => r.json())
       .then((d) => {
-        if (alive) setStats(d.insights?.byDistrict ?? []);
+        if (!alive) return;
+        const list: Property[] = d.properties ?? [];
+        const acc = new Map<string, { count: number; saleSum: number; saleN: number; rentSum: number; rentN: number }>();
+        for (const p of list) {
+          const row = acc.get(p.district) ?? { count: 0, saleSum: 0, saleN: 0, rentSum: 0, rentN: 0 };
+          row.count++;
+          if (p.status === "SALE") {
+            row.saleSum += p.price;
+            row.saleN++;
+          } else {
+            row.rentSum += p.price;
+            row.rentN++;
+          }
+          acc.set(p.district, row);
+        }
+        const out: DistrictStat[] = [...acc.entries()].map(([district, r]) => ({
+          district,
+          count: r.count,
+          saleAvg: r.saleN ? Math.round(r.saleSum / r.saleN) : 0,
+          rentAvg: r.rentN ? Math.round(r.rentSum / r.rentN) : 0,
+        }));
+        setStats(out);
       })
       .catch(() => {
         if (alive) setStats([]);

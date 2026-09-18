@@ -30,12 +30,9 @@ export async function GET() {
       lost,
       waSent,
       waFailed,
-      subscribers,
-      agents,
       categoryRows,
       areaRows,
       recentLeadRows,
-      viewEventRows,
       leadRows14,
     ] = await Promise.all([
       db.property.count(),
@@ -54,8 +51,6 @@ export async function GET() {
       db.lead.count({ where: { status: "LOST" } }),
       db.lead.count({ where: { waStatus: "SENT" } }),
       db.lead.count({ where: { waStatus: "FAILED" } }),
-      db.newsletter.count(),
-      db.agent.count(),
       db.property.groupBy({ by: ["type"], _count: { type: true } }),
       db.property.groupBy({ by: ["district"], _count: { district: true } }),
       db.lead.findMany({
@@ -63,10 +58,7 @@ export async function GET() {
         take: 6,
         include: { property: { select: { title: true } } },
       }),
-      // 14-day traffic + lead trends (raw SQL — same dev-server-safe pattern as /api/insights)
-      db.$queryRaw<{ createdAt: string | Date }[]>`
-        SELECT "createdAt" FROM ViewEvent WHERE "createdAt" >= ${since.getTime()}
-      `,
+      // 14-day lead trend (raw SQL — dev-server-safe pattern)
       db.$queryRaw<{ createdAt: string | Date }[]>`
         SELECT "createdAt" FROM Lead WHERE "createdAt" >= ${since.getTime()}
       `,
@@ -79,7 +71,7 @@ export async function GET() {
         return {
           slug: row.type,
           name: cat?.name ?? row.type,
-          color: cat?.color ?? "#C9A227",
+          color: cat?.color ?? "#0F766E",
           count: row._count.type,
         };
       })
@@ -110,7 +102,6 @@ export async function GET() {
       }
       return dayKeys.map((k, i) => ({ label: k.label, count: counts[i] }));
     };
-    const viewTrend = bucket(viewEventRows);
     const leadTrend = bucket(leadRows14);
 
     const followUps = await followUpQueue(4);
@@ -120,12 +111,9 @@ export async function GET() {
         properties: { total: totalProperties, published, available, reserved, sold, rented, featured },
         leads: { total: totalLeads, new: newLeads, contacted, siteVisits, negotiation, won, lost },
         whatsapp: { sent: waSent, failed: waFailed },
-        subscribers,
-        agents,
         byCategory,
         byArea,
         recentLeads,
-        viewTrend,
         leadTrend,
         followUps,
       },

@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { CATEGORIES, categoryLabel, type Property } from "@/lib/types";
-import { BedDouble, Bath, Ruler, Car, Heart, MapPin, GitCompareArrows, Check } from "lucide-react";
+import { BedDouble, Bath, Ruler, Car, Heart, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-/** Small tinted chip for the property's category (iOS-style soft background). */
+/** Small tinted chip for the property's category. */
 export function CategoryChip({ type, className }: { type: string; className?: string }) {
   const cat = CATEGORIES.find((c) => c.slug === type);
   const label = categoryLabel(type);
@@ -21,7 +21,7 @@ export function CategoryChip({ type, className }: { type: string; className?: st
       )}
       style={
         cat
-          ? { backgroundColor: `${cat.color}1A`, color: cat.color }
+          ? { backgroundColor: `${cat.color}14`, color: cat.color }
           : { backgroundColor: "rgba(0,0,0,0.05)", color: "#52525B" }
       }
     >
@@ -35,8 +35,8 @@ function StateBadge({ state }: { state: Property["listingState"] }) {
   if (state === "AVAILABLE") return null;
   const style =
     state === "RESERVED"
-      ? "bg-amber-400/95 text-amber-950"
-      : "bg-neutral-600/95 text-white";
+      ? "bg-[#F59E0B]/95 text-white"
+      : "bg-neutral-800/95 text-white";
   return (
     <span className={cn("rounded-full px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wider backdrop-blur", style)}>
       {state === "RENTED" ? "Rented" : state === "SOLD" ? "Sold" : "Reserved"}
@@ -45,9 +45,8 @@ function StateBadge({ state }: { state: Property["listingState"] }) {
 }
 
 export function PropertyCard({ property, index = 0 }: { property: Property; index?: number }) {
-  const { navigate, favorites, toggleFavorite, compare, toggleCompare } = useAppStore();
+  const { navigate, favorites, toggleFavorite } = useAppStore();
   const isFav = favorites.includes(property.id);
-  const isComparing = compare.includes(property.id);
   const isRent = property.status === "RENT";
 
   return (
@@ -56,7 +55,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.3), ease: "easeOut" }}
       whileHover={{ y: -4 }}
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_16px_44px_-14px_rgba(120,90,20,0.22)]"
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_20px_48px_-18px_rgba(15,23,42,0.22)]"
       onClick={() => navigate({ name: "property", id: property.id })}
       role="button"
       tabIndex={0}
@@ -80,7 +79,9 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           <span
             className={cn(
               "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
-              isRent ? "bg-[#007AFF]/95 text-white" : "bg-[#C9A227]/95 text-white"
+              isRent
+                ? "border border-[#0F766E]/25 bg-white/95 text-[#0B6B5D]"
+                : "brand-gradient text-white"
             )}
           >
             {isRent ? "For Rent" : "For Sale"}
@@ -107,27 +108,6 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
             />
           </span>
         </button>
-        {/* Compare toggle */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            const ok = toggleCompare(property.id);
-            if (!ok && !isComparing) {
-              toast.info("You can compare up to 4 properties");
-            }
-          }}
-          className={cn(
-            "absolute bottom-3 right-3 flex h-9 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold shadow-sm backdrop-blur transition-all active:scale-95",
-            isComparing
-              ? "gold-gradient text-white shadow-[0_4px_14px_-4px_rgba(154,123,26,0.7)]"
-              : "bg-white/90 text-neutral-600 opacity-0 group-hover:opacity-100 hover:text-[#8C6D1F] focus:opacity-100"
-          )}
-          aria-label={isComparing ? "Remove from compare" : "Add to compare"}
-          aria-pressed={isComparing}
-        >
-          {isComparing ? <Check className="h-3.5 w-3.5" /> : <GitCompareArrows className="h-3.5 w-3.5" />}
-          {isComparing ? "Added" : "Compare"}
-        </button>
       </div>
 
       {/* Body */}
@@ -138,7 +118,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           </p>
           <CategoryChip type={property.type} />
         </div>
-        <h3 className="mt-1.5 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#8F7018]">
+        <h3 className="mt-1.5 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#0B6B5D]">
           {property.title}
         </h3>
         <p className="mt-1 flex items-center gap-1 text-[13px] text-neutral-400">

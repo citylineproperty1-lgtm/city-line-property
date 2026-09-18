@@ -59,9 +59,8 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     }
     if (body.yearBuilt !== undefined) data.yearBuilt = Number(body.yearBuilt) | 0;
     if (body.parking !== undefined) data.parking = Math.max(0, Number(body.parking) | 0);
-    if (body.agentId !== undefined) data.agentId = body.agentId.toString();
 
-    const row = await db.property.update({ where: { id }, data, include: { agent: true } });
+    const row = await db.property.update({ where: { id }, data });
     return NextResponse.json({ property: serializeProperty(row) });
   } catch (e) {
     console.error("PATCH /api/admin/properties/[id]", e);
@@ -69,7 +68,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
   }
 }
 
-/** Delete a listing (view events cascade). */
+/** Delete a listing. */
 export async function DELETE(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const denied = await guardAdmin();
   if (denied) return denied;

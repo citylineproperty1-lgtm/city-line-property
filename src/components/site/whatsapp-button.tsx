@@ -16,7 +16,6 @@ export function WhatsAppIcon({ className }: { className?: string }) {
 
 export function WhatsAppButton() {
   const [visible, setVisible] = useState(false);
-  const compareCount = useAppStore((s) => s.compare.length);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 120);
@@ -25,7 +24,7 @@ export function WhatsAppButton() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const show = visible && compareCount === 0;
+  const show = visible;
 
   const href = waLink(
     `Hi ${BUSINESS.name}! I'm browsing your listings in Etihad Town, Lahore and would like some help finding a property.`

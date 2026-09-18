@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
 import { BUSINESS, AREAS } from "@/lib/business";
-import type { Agent } from "@/lib/types";
 import {
   ShieldCheck,
   Eye,
@@ -29,15 +27,6 @@ const fadeUp = {
 
 export function AboutView() {
   const { navigate } = useAppStore();
-  const [agents, setAgents] = useState<(Agent & { listingCount?: number })[]>([]);
-
-  useEffect(() => {
-    fetch("/api/agents")
-      .then((r) => r.json())
-      .then((d) => setAgents(d.agents ?? []))
-      .catch(() => setAgents([]));
-  }, []);
-
   return (
     <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
       {/* Hero */}
@@ -201,95 +190,6 @@ export function AboutView() {
             ))}
           </div>
         </motion.div>
-      </section>
-
-      {/* Team */}
-      <section className="pt-20">
-        <motion.div
-          {...fadeUp}
-          className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"
-        >
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-              Meet the team
-            </h2>
-            <p className="mt-2 max-w-md text-sm text-neutral-500">
-              Small, senior and specialist — every agent leads their own portfolio and
-              answers their own phone.
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            onClick={() => navigate({ name: "contact" })}
-            className="group h-10 rounded-full text-sm font-medium text-neutral-600 hover:bg-[#C9A227]/10 hover:text-[#8F7018]"
-          >
-            Work with us
-            <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Button>
-        </motion.div>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {agents.length === 0
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-56 animate-pulse rounded-2xl bg-neutral-100" />
-              ))
-            : agents.map((a, i) => (
-                <motion.button
-                  key={a.id}
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-                  onClick={() => navigate({ name: "agent", id: a.id })}
-                  className="group rounded-2xl border border-black/[0.07] bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:border-[#C9A227]/40 hover:shadow-md"
-                  aria-label={`View ${a.name}'s profile and listings`}
-                >
-                  <span
-                    className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-lg font-semibold text-white transition-transform group-hover:scale-105"
-                    style={{ backgroundColor: a.accent }}
-                  >
-                    {a.initials}
-                  </span>
-                  <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900 group-hover:text-[#8F7018]">
-                    {a.name}
-                  </h3>
-                  <p className="text-[13px] text-[#A8851D]">{a.title}</p>
-                  <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-neutral-500">
-                    {a.bio}
-                  </p>
-                  <div className="mt-4 flex items-center justify-center gap-2 border-t border-neutral-100 pt-4">
-                    {a.listingCount !== undefined && (
-                      <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11.5px] font-medium text-neutral-600">
-                        {a.listingCount} active listing{a.listingCount === 1 ? "" : "s"}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-3 flex items-center justify-center gap-3 text-[12.5px] text-neutral-400">
-                    <a
-                      href={`mailto:${a.email}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1 transition-colors hover:text-neutral-700"
-                      aria-label={`Email ${a.name}`}
-                    >
-                      <Mail className="h-3.5 w-3.5" />
-                    </a>
-                    <a
-                      href={`tel:${a.phone.replace(/\s/g, "")}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1 transition-colors hover:text-neutral-700"
-                      aria-label={`Call ${a.name}`}
-                    >
-                      <Phone className="h-3.5 w-3.5" />
-                    </a>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                    </span>
-                  </div>
-                  <span className="mt-4 inline-flex items-center gap-1 text-[12px] font-semibold text-[#A8851D] opacity-0 transition-all group-hover:opacity-100">
-                    View profile
-                    <ArrowRight className="h-3 w-3" />
-                  </span>
-                </motion.button>
-              ))}
-        </div>
       </section>
 
       {/* Story */}

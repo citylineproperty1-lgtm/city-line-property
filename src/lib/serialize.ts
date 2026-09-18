@@ -1,22 +1,7 @@
-import type { Agent as DbAgent, Property as DbProperty } from "@prisma/client";
-import type { Property, Agent } from "./types";
+import type { Property as DbProperty } from "@prisma/client";
+import type { Property } from "./types";
 
-type PropertyWithAgent = DbProperty & { agent: DbAgent };
-
-export function serializeAgent(a: DbAgent): Agent {
-  return {
-    id: a.id,
-    name: a.name,
-    title: a.title,
-    email: a.email,
-    phone: a.phone,
-    initials: a.initials,
-    accent: a.accent,
-    bio: a.bio,
-  };
-}
-
-export function serializeProperty(p: PropertyWithAgent): Property {
+export function serializeProperty(p: DbProperty): Property {
   return {
     id: p.id,
     title: p.title,
@@ -40,8 +25,6 @@ export function serializeProperty(p: PropertyWithAgent): Property {
     yearBuilt: p.yearBuilt,
     parking: p.parking,
     views: p.views,
-    rating: p.rating,
-    agent: serializeAgent(p.agent),
     createdAt: p.createdAt.toISOString(),
   };
 }

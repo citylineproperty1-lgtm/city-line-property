@@ -7,19 +7,13 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { HomeView } from "@/components/site/home-view";
 import { PropertiesView } from "@/components/site/properties-view";
 import { PropertyDetailView } from "@/components/site/property-detail";
-import { AgentView } from "@/components/site/agent-view";
 import { AboutView } from "@/components/site/about-view";
 import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
-import { CompareView } from "@/components/site/compare-view";
-import { InsightsView } from "@/components/site/insights-view";
-import { DigestView } from "@/components/site/digest-view";
 import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
 import { AdminView } from "@/components/site/admin-view";
-import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { ScrollProgress } from "@/components/site/scroll-progress";
-import { CommandPalette } from "@/components/site/command-palette";
 import {
   useAppStore,
   hashToView,
@@ -32,13 +26,9 @@ const TITLES: Record<string, string> = {
   home: "City Line Property — Your Key to the City | Etihad Town, Lahore",
   properties: "Browse Properties — City Line Property",
   property: "Property Details — City Line Property",
-  agent: "Agent Profile — City Line Property",
   about: "About Us — City Line Property",
   contact: "Contact — City Line Property",
   saved: "Saved Properties — City Line Property",
-  compare: "Compare Properties — City Line Property",
-  insights: "Market Insights — City Line Property",
-  digest: "Property Digest — City Line Property",
   areas: "Area Guides — City Line Property",
   area: "Area Guide — City Line Property",
   admin: "City Line Property",
@@ -114,13 +104,9 @@ export default function Page() {
             {view.name === "home" && <HomeView />}
             {view.name === "properties" && <PropertiesView />}
             {view.name === "property" && <PropertyDetailView id={view.id} />}
-            {view.name === "agent" && <AgentView id={view.id} />}
             {view.name === "about" && <AboutView />}
             {view.name === "contact" && <ContactView />}
             {view.name === "saved" && <SavedView />}
-            {view.name === "compare" && <CompareView />}
-            {view.name === "insights" && <InsightsView />}
-            {view.name === "digest" && <DigestView slug={view.slug} />}
             {view.name === "areas" && <AreasIndexView />}
             {view.name === "area" && <AreaDetailView slug={view.slug} />}
             {view.name === "admin" && <AdminView />}
@@ -128,9 +114,7 @@ export default function Page() {
         </AnimatePresence>
       </main>
       <SiteFooter />
-      <CompareBarLoader />
       <WhatsAppButton />
-      <CommandPalette />
     </div>
   );
 }

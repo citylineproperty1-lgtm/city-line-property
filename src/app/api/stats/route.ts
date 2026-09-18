@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [properties, forSale, forRent, cities, districts, leads, agents] =
+    const [properties, forSale, forRent, cities, districts, leads] =
       await Promise.all([
         db.property.count({ where: { published: true } }),
         db.property.count({ where: { status: "SALE", published: true } }),
@@ -13,7 +13,6 @@ export async function GET() {
         db.property.groupBy({ by: ["city"], where: { published: true } }),
         db.property.groupBy({ by: ["district"], where: { published: true } }),
         db.lead.count(),
-        db.agent.count(),
       ]);
     return NextResponse.json({
       stats: {
@@ -23,13 +22,12 @@ export async function GET() {
         cities: cities.length,
         districts: districts.length,
         leads,
-        agents,
       },
     });
   } catch (e) {
     console.error("GET /api/stats", e);
     return NextResponse.json({
-      stats: { properties: 0, forSale: 0, forRent: 0, cities: 0, districts: 0, leads: 0, agents: 0 },
+      stats: { properties: 0, forSale: 0, forRent: 0, cities: 0, districts: 0, leads: 0 },
     });
   }
 }
