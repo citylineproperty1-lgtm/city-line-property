@@ -15,6 +15,7 @@ import { formatPKR, monthlyInstallment, formatDate } from "@/lib/format";
 import { TYPE_LABELS, type Property } from "@/lib/types";
 import {
   ArrowLeft,
+  ArrowRight,
   BedDouble,
   Bath,
   Ruler,
@@ -42,7 +43,8 @@ import { cn } from "@/lib/utils";
 import { Lightbox } from "@/components/site/lightbox";
 
 export function PropertyDetailView({ id }: { id: string }) {
-  const { navigate, favorites, toggleFavorite, compare, toggleCompare } = useAppStore();
+  const { navigate, favorites, toggleFavorite, compare, toggleCompare, recordRecent } =
+    useAppStore();
   const [property, setProperty] = useState<Property | null>(null);
   const [similar, setSimilar] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,10 @@ export function PropertyDetailView({ id }: { id: string }) {
       setNotFound(false);
       fetch(`/api/properties/${id}`)
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error("not found"))))
-        .then((d) => setProperty(d.property))
+        .then((d) => {
+          setProperty(d.property);
+          recordRecent(d.property.id);
+        })
         .catch(() => setNotFound(true))
         .finally(() => setLoading(false));
 
@@ -68,7 +73,7 @@ export function PropertyDetailView({ id }: { id: string }) {
         .catch(() => setSimilar([]));
     };
     load();
-  }, [id]);
+  }, [id, recordRecent]);
 
   if (loading) {
     return (
@@ -425,20 +430,28 @@ function AgentCardWithForm({ property }: { property: Property }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-sm">
       {/* Agent */}
-      <div className="flex items-center gap-4 border-b border-neutral-100 bg-neutral-50/50 p-5">
+      <button
+        onClick={() => navigate({ name: "agent", id: property.agent.id })}
+        className="group flex w-full items-center gap-4 border-b border-neutral-100 bg-neutral-50/50 p-5 text-left transition-colors hover:bg-neutral-100/70"
+        aria-label={`View ${property.agent.name}'s profile`}
+      >
         <span
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white transition-transform group-hover:scale-105"
           style={{ backgroundColor: property.agent.accent }}
         >
           {property.agent.initials}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold text-neutral-900">
+          <p className="truncate text-[15px] font-semibold text-neutral-900 group-hover:text-emerald-700">
             {property.agent.name}
           </p>
           <p className="truncate text-[13px] text-neutral-500">{property.agent.title}</p>
         </div>
-      </div>
+        <span className="flex shrink-0 items-center gap-1 rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-medium text-neutral-500 transition-colors group-hover:border-emerald-200 group-hover:text-emerald-700">
+          View profile
+          <ArrowRight className="h-3 w-3" />
+        </span>
+      </button>
 
       <div className="p-5">
         <div className="grid grid-cols-1 gap-2">

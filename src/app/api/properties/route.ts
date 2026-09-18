@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
     const featured = sp.get("featured") === "true";
     const sort = sp.get("sort") ?? "newest";
     const limit = Math.min(Number(sp.get("limit") ?? 60), 100);
+    const offset = Math.max(Number(sp.get("offset") ?? 0), 0);
+    const agentId = sp.get("agentId") ?? "";
     const ids = sp.get("ids");
 
     const where: Record<string, unknown> = {};
@@ -44,6 +46,7 @@ export async function GET(req: NextRequest) {
       };
     }
     if (featured) where.featured = true;
+    if (agentId) where.agentId = agentId;
 
     const orderBy: Record<string, "asc" | "desc"> =
       sort === "price-asc"
@@ -54,14 +57,21 @@ export async function GET(req: NextRequest) {
             ? { area: "desc" }
             : { createdAt: "desc" };
 
-    const rows = await db.property.findMany({
-      where,
-      include: { agent: true },
-      orderBy,
-      take: limit,
-    });
+    const [rows, total] = await Promise.all([
+      db.property.findMany({
+        where,
+        include: { agent: true },
+        orderBy,
+        take: limit,
+        skip: offset,
+      }),
+      db.property.count({ where }),
+    ]);
 
-    return NextResponse.json({ properties: rows.map(serializeProperty) });
+    return NextResponse.json({
+      properties: rows.map(serializeProperty),
+      total,
+    });
   } catch (e) {
     console.error("GET /api/properties", e);
     return NextResponse.json({ error: "Failed to load properties" }, { status: 500 });

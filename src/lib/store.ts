@@ -7,6 +7,7 @@ export type View =
   | { name: "home" }
   | { name: "properties" }
   | { name: "property"; id: string }
+  | { name: "agent"; id: string }
   | { name: "about" }
   | { name: "contact" }
   | { name: "saved" }
@@ -29,6 +30,7 @@ interface AppState {
   listingsFilters: ListingsFilters;
   favorites: string[];
   compare: string[];
+  recent: string[];
   navigate: (view: View) => void;
   setFilters: (f: Partial<ListingsFilters>) => void;
   resetFilters: () => void;
@@ -36,6 +38,7 @@ interface AppState {
   isFavorite: (id: string) => boolean;
   toggleCompare: (id: string) => boolean; // returns true if added
   clearCompare: () => void;
+  recordRecent: (id: string) => void;
 }
 
 const defaultFilters: ListingsFilters = {
@@ -55,6 +58,7 @@ export const useAppStore = create<AppState>()(
       listingsFilters: defaultFilters,
       favorites: [],
       compare: [],
+      recent: [],
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
@@ -82,10 +86,18 @@ export const useAppStore = create<AppState>()(
         return true;
       },
       clearCompare: () => set({ compare: [] }),
+      recordRecent: (id) =>
+        set((s) => ({
+          recent: [id, ...s.recent.filter((r) => r !== id)].slice(0, 8),
+        })),
     }),
     {
       name: "city-line-property",
-      partialize: (s) => ({ favorites: s.favorites, compare: s.compare }),
+      partialize: (s) => ({
+        favorites: s.favorites,
+        compare: s.compare,
+        recent: s.recent,
+      }),
     }
   )
 );

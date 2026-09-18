@@ -15,7 +15,7 @@ import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-c
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { PROPERTY_TYPES, type Property } from "@/lib/types";
-import { Search, SlidersHorizontal, X, SearchX, RotateCcw } from "lucide-react";
+import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRICE_STEPS = [
@@ -43,10 +43,14 @@ const STATUS_TABS = [
   { value: "RENT", label: "For Rent" },
 ];
 
+const PAGE_SIZE = 9;
+
 export function PropertiesView() {
   const { listingsFilters: f, setFilters, resetFilters, favorites } = useAppStore();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const query = useMemo(() => {
@@ -64,15 +68,36 @@ export function PropertiesView() {
   const load = useCallback(() => {
     setLoading(true);
     setError(null);
-    fetch(`/api/properties?${query}`)
+    fetch(`/api/properties?${query}&limit=${PAGE_SIZE}`)
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load");
         return r.json();
       })
-      .then((d) => setProperties(d.properties ?? []))
+      .then((d) => {
+        setProperties(d.properties ?? []);
+        setTotal(d.total ?? 0);
+      })
       .catch(() => setError("Could not load properties. Please try again."))
       .finally(() => setLoading(false));
   }, [query]);
+
+  const loadMore = useCallback(() => {
+    setLoadingMore(true);
+    fetch(`/api/properties?${query}&limit=${PAGE_SIZE}&offset=${properties.length}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      })
+      .then((d) => {
+        setProperties((prev) => {
+          const seen = new Set(prev.map((p) => p.id));
+          return [...prev, ...(d.properties ?? []).filter((p: Property) => !seen.has(p.id))];
+        });
+        setTotal(d.total ?? 0);
+      })
+      .catch(() => setError("Could not load more properties."))
+      .finally(() => setLoadingMore(false));
+  }, [query, properties.length]);
 
   useEffect(() => {
     const t = setTimeout(load, 250);
@@ -115,7 +140,7 @@ export function PropertiesView() {
           <p className="mt-2 text-[15px] text-neutral-500">
             {loading
               ? "Finding the right homes…"
-              : `${properties.length} ${properties.length === 1 ? "listing" : "listings"} available${
+              : `${total} ${total === 1 ? "listing" : "listings"} available${
                   savedCount ? ` · ${savedCount} saved` : ""
                 }`}
           </p>
@@ -316,11 +341,37 @@ export function PropertiesView() {
           </Button>
         </motion.div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((p, i) => (
-            <PropertyCard key={p.id} property={p} index={i} />
-          ))}
-        </div>
+        <>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {properties.map((p, i) => (
+              <PropertyCard key={p.id} property={p} index={i} />
+            ))}
+          </div>
+
+          {/* Load more */}
+          {properties.length < total && (
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <p className="text-[12.5px] text-neutral-400">
+                Showing {properties.length} of {total}
+              </p>
+              <Button
+                onClick={loadMore}
+                disabled={loadingMore}
+                variant="outline"
+                className="h-11 rounded-full border-neutral-200 px-8 text-sm font-medium hover:bg-neutral-50"
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading…
+                  </>
+                ) : (
+                  "Load more properties"
+                )}
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

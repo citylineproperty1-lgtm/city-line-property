@@ -15,6 +15,7 @@ import {
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { AnimatedNumber } from "@/components/site/animated-number";
 import { AreaMarquee } from "@/components/site/area-marquee";
+import { RecentStrip } from "@/components/site/recent-strip";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import {
@@ -489,6 +490,8 @@ export function HomeView() {
           )}
         </div>
       </section>
+
+      <RecentStrip />
 
       {/* ---------- CTA ---------- */}
       <section className="mx-auto w-full max-w-6xl px-4 pb-4 pt-20 sm:px-6">

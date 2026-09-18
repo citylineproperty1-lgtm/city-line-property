@@ -167,19 +167,21 @@ export function AboutView() {
                 <div key={i} className="h-56 animate-pulse rounded-2xl bg-neutral-100" />
               ))
             : agents.map((a, i) => (
-                <motion.div
+                <motion.button
                   key={a.id}
                   {...fadeUp}
                   transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-                  className="group rounded-2xl border border-neutral-200/80 bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  onClick={() => navigate({ name: "agent", id: a.id })}
+                  className="group rounded-2xl border border-neutral-200/80 bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-md"
+                  aria-label={`View ${a.name}'s profile and listings`}
                 >
                   <span
-                    className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-lg font-semibold text-white"
+                    className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-lg font-semibold text-white transition-transform group-hover:scale-105"
                     style={{ backgroundColor: a.accent }}
                   >
                     {a.initials}
                   </span>
-                  <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900">
+                  <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900 group-hover:text-emerald-700">
                     {a.name}
                   </h3>
                   <p className="text-[13px] text-emerald-700">{a.title}</p>
@@ -196,6 +198,7 @@ export function AboutView() {
                   <div className="mt-3 flex items-center justify-center gap-3 text-[12.5px] text-neutral-400">
                     <a
                       href={`mailto:${a.email}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-1 transition-colors hover:text-neutral-700"
                       aria-label={`Email ${a.name}`}
                     >
@@ -203,6 +206,7 @@ export function AboutView() {
                     </a>
                     <a
                       href={`tel:${a.phone.replace(/\s/g, "")}`}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-1 transition-colors hover:text-neutral-700"
                       aria-label={`Call ${a.name}`}
                     >
@@ -212,7 +216,11 @@ export function AboutView() {
                       <MapPin className="h-3.5 w-3.5" />
                     </span>
                   </div>
-                </motion.div>
+                  <span className="mt-4 inline-flex items-center gap-1 text-[12px] font-semibold text-emerald-700 opacity-0 transition-all group-hover:opacity-100">
+                    View profile
+                    <ArrowRight className="h-3 w-3" />
+                  </span>
+                </motion.button>
               ))}
         </div>
       </section>

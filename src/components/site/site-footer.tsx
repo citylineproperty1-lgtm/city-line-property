@@ -5,7 +5,7 @@ import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Building2, Mail, MapPin, Phone, Loader2, ArrowRight } from "lucide-react";
+import { Building2, Mail, MapPin, Phone, Loader2, ArrowRight, ArrowUp } from "lucide-react";
 import type { View } from "@/lib/store";
 
 const LINK_GROUPS: {
@@ -26,7 +26,7 @@ const LINK_GROUPS: {
     links: [
       { label: "Contact", view: { name: "contact" } },
       { label: "Book a valuation", view: { name: "contact" } },
-      { label: "Our agents", view: { name: "about" } },
+      { label: "Compare properties", view: { name: "compare" } },
     ],
   },
 ];
@@ -158,7 +158,17 @@ export function SiteFooter() {
       <div className="border-t border-neutral-100">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-5 text-[13px] text-neutral-400 sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} City Line Property. All rights reserved.</span>
-          <span>Crafted with care in Karachi · Sindh, Pakistan</span>
+          <div className="flex items-center gap-4">
+            <span>Crafted with care in Karachi · Sindh, Pakistan</span>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="group flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-[12px] font-medium text-neutral-500 transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900"
+              aria-label="Back to top"
+            >
+              Back to top
+              <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5" />
+            </button>
+          </div>
         </div>
       </div>
     </footer>

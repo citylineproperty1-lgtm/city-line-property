@@ -1,21 +1,47 @@
 "use client";
 
+import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { HomeView } from "@/components/site/home-view";
 import { PropertiesView } from "@/components/site/properties-view";
 import { PropertyDetailView } from "@/components/site/property-detail";
+import { AgentView } from "@/components/site/agent-view";
 import { AboutView } from "@/components/site/about-view";
 import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
 import { CompareView } from "@/components/site/compare-view";
 import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, type View } from "@/lib/store";
+
+const TITLES: Record<string, string> = {
+  home: "City Line Property — Karachi's Trusted Real Estate Partner",
+  properties: "Browse Properties — City Line Property",
+  property: "Property Details — City Line Property",
+  agent: "Agent Profile — City Line Property",
+  about: "About Us — City Line Property",
+  contact: "Contact — City Line Property",
+  saved: "Saved Properties — City Line Property",
+  compare: "Compare Properties — City Line Property",
+};
+
+function titleFor(view: View): string {
+  switch (view.name) {
+    case "property":
+      return `Property Details — City Line Property`;
+    default:
+      return TITLES[view.name] ?? TITLES.home;
+  }
+}
 
 export default function Page() {
   const { view } = useAppStore();
+
+  useEffect(() => {
+    document.title = titleFor(view);
+  }, [view]);
 
   const viewKey =
     view.name === "property" ? `property-${view.id}` : view.name;
@@ -35,6 +61,7 @@ export default function Page() {
             {view.name === "home" && <HomeView />}
             {view.name === "properties" && <PropertiesView />}
             {view.name === "property" && <PropertyDetailView id={view.id} />}
+            {view.name === "agent" && <AgentView id={view.id} />}
             {view.name === "about" && <AboutView />}
             {view.name === "contact" && <ContactView />}
             {view.name === "saved" && <SavedView />}
