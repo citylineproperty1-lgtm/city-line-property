@@ -161,3 +161,21 @@
   background-image: radial-gradient(oklch(0.88 0 0) 1px, transparent 1px);
   background-size: 22px 22px;
 }
+
+/* Print: turn the property page into a clean flyer.
+   Chrome (header/footer/floating widgets) hides via print:hidden utilities;
+   here we only normalize colors and spacing. */
+@media print {
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  main {
+    padding-top: 0 !important;
+  }
+  .rounded-3xl,
+  .rounded-2xl {
+    box-shadow: none !important;
+  }
+}

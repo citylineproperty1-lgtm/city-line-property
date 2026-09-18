@@ -21,6 +21,7 @@ import { CommandPalette } from "@/components/site/command-palette";
 import {
   useAppStore,
   hashToView,
+  filtersFromHash,
   sameView,
   type View,
 } from "@/lib/store";
@@ -56,14 +57,26 @@ export default function Page() {
 
   // Deep links + browser back/forward: hydrate view from URL hash once,
   // then keep the store in sync whenever the user navigates history.
+  // Shared /#/properties?… links also restore their listing filters.
+  const applyHashFilters = (hash: string) => {
+    const f = filtersFromHash(hash);
+    if (f) {
+      useAppStore.setState((s) => ({
+        listingsFilters: { ...s.listingsFilters, ...f },
+      }));
+    }
+  };
+
   useEffect(() => {
     const initial = hashToView(window.location.hash);
+    applyHashFilters(window.location.hash);
     if (initial && !sameView(initial, useAppStore.getState().view)) {
       useAppStore.setState({ view: initial });
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
     const onPop = () => {
       const next = hashToView(window.location.hash);
+      applyHashFilters(window.location.hash);
       if (next && !sameView(next, useAppStore.getState().view)) {
         useAppStore.setState({ view: next });
         window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });

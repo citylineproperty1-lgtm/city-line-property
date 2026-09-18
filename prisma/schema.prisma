@@ -39,6 +39,7 @@ model Property {
   agentId   String
   agent     Agent     @relation(fields: [agentId], references: [id])
   inquiries Inquiry[]
+  viewEvents ViewEvent[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -84,4 +85,12 @@ model Newsletter {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+// One row per property-detail view — powers the traffic chart in insights.
+model ViewEvent {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
 }

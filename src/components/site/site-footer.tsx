@@ -62,7 +62,7 @@ export function SiteFooter() {
   };
 
   return (
-    <footer className="mt-auto border-t border-neutral-200/80 bg-white pb-[env(safe-area-inset-bottom)]">
+    <footer className="mt-auto border-t border-neutral-200/80 bg-white pb-[env(safe-area-inset-bottom)] print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
           {/* Brand */}

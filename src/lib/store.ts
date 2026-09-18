@@ -31,7 +31,46 @@ export const MAX_COMPARE = 4;
 
 /* ---------- Hash router helpers (shareable deep links) ---------- */
 
-export function viewToHash(v: View): string {
+/** Serialize non-default listing filters to a readable query string. */
+function filtersToQuery(f: ListingsFilters): string {
+  const p = new URLSearchParams();
+  if (f.search) p.set("q", f.search);
+  if (f.status !== "ALL") p.set("status", f.status.toLowerCase());
+  if (f.type !== "ALL") p.set("type", f.type.toLowerCase());
+  if (f.beds > 0) p.set("beds", String(f.beds));
+  if (f.minPrice != null) p.set("min", String(f.minPrice));
+  if (f.maxPrice != null) p.set("max", String(f.maxPrice));
+  if (f.sort !== "newest") p.set("sort", f.sort);
+  const s = p.toString();
+  return s ? `?${s}` : "";
+}
+
+/** Parse a properties hash query back into filter values (null if none). */
+export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
+  const qIndex = hash.indexOf("?");
+  if (qIndex === -1) return null;
+  const head = hash.replace(/^#\/?/, "").split("/")[0]?.split("?")[0];
+  if (head !== "properties") return null;
+  const p = new URLSearchParams(hash.slice(qIndex + 1));
+  const f: Partial<ListingsFilters> = {};
+  const q = p.get("q");
+  if (q) f.search = q;
+  const status = p.get("status");
+  if (status === "sale" || status === "rent") f.status = status.toUpperCase();
+  const type = p.get("type");
+  if (type) f.type = type.toUpperCase();
+  const beds = p.get("beds");
+  if (beds && /^\d+$/.test(beds)) f.beds = Number(beds);
+  const min = p.get("min");
+  if (min && /^\d+$/.test(min)) f.minPrice = Number(min);
+  const max = p.get("max");
+  if (max && /^\d+$/.test(max)) f.maxPrice = Number(max);
+  const sort = p.get("sort");
+  if (sort && /^[a-z-]+$/.test(sort)) f.sort = sort;
+  return Object.keys(f).length > 0 ? f : null;
+}
+
+export function viewToHash(v: View, filters?: ListingsFilters): string {
   switch (v.name) {
     case "home":
       return "#/";
@@ -39,13 +78,16 @@ export function viewToHash(v: View): string {
       return `#/property/${v.id}`;
     case "agent":
       return `#/agent/${v.id}`;
+    case "properties":
+      return `#/properties${filters ? filtersToQuery(filters) : ""}`;
     default:
       return `#/${v.name}`;
   }
 }
 
 export function hashToView(hash: string): View | null {
-  const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  const clean = hash.split("?")[0];
+  const parts = clean.replace(/^#\/?/, "").split("/").filter(Boolean);
   if (parts.length === 0) return { name: "home" };
   const [head, id] = parts;
   switch (head) {
@@ -123,7 +165,10 @@ export const useAppStore = create<AppState>()(
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
-          const target = viewToHash(view);
+          const target =
+            view.name === "properties"
+              ? viewToHash(view, get().listingsFilters)
+              : viewToHash(view);
           if (window.location.hash !== target) {
             history.pushState(null, "", target);
           }

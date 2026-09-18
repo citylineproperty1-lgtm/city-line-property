@@ -168,3 +168,31 @@ Work Log:
 Stage Summary:
 - v6 shipped: ⌘K command palette with live search, global currency toggle, saved-view sorting, micro-polish — 1 new file, ~450 insertions.
 - Remaining ideas: dark mode, admin auth, blog/editorial, map node → filtered properties with district chip, monthly-views chart in insights, compare-bar keyboard hints.
+
+---
+Task ID: 9
+Agent: main
+Task: Round 7 — QA, view-traffic analytics, shareable filter URLs, print flyer, favorite feedback
+
+Work Log:
+- QA via agent-browser first: all views + APIs healthy, 0 console errors. Verdict: stable → features.
+- NEW — View-traffic analytics (full-stack):
+  - Prisma: ViewEvent model (propertyId, createdAt, cascade delete) + Property.viewEvents[]; db push OK.
+  - prisma/seed-views.ts: seeded 146 demo events across 14 days with an upward trend (bun run prisma/seed-views.ts).
+  - GET /api/properties/[id] now also records a ViewEvent (fire-and-forget).
+  - GET /api/insights adds viewsByDay (14 local-day buckets), viewsLast7, weekDelta.
+  - traffic-chart.tsx: responsive SVG area chart — Catmull-Rom smooth line, emerald gradient fill, pathLength draw-in animation, dashed gridlines, end-dot halo, hover guide line + dark tooltip (date + count), first/mid/last x labels; chips show "N views this week" + delta badge (emerald ▲ / rose ▼ / neutral —).
+  - Insights page: new full-width "Traffic" section between district grid and Most viewed. Verified desktop + mobile 390px; hover tooltip verified; live events tick the chart up (+75% → +81% during QA).
+- NEW — Shareable listing-filter URLs:
+  - store: viewToHash serializes non-default listingsFilters onto #/properties (q/status/type/beds/min/max/sort, lowercase); filtersFromHash parses them back (validated numeric/regex guards); hashToView strips query before parsing.
+  - navigate() emits filters for the properties view; page.tsx applies filtersFromHash on cold load AND popstate/hashchange (back/forward restores filters).
+  - Verified: cold load #/properties?status=rent&q=clifton → search box + For Rent tab + chip restored (1 listing); detail → back → filters-restored; forward → detail again.
+- NEW — Print flyer: Printer icon button next to Share on detail (window.print); print:hidden on header, footer, whatsapp, compare-bar, scroll-progress, palette, back button, thumbnails, view-fullscreen pill, sidebar (agent form + mortgage), similar section; globals @media print normalizes colors (print-color-adjust: exact) and kills shadows. Result = clean image + title + price + facts + description + amenities sheet.
+- POLISH — favorite toggle now toasts "Saved to your shortlist"/"Removed from your shortlist" (card + detail) with zoom-in-95 heart pop via key-remount; hero trust row under popular chips: "12 live listings · 9 neighbourhoods · 4 verified agents" (stats-driven, emerald icons); stats API + PlatformStats now include districts (GROUP BY district — cities was always 1 since all listings are Karachi).
+- FIXED — Prisma stale-client pitfall: long-running dev server cached the pre-ViewEvent generated client (db.viewEvent undefined → insights 500). api routes use $executeRaw/$queryRaw for ViewEvent (raw SQL immune to client regen; SQLite DateTime is stored as INTEGER epoch-ms — compare with getTime(), not ISO strings). db.ts also got a SCHEMA_STAMP guard so future regens self-heal; kept model in schema for correctness.
+- Lint clean; insights/stats/home 200; 0 console errors; ViewEvent count 146→149 during QA (live tracking works).
+
+Stage Summary:
+- v7 shipped: traffic analytics chart, shareable filtered-listing URLs, print flyer, favorite feedback + trust row — 3 new files (~500 insertions), schema updated (ViewEvent).
+- Risks: raw-SQL ViewEvent paths bypass Prisma model (intentional, commented); seed-views demo data documented; WhatsApp number still placeholder.
+- Next ideas: dark mode, admin auth, blog/editorial, area-guide pages, email digest for subscribers, saved-search alerts.

@@ -82,6 +82,7 @@ export interface PlatformStats {
   forSale: number;
   forRent: number;
   cities: number;
+  districts: number;
   inquiries: number;
   agents: number;
 }

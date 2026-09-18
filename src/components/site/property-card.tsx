@@ -53,17 +53,21 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
         <button
           onClick={(e) => {
             e.stopPropagation();
+            const nowFav = !isFav;
             toggleFavorite(property.id);
+            if (nowFav) toast.success("Saved to your shortlist");
           }}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur transition-transform hover:scale-110 active:scale-95"
           aria-label={isFav ? "Remove from saved" : "Save property"}
         >
-          <Heart
-            className={cn(
-              "h-4 w-4 transition-colors",
-              isFav ? "fill-rose-500 text-rose-500" : "text-neutral-600"
-            )}
-          />
+          <span key={String(isFav)} className="inline-flex animate-in zoom-in-95 duration-200">
+            <Heart
+              className={cn(
+                "h-4 w-4 transition-colors",
+                isFav ? "fill-rose-500 text-rose-500" : "text-neutral-600"
+              )}
+            />
+          </span>
         </button>
         {/* Compare toggle */}
         <button

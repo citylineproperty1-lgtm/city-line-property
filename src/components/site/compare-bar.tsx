@@ -27,7 +27,7 @@ export function CompareBar({ items }: { items: ListItem[] }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className="fixed inset-x-3 bottom-4 z-40 sm:inset-x-auto sm:left-1/2 sm:w-auto sm:-translate-x-1/2"
+          className="fixed inset-x-3 bottom-4 z-40 print:hidden sm:inset-x-auto sm:left-1/2 sm:w-auto sm:-translate-x-1/2"
         >
           <div className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white/95 p-2.5 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.25)] backdrop-blur-xl">
             {/* thumbnails */}

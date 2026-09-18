@@ -17,10 +17,16 @@ export async function GET(
     if (!row) {
       return NextResponse.json({ error: "Property not found" }, { status: 404 });
     }
-    // fire-and-forget view counter
+    // fire-and-forget view counter + traffic event (insights chart).
+    // The ViewEvent insert uses raw SQL on purpose: the long-running dev
+    // server can hold a Prisma client generated before the ViewEvent model
+    // existed, and $executeRaw keeps working regardless of regenerations.
     db.property
       .update({ where: { id: row.id }, data: { views: { increment: 1 } } })
       .catch(() => {});
+    db.$executeRaw`INSERT INTO ViewEvent (id, propertyId, createdAt) VALUES (${crypto.randomUUID()}, ${row.id}, ${Date.now()})`.catch(
+      () => {}
+    );
     return NextResponse.json({ property: serializeProperty(row) });
   } catch (e) {
     console.error("GET /api/properties/[id]", e);

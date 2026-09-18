@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/site/animated-number";
+import { TrafficChart, type DayPoint } from "@/components/site/traffic-chart";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { TYPE_LABELS } from "@/lib/types";
@@ -45,6 +46,9 @@ interface Insights {
     baths: number;
     image: string;
   }[];
+  viewsByDay: DayPoint[];
+  viewsLast7: number;
+  weekDelta: number;
 }
 
 const fadeUp = {
@@ -293,6 +297,22 @@ export function InsightsView() {
           </motion.section>
         </div>
       </div>
+
+      {/* Traffic */}
+      <motion.section {...fadeUp} className="mt-8 rounded-3xl border border-neutral-200/80 bg-white p-6 sm:p-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-neutral-900">Traffic</h2>
+            <p className="mt-1 text-[13px] text-neutral-400">
+              Listing views over the last 14 days, updated live
+            </p>
+          </div>
+          <Eye className="h-5 w-5 shrink-0 text-neutral-300" />
+        </div>
+        <div className="mt-5">
+          <TrafficChart data={data.viewsByDay} last7={data.viewsLast7} delta={data.weekDelta} />
+        </div>
+      </motion.section>
 
       {/* Most viewed */}
       <motion.section {...fadeUp} className="mt-8 rounded-3xl border border-neutral-200/80 bg-white p-6 sm:p-8">

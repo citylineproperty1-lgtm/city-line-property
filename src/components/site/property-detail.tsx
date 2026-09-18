@@ -37,6 +37,7 @@ import {
   GitCompareArrows,
   Check,
   Maximize2,
+  Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -155,7 +156,7 @@ export function PropertyDetailView({ id }: { id: string }) {
       {/* Back */}
       <button
         onClick={() => navigate({ name: "properties" })}
-        className="group inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+        className="group inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 print:hidden"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         All properties
@@ -181,7 +182,7 @@ export function PropertyDetailView({ id }: { id: string }) {
           />
           <button
             onClick={() => setLightboxOpen(true)}
-            className="absolute bottom-4 right-4 flex h-10 items-center gap-1.5 rounded-full bg-white/90 px-3.5 text-[12px] font-semibold text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95"
+            className="absolute bottom-4 right-4 flex h-10 items-center gap-1.5 rounded-full bg-white/90 px-3.5 text-[12px] font-semibold text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95 print:hidden"
             aria-label="Open full-screen gallery"
           >
             <Maximize2 className="h-3.5 w-3.5" />
@@ -200,7 +201,7 @@ export function PropertyDetailView({ id }: { id: string }) {
             {property.views.toLocaleString()} views
           </span>
         </div>
-        <div className="mt-3 grid grid-cols-4 gap-3">
+        <div className="mt-3 grid grid-cols-4 gap-3 print:hidden">
           {property.images.map((img, i) => (
             <button
               key={img + i}
@@ -278,7 +279,12 @@ export function PropertyDetailView({ id }: { id: string }) {
                   {isComparing ? "Comparing" : "Compare"}
                 </button>
                 <button
-                  onClick={() => toggleFavorite(property.id)}
+                  onClick={() => {
+                    const nowFav = !isFav;
+                    toggleFavorite(property.id);
+                    if (nowFav) toast.success("Saved to your shortlist");
+                    else toast("Removed from your shortlist");
+                  }}
                   className={cn(
                     "flex h-11 w-11 items-center justify-center rounded-full border transition-all",
                     isFav
@@ -287,12 +293,17 @@ export function PropertyDetailView({ id }: { id: string }) {
                   )}
                   aria-label={isFav ? "Remove from saved" : "Save property"}
                 >
-                  <Heart
-                    className={cn(
-                      "h-5 w-5",
-                      isFav ? "fill-rose-500 text-rose-500" : "text-neutral-500"
-                    )}
-                  />
+                  <span
+                    key={String(isFav)}
+                    className="inline-flex animate-in zoom-in-95 duration-200"
+                  >
+                    <Heart
+                      className={cn(
+                        "h-5 w-5",
+                        isFav ? "fill-rose-500 text-rose-500" : "text-neutral-500"
+                      )}
+                    />
+                  </span>
                 </button>
                 <button
                   onClick={async () => {
@@ -318,6 +329,14 @@ export function PropertyDetailView({ id }: { id: string }) {
                   aria-label="Share property"
                 >
                   <Share2 className="h-4.5 w-4.5" />
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition-all hover:bg-neutral-50 hover:text-neutral-900"
+                  aria-label="Print property flyer"
+                  title="Print flyer"
+                >
+                  <Printer className="h-4.5 w-4.5" />
                 </button>
               </div>
             </div>
@@ -390,7 +409,7 @@ export function PropertyDetailView({ id }: { id: string }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.12 }}
-          className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start"
+          className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start print:hidden"
         >
           <AgentCardWithForm property={property} />
           <MortgageCalculator price={property.price} isRent={isRent} />
@@ -399,7 +418,7 @@ export function PropertyDetailView({ id }: { id: string }) {
 
       {/* Similar */}
       {similar.length > 0 && (
-        <section className="mt-16">
+        <section className="mt-16 print:hidden">
           <h2 className="text-xl font-semibold tracking-tight text-neutral-900">
             You may also like
           </h2>

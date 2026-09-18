@@ -198,6 +198,29 @@ export function HomeView() {
                 </button>
               ))}
             </div>
+            {stats && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[12px] font-medium text-neutral-400"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-emerald-600" />
+                  {stats.properties} live listings
+                </span>
+                <span aria-hidden className="h-3 w-px bg-neutral-200" />
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-emerald-600" />
+                  {stats.districts} neighbourhoods
+                </span>
+                <span aria-hidden className="h-3 w-px bg-neutral-200" />
+                <span className="inline-flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  {stats.agents} verified agents
+                </span>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Hero image */}

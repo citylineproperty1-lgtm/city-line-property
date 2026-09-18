@@ -271,7 +271,7 @@ export function CommandPalette() {
     <AnimatePresence>
       {paletteOpen && (
         <div
-          className="fixed inset-0 z-[80]"
+          className="fixed inset-0 z-[80] print:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Quick find"
