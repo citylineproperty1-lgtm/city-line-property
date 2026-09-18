@@ -430,3 +430,27 @@ Stage Summary:
 - Task 15 shipped: full admin CRM on white+#F7F9F8 canvas with emerald #0F766E/#0B6B5D/#E7F4F0 tokens — GOLD_* constants gone (BRAND_* everywhere), zero yellow in admin code or chrome, amber confined to follow-up "soon" chip, all forms emerald-ring + #E5484D errors, PKR-only (formatPKR) in leads budget.
 - All CRM flows intact: auth (login/401-flip/logout), Overview KPIs/chart/funnel, Inventory CRUD + inline price/state/publish/feature + drawer + upload, Leads pipeline/follow-ups/CSV/WhatsApp resend, Categories CRUD, Settings save/test + password change.
 - Next: merge-ready for QA/commit round (Task 14 public sweep + Task 15 admin sweep both land on the shared globals.css brand-gradient utilities).
+
+---
+Task ID: 16
+Agent: main (verification + release round)
+Task: Final QA of the v13 redesign (Tasks 13–15), legacy gold utility removal, browser E2E verification, release commit
+
+Work Log:
+- Global gold sweep: 0 gold hex/classes left anywhere in src (public + admin + APIs); removed legacy .gold-gradient/.text-gold-gradient*/
+  .gold-pulse aliases from globals.css (renamed animate-gold-pulse → animate-brand-pulse); admin categories API default color → #0F766E.
+- agent-browser E2E: home (white hero "Your Key to the City.", emerald monogram logo, search card, stats, marquee band), listings
+  (16 listings, PKR-only, For Sale/Rent filters), property detail (verified chip, both real phones 0309 4499940/0321 8422109, Enquire on
+  WhatsApp, viewing form, "More in Etihad Town Phase 1 & nearby" similar rail), areas (live per-area stats 6/3/2 listings + avg PKR),
+  admin (#/admin login → Overview 5 tabs, single-series leads chart, Leads inbox with follow-up chips + CSV, QA lead created via
+  POST /api/inquiries appeared in inbox and was deleted), mobile 390 (no horizontal scroll, footer mt-auto sticky), desktop 1440.
+- Real map verified live: Leaflet + OpenStreetMap tiles (15 tiles loaded), 6 pins (5 areas + office), zoom control; office pin at the
+  verified Raiwind Road coordinates; console clean (no errors) across all views.
+- Lint exit 0. Committed 9fc6972 (v13 redesign sweep). Earlier: 98a3945 (v13-foundation).
+
+Stage Summary:
+- v13 SHIPPED: extras removed, PKR-only, pure-white family.co-style UI (paper & emerald), real OSM maps with real office location,
+  complete Supabase SQL (supabase/schema.sql — user must run it in Supabase SQL Editor to move the data layer from SQLite).
+- Admin login: admin@citylineproperty.com / CityLine@2025 (change from panel). WhatsApp webhook: set `webhook_url` in Admin → Settings
+  (CallMeBot GET with {MESSAGE} or JSON POST) to activate automatic WhatsApp lead push.
+- Next ideas: Supabase storage upload switch, dark mode (optional), image drag-reorder parity check, per-area photo covers.
