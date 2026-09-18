@@ -9,6 +9,9 @@ export async function GET() {
   const denied = await guardAdmin();
   if (denied) return denied;
   try {
+    const since = new Date();
+    since.setDate(since.getDate() - 13);
+    since.setHours(0, 0, 0, 0);
     const [
       totalProperties,
       published,
@@ -31,6 +34,8 @@ export async function GET() {
       categoryRows,
       areaRows,
       recentLeadRows,
+      viewEventRows,
+      leadRows14,
     ] = await Promise.all([
       db.property.count(),
       db.property.count({ where: { published: true } }),
@@ -57,6 +62,13 @@ export async function GET() {
         take: 6,
         include: { property: { select: { title: true } } },
       }),
+      // 14-day traffic + lead trends (raw SQL — same dev-server-safe pattern as /api/insights)
+      db.$queryRaw<{ createdAt: string | Date }[]>`
+        SELECT "createdAt" FROM ViewEvent WHERE "createdAt" >= ${since.getTime()}
+      `,
+      db.$queryRaw<{ createdAt: string | Date }[]>`
+        SELECT "createdAt" FROM Lead WHERE "createdAt" >= ${since.getTime()}
+      `,
     ]);
 
     const categories = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
@@ -88,6 +100,18 @@ export async function GET() {
       createdAt: r.createdAt.toISOString(),
     }));
 
+    const dayKeys = dayBucketKeys(14);
+    const bucket = (rows: { createdAt: string | Date }[]) => {
+      const counts = dayKeys.map(() => 0);
+      for (const row of rows) {
+        const idx = dayKeys.findIndex((k) => k.key === new Date(row.createdAt).toDateString());
+        if (idx >= 0) counts[idx]++;
+      }
+      return dayKeys.map((k, i) => ({ label: k.label, count: counts[i] }));
+    };
+    const viewTrend = bucket(viewEventRows);
+    const leadTrend = bucket(leadRows14);
+
     return NextResponse.json({
       overview: {
         properties: { total: totalProperties, published, available, reserved, sold, rented, featured },
@@ -98,10 +122,24 @@ export async function GET() {
         byCategory,
         byArea,
         recentLeads,
+        viewTrend,
+        leadTrend,
       },
     });
   } catch (e) {
     console.error("GET /api/admin/overview", e);
     return NextResponse.json({ error: "Failed to load overview" }, { status: 500 });
   }
+}
+
+/** 14 local-day buckets ending today, e.g. "Sep 5" (mirrors /api/insights). */
+function dayBucketKeys(n: number): { key: string; label: string }[] {
+  const keys: { key: string; label: string }[] = [];
+  const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    keys.push({ key: d.toDateString(), label: fmt.format(d) });
+  }
+  return keys;
 }

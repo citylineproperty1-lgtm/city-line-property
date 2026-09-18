@@ -95,7 +95,7 @@ export function CompareView() {
         </p>
         <Button
           onClick={() => navigate({ name: "properties" })}
-          className="mt-6 h-11 rounded-full bg-neutral-900 px-6 text-sm hover:bg-neutral-700"
+          className="mt-6 h-11 rounded-full gold-gradient px-6 text-sm text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] hover:opacity-95"
         >
           Browse properties
         </Button>
@@ -125,7 +125,7 @@ export function CompareView() {
       </div>
 
       <div className="mt-2 flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white">
+        <span className="gold-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)]">
           <GitCompareArrows className="h-4.5 w-4.5" />
         </span>
         <div>
@@ -155,7 +155,7 @@ export function CompareView() {
           >
             <button
               onClick={() => toggleCompare(p.id)}
-              className="absolute right-2.5 top-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-neutral-500 shadow-sm backdrop-blur transition-all hover:bg-neutral-900 hover:text-white"
+              className="absolute right-2.5 top-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-neutral-500 shadow-sm backdrop-blur transition-all hover:bg-[#C9A227] hover:text-white"
               aria-label={`Remove ${p.title} from comparison`}
             >
               <X className="h-3.5 w-3.5" />
@@ -183,7 +183,7 @@ export function CompareView() {
               </h3>
               <button
                 onClick={() => navigate({ name: "property", id: p.id })}
-                className="mt-3 flex h-9 w-full items-center justify-center gap-1.5 rounded-full border border-neutral-200 text-[12.5px] font-medium text-neutral-700 transition-colors hover:bg-neutral-900 hover:text-white"
+                className="mt-3 flex h-9 w-full items-center justify-center gap-1.5 rounded-full border border-neutral-200 text-[12.5px] font-medium text-neutral-700 transition-colors hover:bg-[#C9A227] hover:text-white"
               >
                 <Eye className="h-3.5 w-3.5" /> View details
               </button>

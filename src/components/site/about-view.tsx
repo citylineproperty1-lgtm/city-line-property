@@ -158,7 +158,7 @@ export function AboutView() {
               We&rsquo;re on the main boulevard of Phase 1, two minutes from the main gate.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Button asChild className="h-11 rounded-full bg-neutral-900 px-6 text-sm font-semibold hover:bg-neutral-800">
+              <Button asChild className="h-11 rounded-full gold-gradient px-6 text-sm font-semibold text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] hover:opacity-95">
                 <a href={`tel:${BUSINESS.telPrimary}`}>
                   <Phone className="mr-2 h-4 w-4" />
                   {BUSINESS.phonePrimary}

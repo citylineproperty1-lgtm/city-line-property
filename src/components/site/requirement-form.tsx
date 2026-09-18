@@ -282,7 +282,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       <Button
         type="submit"
         disabled={sending}
-        className="h-12 w-full rounded-full bg-neutral-900 text-sm font-semibold hover:bg-neutral-800"
+        className="h-12 w-full rounded-full gold-gradient text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95"
       >
         {sending ? (
           <>

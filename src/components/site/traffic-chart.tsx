@@ -174,7 +174,7 @@ export function TrafficChart({
         {/* tooltip */}
         {active && hover != null && (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-lg bg-neutral-900 px-2.5 py-1.5 text-center text-white shadow-lg"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-lg bg-[#2A2210] px-2.5 py-1.5 text-center text-white shadow-lg"
             style={{
               left: `${(pts[hover][0] / W) * 100}%`,
               top: `${(pts[hover][1] / H) * 100}%`,

@@ -16,6 +16,8 @@ import {
   UserPlus,
   AlertCircle,
   Phone,
+  TrendingUp,
+  Eye,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -56,6 +58,8 @@ interface Overview {
   agents: number;
   byCategory: { slug: string; name: string; color: string; count: number }[];
   byArea: { area: string; count: number }[];
+  viewTrend: { label: string; count: number }[];
+  leadTrend: { label: string; count: number }[];
   recentLeads: {
     id: string;
     name: string;
@@ -114,6 +118,8 @@ export function AdminOverview({ api }: { api: AdminApi }) {
   if (!o) return null;
   const maxCat = Math.max(1, ...o.byCategory.map((c) => c.count));
   const maxArea = Math.max(1, ...o.byArea.map((a) => a.count));
+  const views14 = o.viewTrend.reduce((a, b) => a + b.count, 0);
+  const leads14 = o.leadTrend.reduce((a, b) => a + b.count, 0);
 
   return (
     <div className="space-y-5">
@@ -179,7 +185,79 @@ export function AdminOverview({ api }: { api: AdminApi }) {
         />
       </div>
 
+      {/* 14-day traffic + lead trend */}
+      <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.06 }}>
+        <AdminCard>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
+                <TrendingUp className="h-4 w-4 text-[#C9A227]" />
+                Last 14 days
+              </h3>
+              <p className="mt-0.5 text-[12px] text-neutral-400">Listing views vs. new leads, day by day.</p>
+            </div>
+            <div className="flex items-center gap-4 text-[11.5px] font-medium text-neutral-500">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#C9A227]" /> Views
+                <b className="tabular-nums text-neutral-800">{views14}</b>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#34C759]" /> Leads
+                <b className="tabular-nums text-neutral-800">{leads14}</b>
+              </span>
+            </div>
+          </div>
+          <TrendChart views={o.viewTrend} leads={o.leadTrend} />
+        </AdminCard>
+      </motion.section>
+
       <div className="grid gap-4 lg:grid-cols-2">
+        {/* Leads pipeline funnel */}
+        <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
+          <AdminCard className="h-full">
+            <h3 className="text-[15px] font-semibold text-neutral-900">Leads pipeline</h3>
+            {o.leads.total === 0 ? (
+              <EmptyLine text="No leads yet — website inquiries will appear here." />
+            ) : (
+              <div className="mt-5 space-y-2.5">
+                {[
+                  { key: "NEW", label: "New", count: o.leads.new, color: "#C9A227" },
+                  { key: "CONTACTED", label: "Contacted", count: o.leads.contacted, color: "#30B0C7" },
+                  { key: "SITE_VISIT", label: "Site visit", count: o.leads.siteVisits, color: "#AF52DE" },
+                  { key: "NEGOTIATION", label: "Negotiation", count: o.leads.negotiation, color: "#FF9500" },
+                  { key: "WON", label: "Won", count: o.leads.won, color: "#34C759" },
+                  { key: "LOST", label: "Lost", count: o.leads.lost, color: "#FF3B30" },
+                ].map((s, i) => (
+                  <div key={s.key} className="flex items-center gap-3">
+                    <span className="w-20 shrink-0 text-right text-[12px] font-medium text-neutral-500">{s.label}</span>
+                    <div className="h-7 flex-1 overflow-hidden rounded-lg bg-black/[0.04]">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: s.count === 0 ? "0%" : `${Math.max(6, (s.count / Math.max(1, o.leads.total)) * 100)}%` }}
+                        transition={{ duration: 0.65, ease: "easeOut", delay: 0.12 + i * 0.06 }}
+                        className="flex h-full items-center justify-end rounded-lg pr-2"
+                        style={{
+                          background: `linear-gradient(90deg, ${s.color}CC, ${s.color})`,
+                          minWidth: s.count > 0 ? 28 : 0,
+                        }}
+                      >
+                        {s.count > 0 && (
+                          <span className="text-[10.5px] font-bold tabular-nums text-white">{s.count}</span>
+                        )}
+                      </motion.div>
+                    </div>
+                  </div>
+                ))}
+                <p className="pt-1 text-right text-[11px] text-neutral-400">
+                  {o.leads.total > 0
+                    ? `${Math.round((o.leads.won / o.leads.total) * 100)}% win rate`
+                    : "—"}
+                </p>
+              </div>
+            )}
+          </AdminCard>
+        </motion.section>
+
         {/* Inventory by category */}
         <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
           <AdminCard className="h-full">
@@ -307,6 +385,121 @@ function EmptyLine({ text }: { text: string }) {
   return <p className="mt-4 rounded-xl bg-neutral-50/70 px-4 py-6 text-center text-[12.5px] text-neutral-400">{text}</p>;
 }
 
+/** Dual-series SVG chart: gold views (area) + green leads (line), 14 days. */
+function TrendChart({
+  views,
+  leads,
+}: {
+  views: { label: string; count: number }[];
+  leads: { label: string; count: number }[];
+}) {
+  const W = 560;
+  const H = 170;
+  const PAD_X = 10;
+  const PAD_TOP = 14;
+  const PAD_BOTTOM = 26;
+  const innerW = W - PAD_X * 2;
+  const innerH = H - PAD_TOP - PAD_BOTTOM;
+  const max = Math.max(1, ...views.map((v) => v.count), ...leads.map((l) => l.count));
+  const step = views.length > 1 ? innerW / (views.length - 1) : 0;
+  const px = (i: number) => PAD_X + i * step;
+  const py = (c: number) => PAD_TOP + innerH - (c / max) * innerH;
+
+  const linePath = (data: { count: number }[]) =>
+    data.map((d, i) => `${i === 0 ? "M" : "L"}${px(i).toFixed(1)},${py(d.count).toFixed(1)}`).join(" ");
+  const areaPath =
+    `${linePath(views)} L${px(views.length - 1).toFixed(1)},${(PAD_TOP + innerH).toFixed(1)} L${px(0).toFixed(1)},${
+      PAD_TOP + innerH
+    } Z`;
+
+  const peakIdx = views.reduce((best, d, i) => (d.count > views[best].count ? i : best), 0);
+  const totalViews = views.reduce((a, b) => a + b.count, 0);
+  const totalLeads = leads.reduce((a, b) => a + b.count, 0);
+
+  return (
+    <div className="mt-4">
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-44 w-full" role="img" aria-label="Views and leads over the last 14 days">
+        <defs>
+          <linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#C9A227" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#C9A227" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        {[0.25, 0.5, 0.75].map((f) => (
+          <line
+            key={f}
+            x1={PAD_X}
+            x2={W - PAD_X}
+            y1={PAD_TOP + innerH * f}
+            y2={PAD_TOP + innerH * f}
+            stroke="rgba(0,0,0,0.06)"
+            strokeDasharray="3 5"
+          />
+        ))}
+        <motion.path
+          d={areaPath}
+          fill="url(#viewsFill)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        />
+        <motion.path
+          d={linePath(views)}
+          fill="none"
+          stroke="#C9A227"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.1, ease: "easeOut", delay: 0.15 }}
+        />
+        <motion.path
+          d={linePath(leads)}
+          fill="none"
+          stroke="#34C759"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeDasharray="1 0"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.1, ease: "easeOut", delay: 0.3 }}
+        />
+        {views.map((d, i) =>
+          i === peakIdx && d.count > 0 ? (
+            <g key={i}>
+              <circle cx={px(i)} cy={py(d.count)} r="4.5" fill="#C9A227" stroke="#fff" strokeWidth="2" />
+            </g>
+          ) : null
+        )}
+        {leads.map((d, i) =>
+          d.count > 0 ? (
+            <circle key={i} cx={px(i)} cy={py(d.count)} r="3" fill="#34C759" stroke="#fff" strokeWidth="1.5" />
+          ) : null
+        )}
+        {views.map((d, i) =>
+          i === 0 || i === views.length - 1 || i === Math.floor(views.length / 2) ? (
+            <text
+              key={i}
+              x={px(i)}
+              y={H - 8}
+              textAnchor={i === 0 ? "start" : i === views.length - 1 ? "end" : "middle"}
+              className="fill-neutral-400"
+              fontSize="10"
+            >
+              {d.label}
+            </text>
+          ) : null
+        )}
+      </svg>
+      {totalViews === 0 && totalLeads === 0 && (
+        <p className="-mt-24 flex items-center justify-center gap-2 text-[12.5px] text-neutral-400">
+          <Eye className="h-4 w-4" /> No activity in the last 14 days yet.
+        </p>
+      )}
+    </div>
+  );
+}
+
 const EMPTY: Overview = {
   properties: { total: 0, published: 0, available: 0, reserved: 0, sold: 0, rented: 0, featured: 0 },
   leads: { total: 0, new: 0, contacted: 0, siteVisits: 0, negotiation: 0, won: 0, lost: 0 },
@@ -315,5 +508,7 @@ const EMPTY: Overview = {
   agents: 0,
   byCategory: [],
   byArea: [],
+  viewTrend: [],
+  leadTrend: [],
   recentLeads: [],
 };

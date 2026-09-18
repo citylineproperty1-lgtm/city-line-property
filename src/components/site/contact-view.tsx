@@ -212,7 +212,7 @@ export function ContactView() {
           Prefer to talk first?
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-          <Button asChild className="h-12 rounded-full bg-neutral-900 px-7 text-sm font-semibold hover:bg-neutral-800">
+          <Button asChild className="h-12 rounded-full gold-gradient px-7 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95">
             <a href={`tel:${BUSINESS.telPrimary}`}>
               <Phone className="mr-2 h-4 w-4" />
               Call {BUSINESS.phonePrimary}

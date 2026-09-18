@@ -346,7 +346,7 @@ export function PropertiesView() {
             {chips.map((c) => (
               <span
                 key={c.label}
-                className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 py-1 pl-3 pr-1.5 text-[12px] font-medium text-white"
+                className="inline-flex items-center gap-1.5 rounded-full gold-gradient py-1 pl-3 pr-1.5 text-[12px] font-medium text-white shadow-[0_4px_12px_-4px_rgba(154,123,26,0.6)]"
               >
                 {c.label}
                 <button
@@ -403,7 +403,7 @@ export function PropertiesView() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Button
               onClick={resetFilters}
-              className="h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium hover:bg-neutral-800"
+              className="h-11 rounded-full gold-gradient px-6 text-sm font-medium text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] hover:opacity-95"
             >
               Clear all filters
             </Button>

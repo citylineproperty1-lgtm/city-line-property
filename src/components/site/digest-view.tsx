@@ -66,14 +66,21 @@ function contentBlocks(content: string): { type: "p" | "h" | "li"; text: string 
     });
 }
 
-export function DigestView() {
+export function DigestView({ slug }: { slug?: string }) {
   const { navigate } = useAppStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [tag, setTag] = useState<string>("All");
   const [openSlug, setOpenSlug] = useState<string | null>(null);
-  const [article, setArticle] = useState<Post | null>(null);
-  const [articleLoading, setArticleLoading] = useState(false);
+  const [loadedArticle, setLoadedArticle] = useState<{ slug: string; post: Post | null }>({
+    slug: "",
+    post: null,
+  });
+
+  // Deep link (view.slug) wins over in-feed selection; loading derived from cache key.
+  const activeSlug = slug ?? openSlug;
+  const articleLoading = !!activeSlug && loadedArticle.slug !== activeSlug;
+  const article = loadedArticle.slug === activeSlug ? loadedArticle.post : null;
 
   const load = useCallback(() => {
     setError(null);
@@ -98,26 +105,36 @@ export function DigestView() {
   const filtered = tag === "All" ? posts : posts.filter((p) => p.tag === tag);
   const [featured, ...rest] = filtered;
 
-  const openArticle = useCallback((slug: string) => {
-    setArticleLoading(true);
-    setOpenSlug(slug);
-    setArticle(null);
-    fetch(`/api/posts/${slug}`)
+  useEffect(() => {
+    if (!activeSlug || loadedArticle.slug === activeSlug) return;
+    let dead = false;
+    fetch(`/api/posts/${activeSlug}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("failed"))))
-      .then((d) => setArticle(d.post ?? null))
-      .catch(() => setArticle(null))
-      .finally(() => setArticleLoading(false));
+      .then((d) => {
+        if (!dead) setLoadedArticle({ slug: activeSlug, post: d.post ?? null });
+      })
+      .catch(() => {
+        if (!dead) setLoadedArticle({ slug: activeSlug, post: null });
+      });
+    return () => {
+      dead = true;
+    };
+  }, [activeSlug, loadedArticle.slug]);
+
+  /** In-feed click: remember the selection (deep-link slug prop takes precedence). */
+  const openArticle = (s: string) => {
+    setOpenSlug(s);
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, []);
+  };
 
   const closeArticle = () => {
     setOpenSlug(null);
-    setArticle(null);
+    if (slug) navigate({ name: "digest" });
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   };
 
   /* ----------------------------- Article reader ---------------------------- */
-  if (openSlug) {
+  if (activeSlug) {
     return (
       <div className="mx-auto max-w-3xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
         <button

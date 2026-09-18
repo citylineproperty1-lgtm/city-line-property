@@ -209,7 +209,7 @@ export function SavedView() {
               toast.success("Shortlist ready to compare");
               navigate({ name: "compare" });
             }}
-            className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-neutral-900 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-neutral-700"
+            className="flex h-10 shrink-0 items-center gap-2 rounded-full gold-gradient px-5 text-[13px] font-semibold text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] transition-opacity hover:opacity-95"
           >
             <GitCompareArrows className="h-4 w-4" />
             Compare saved
@@ -259,7 +259,7 @@ export function SavedView() {
           </p>
           <Button
             onClick={() => navigate({ name: "properties" })}
-            className="mt-6 h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium hover:bg-neutral-700"
+            className="mt-6 h-11 rounded-full gold-gradient px-6 text-sm font-medium text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] hover:opacity-95"
           >
             <Search className="h-4 w-4" />
             Explore properties

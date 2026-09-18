@@ -80,7 +80,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           <span
             className={cn(
               "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
-              isRent ? "bg-[#C9A227]/95 text-white" : "bg-neutral-900/90 text-white"
+              isRent ? "bg-[#007AFF]/95 text-white" : "bg-[#C9A227]/95 text-white"
             )}
           >
             {isRent ? "For Rent" : "For Sale"}
@@ -119,8 +119,8 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           className={cn(
             "absolute bottom-3 right-3 flex h-9 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold shadow-sm backdrop-blur transition-all active:scale-95",
             isComparing
-              ? "bg-neutral-900 text-white"
-              : "bg-white/90 text-neutral-600 opacity-0 group-hover:opacity-100 hover:text-neutral-900 focus:opacity-100"
+              ? "gold-gradient text-white shadow-[0_4px_14px_-4px_rgba(154,123,26,0.7)]"
+              : "bg-white/90 text-neutral-600 opacity-0 group-hover:opacity-100 hover:text-[#8C6D1F] focus:opacity-100"
           )}
           aria-label={isComparing ? "Remove from compare" : "Add to compare"}
           aria-pressed={isComparing}

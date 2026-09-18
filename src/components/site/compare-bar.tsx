@@ -45,7 +45,7 @@ export function CompareBar({ items }: { items: ListItem[] }) {
                   </div>
                   <button
                     onClick={() => toggleCompare(p.id)}
-                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                    className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#2A2210] text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
                     aria-label={`Remove ${p.title} from compare`}
                   >
                     <X className="h-3 w-3" />
@@ -80,7 +80,7 @@ export function CompareBar({ items }: { items: ListItem[] }) {
             <button
               onClick={() => navigate({ name: "compare" })}
               disabled={compare.length < 2}
-              className="flex h-10 items-center gap-2 rounded-full bg-neutral-900 px-4 text-[13px] font-semibold text-white transition-all hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 items-center gap-2 rounded-full gold-gradient px-4 text-[13px] font-semibold text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] transition-all hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <GitCompareArrows className="h-4 w-4" />
               Compare{compare.length > 1 ? ` (${compare.length})` : ""}

@@ -52,7 +52,22 @@ import {
   BedDouble,
   Sparkles,
   ArrowRight,
+  Newspaper,
+  Clock3,
+  CalendarDays,
 } from "lucide-react";
+
+/** Light shape of a digest post as served by /api/posts. */
+interface DigestPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  cover: string | null;
+  tag: string;
+  views: number;
+  createdAt: string;
+}
 
 /* ------------------------------------------------------------------ */
 /* Animation primitives — frame-by-frame stagger everywhere            */
@@ -269,6 +284,7 @@ export function HomeView() {
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
   const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
+  const [digest, setDigest] = useState<DigestPost[]>([]);
 
   useEffect(() => {
     fetch("/api/properties?featured=true&limit=6")
@@ -302,6 +318,11 @@ export function HomeView() {
         setTypeCounts(rec);
       })
       .catch(() => setTypeCounts({}));
+
+    fetch("/api/posts?limit=3")
+      .then((r) => r.json())
+      .then((d) => setDigest(d.posts ?? []))
+      .catch(() => setDigest([]));
   }, []);
 
   /* ---------- hero search ---------- */
@@ -452,7 +473,7 @@ export function HomeView() {
                   </Select>
                   <Button
                     onClick={heroSearch}
-                    className="h-11 rounded-2xl bg-neutral-900 px-6 text-sm font-semibold text-white hover:bg-neutral-800"
+                    className="h-11 rounded-2xl gold-gradient px-6 text-sm font-semibold text-white shadow-[0_6px_18px_-6px_rgba(154,123,26,0.7)] hover:opacity-95"
                     aria-label="Search listings"
                   >
                     <Search className="mr-1.5 h-4 w-4" />
@@ -502,14 +523,21 @@ export function HomeView() {
             >
               <motion.div style={{ y: parY }} className="relative">
                 <div className="relative aspect-[4/3.2] overflow-hidden rounded-[2rem] border border-white/60 shadow-[0_40px_90px_-30px_rgba(140,105,25,0.45)]">
-                  <Image
-                    src="/images/hero-lahore.png"
-                    alt="Main boulevard of a modern housing society in Lahore at golden hour"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 520px"
-                    className="object-cover"
-                  />
+                  <motion.div
+                    className="absolute inset-0"
+                    initial={{ scale: 1.12 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 3.2, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Image
+                      src="/images/hero-lahore.png"
+                      alt="Main boulevard of a modern housing society in Lahore at golden hour"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 520px"
+                      className="object-cover"
+                    />
+                  </motion.div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
                   {/* floating commission chip */}
                   <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 text-[11.5px] font-bold uppercase tracking-wide text-[#8F7018] shadow-md backdrop-blur">
@@ -929,6 +957,85 @@ export function HomeView() {
         </motion.div>
       </section>
 
+      {/* ================= FROM THE DIGEST ================= */}
+      {digest.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="From the Property Digest">
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
+            <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+                  <Newspaper className="h-4 w-4" />
+                  Property Digest
+                </p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                  Notes from the office.
+                </h2>
+              </div>
+              <button
+                onClick={() => navigate({ name: "digest" })}
+                className="group inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-[#F5EDD7]/60 px-4 py-2 text-[12.5px] font-semibold text-[#8C6D1F] transition-all hover:border-[#C9A227]/60 hover:bg-[#F5EDD7]"
+              >
+                Read the digest
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </motion.div>
+
+            <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {digest.map((post) => (
+                <motion.article
+                  key={post.id}
+                  variants={item}
+                  whileHover={{ y: -6 }}
+                  transition={{ type: "spring", bounce: 0.3, duration: 0.5 }}
+                  className="group cursor-pointer overflow-hidden rounded-3xl border border-white/70 bg-white shadow-[0_16px_44px_-28px_rgba(140,105,25,0.45)]"
+                  onClick={() => navigate({ name: "digest", slug: post.slug })}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    {post.cover ? (
+                      <Image
+                        src={post.cover}
+                        alt={post.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                      />
+                    ) : (
+                      <div className="gold-gradient flex h-full items-center justify-center">
+                        <Newspaper className="h-8 w-8 text-white/80" />
+                      </div>
+                    )}
+                    <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-[#8C6D1F] backdrop-blur">
+                      {post.tag}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="line-clamp-2 text-[15.5px] font-semibold leading-snug tracking-tight text-neutral-900 transition-colors group-hover:text-[#8C6D1F]">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-neutral-500">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center gap-3 border-t border-neutral-100 pt-3.5 text-[11.5px] font-medium text-neutral-400">
+                      <span className="inline-flex items-center gap-1.5">
+                        <CalendarDays className="h-3.5 w-3.5" />
+                        {new Date(post.createdAt).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                        })}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock3 className="h-3.5 w-3.5" />
+                        {Math.max(1, Math.round(post.excerpt.split(/\s+/).length / 3))} min read
+                      </span>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
       {/* ================= REQUIREMENT FORM ================= */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Post your requirement">
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr]">
@@ -1010,7 +1117,7 @@ export function HomeView() {
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button
                 asChild
-                className="h-12 rounded-full bg-neutral-900 px-7 text-sm font-semibold text-white hover:bg-neutral-800"
+                className="h-12 rounded-full gold-gradient px-7 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95"
               >
                 <a href={`tel:${BUSINESS.telPrimary}`}>
                   <Phone className="mr-2 h-4 w-4" />

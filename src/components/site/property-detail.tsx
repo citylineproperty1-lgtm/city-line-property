@@ -34,6 +34,8 @@ import {
   Loader2,
   BadgeCheck,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   GitCompareArrows,
   Check,
   Maximize2,
@@ -67,7 +69,7 @@ async function copyLink(text: string): Promise<boolean> {
 }
 
 export function PropertyDetailView({ id }: { id: string }) {
-  const { navigate, favorites, toggleFavorite, compare, toggleCompare, recordRecent } =
+  const { navigate, setFilters, favorites, toggleFavorite, compare, toggleCompare, recordRecent } =
     useAppStore();
   const [property, setProperty] = useState<Property | null>(null);
   const [similar, setSimilar] = useState<Property[]>([]);
@@ -86,15 +88,33 @@ export function PropertyDetailView({ id }: { id: string }) {
         .then((d) => {
           setProperty(d.property);
           recordRecent(d.property.id);
+
+          // similar: wider pool scored by category > area > status > price proximity
+          fetch(`/api/properties?limit=24&sort=newest`)
+            .then((r) => r.json())
+            .then((pd) => {
+              const pool: Property[] = (pd.properties ?? []).filter(
+                (p: Property) => p.id !== id
+              );
+              const cur: Property = d.property;
+              const mid = (a: number, b: number) => Math.abs(a - b) / Math.max(a, b, 1);
+              const scored = pool
+                .map((p) => {
+                  let s = 0;
+                  if (p.type === cur.type) s += 4;
+                  if (p.district === cur.district) s += 3;
+                  if (p.status === cur.status) s += 2;
+                  if (mid(p.price, cur.price) < 0.35) s += 1;
+                  if (p.listingState === "AVAILABLE") s += 0.5;
+                  return { p, s };
+                })
+                .sort((a, b) => b.s - a.s || b.p.views - a.p.views);
+              setSimilar(scored.map((x) => x.p));
+            })
+            .catch(() => setSimilar([]));
         })
         .catch(() => setNotFound(true))
         .finally(() => setLoading(false));
-
-      // similar: same type
-      fetch(`/api/properties?limit=4&sort=newest`)
-        .then((r) => r.json())
-        .then((d) => setSimilar((d.properties ?? []).filter((p: Property) => p.id !== id)))
-        .catch(() => setSimilar([]));
     };
     load();
   }, [id, recordRecent]);
@@ -150,6 +170,15 @@ export function PropertyDetailView({ id }: { id: string }) {
     { icon: Car, label: "Parking", value: property.parking > 0 ? `${property.parking} cars` : "—" },
     { icon: Building2, label: "Type", value: categoryLabel(property.type) },
     { icon: CalendarDays, label: "Year built", value: String(property.yearBuilt) },
+    ...(property.status === "SALE" && property.area > 0
+      ? [
+          {
+            icon: Calculator,
+            label: "Price / sqft",
+            value: formatPKR(Math.round(property.price / property.area)),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -181,6 +210,28 @@ export function PropertyDetailView({ id }: { id: string }) {
             className="cursor-zoom-in object-cover transition-transform duration-500 hover:scale-[1.02]"
             onClick={() => setLightboxOpen(true)}
           />
+          {/* prev / next over the main photo */}
+          {property.images.length > 1 && (
+            <>
+              <button
+                onClick={() => setImgIndex((i) => (i - 1 + property.images.length) % property.images.length)}
+                className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95 print:hidden"
+                aria-label="Previous photo"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setImgIndex((i) => (i + 1) % property.images.length)}
+                className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95 print:hidden"
+                aria-label="Next photo"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </>
+          )}
+          <span className="absolute bottom-4 left-4 rounded-full bg-[#2A2210]/75 px-2.5 py-1 text-[11.5px] font-semibold tabular-nums text-white backdrop-blur print:hidden">
+            {imgIndex + 1} / {property.images.length}
+          </span>
           <button
             onClick={() => setLightboxOpen(true)}
             className="absolute bottom-4 right-4 flex h-10 items-center gap-1.5 rounded-full bg-white/90 px-3.5 text-[12px] font-semibold text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95 print:hidden"
@@ -206,17 +257,15 @@ export function PropertyDetailView({ id }: { id: string }) {
           {property.images.map((img, i) => (
             <button
               key={img + i}
-              onClick={() => {
-                setImgIndex(i);
-                setLightboxOpen(true);
-              }}
+              onClick={() => setImgIndex(i)}
               className={cn(
                 "relative aspect-[16/10] overflow-hidden rounded-xl border-2 bg-neutral-100 transition-all",
                 imgIndex === i
-                  ? "border-neutral-900"
+                  ? "border-[#C9A227] opacity-100 shadow-[0_0_0_3px_rgba(201,162,39,0.18)]"
                   : "border-transparent opacity-70 hover:opacity-100"
               )}
               aria-label={`View photo ${i + 1}`}
+              aria-current={imgIndex === i}
             >
               <Image src={img} alt="" fill sizes="25vw" className="object-cover" />
             </button>
@@ -423,9 +472,26 @@ export function PropertyDetailView({ id }: { id: string }) {
       {/* Similar */}
       {similar.length > 0 && (
         <section className="mt-16 print:hidden">
-          <h2 className="text-xl font-semibold tracking-tight text-neutral-900">
-            You may also like
-          </h2>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8C6D1F]">
+                Keep exploring
+              </p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+                More in {property.district} &amp; nearby
+              </h2>
+            </div>
+            <button
+              onClick={() => {
+                setFilters({ search: property.district, type: property.type });
+                navigate({ name: "properties" });
+              }}
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-[#F5EDD7]/60 px-4 py-2 text-[12.5px] font-semibold text-[#8C6D1F] transition-all hover:border-[#C9A227]/60 hover:bg-[#F5EDD7]"
+            >
+              Browse {categoryLabel(property.type)} in {property.district}
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </div>
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {similar.slice(0, 3).map((p, i) => (
               <PropertyCard key={p.id} property={p} index={i} />

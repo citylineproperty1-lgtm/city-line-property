@@ -117,7 +117,7 @@ export default function Page() {
             {view.name === "saved" && <SavedView />}
             {view.name === "compare" && <CompareView />}
             {view.name === "insights" && <InsightsView />}
-            {view.name === "digest" && <DigestView />}
+            {view.name === "digest" && <DigestView slug={view.slug} />}
             {view.name === "admin" && <AdminView />}
           </motion.div>
         </AnimatePresence>
