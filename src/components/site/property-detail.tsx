@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PropertyCard } from "@/components/site/property-card";
-import { useAppStore } from "@/lib/store";
+import { useAppStore, viewToHash } from "@/lib/store";
 import { formatPKR, monthlyInstallment, formatDate } from "@/lib/format";
 import { TYPE_LABELS, type Property } from "@/lib/types";
 import {
@@ -41,6 +41,28 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Lightbox } from "@/components/site/lightbox";
+
+/** Clipboard write with a legacy fallback; returns false if both fail. */
+async function copyLink(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+}
 
 export function PropertyDetailView({ id }: { id: string }) {
   const { navigate, favorites, toggleFavorite, compare, toggleCompare, recordRecent } =
@@ -274,16 +296,22 @@ export function PropertyDetailView({ id }: { id: string }) {
                 </button>
                 <button
                   onClick={async () => {
-                    const url = `${window.location.origin}/#${property.slug}`;
+                    const url = `${window.location.origin}${window.location.pathname}${viewToHash({ name: "property", id: property.id })}`;
                     try {
                       if (navigator.share) {
                         await navigator.share({ title: property.title, url });
-                      } else {
-                        await navigator.clipboard.writeText(url);
-                        toast.success("Link copied to clipboard");
+                        return;
                       }
                     } catch {
-                      /* user cancelled */
+                      return; /* user cancelled native share */
+                    }
+                    if (await copyLink(url)) {
+                      toast.success("Link copied to clipboard");
+                    } else {
+                      toast("Copy property link", {
+                        description: url,
+                        duration: 10000,
+                      });
                     }
                   }}
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition-all hover:bg-neutral-50 hover:text-neutral-900"

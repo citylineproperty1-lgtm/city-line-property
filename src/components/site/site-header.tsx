@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -70,14 +71,22 @@ export function SiteHeader() {
               <button
                 key={item.label}
                 onClick={() => go(item.view)}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+                  "relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-neutral-100 text-neutral-900"
-                    : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+                    ? "text-neutral-900"
+                    : "text-neutral-500 hover:text-neutral-900"
                 )}
               >
-                {item.label}
+                {active && (
+                  <motion.span
+                    layoutId="nav-active-pill"
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.55 }}
+                    className="absolute inset-0 rounded-full bg-neutral-100"
+                  />
+                )}
+                <span className="relative z-10">{item.label}</span>
               </button>
             );
           })}

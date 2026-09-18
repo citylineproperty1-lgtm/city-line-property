@@ -16,7 +16,13 @@ import { InsightsView } from "@/components/site/insights-view";
 import { AdminView } from "@/components/site/admin-view";
 import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
-import { useAppStore, type View } from "@/lib/store";
+import { ScrollProgress } from "@/components/site/scroll-progress";
+import {
+  useAppStore,
+  hashToView,
+  sameView,
+  type View,
+} from "@/lib/store";
 
 const TITLES: Record<string, string> = {
   home: "City Line Property — Karachi's Trusted Real Estate Partner",
@@ -47,11 +53,35 @@ export default function Page() {
     document.title = titleFor(view);
   }, [view]);
 
+  // Deep links + browser back/forward: hydrate view from URL hash once,
+  // then keep the store in sync whenever the user navigates history.
+  useEffect(() => {
+    const initial = hashToView(window.location.hash);
+    if (initial && !sameView(initial, useAppStore.getState().view)) {
+      useAppStore.setState({ view: initial });
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
+    const onPop = () => {
+      const next = hashToView(window.location.hash);
+      if (next && !sameView(next, useAppStore.getState().view)) {
+        useAppStore.setState({ view: next });
+        window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("hashchange", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("hashchange", onPop);
+    };
+  }, []);
+
   const viewKey =
     view.name === "property" ? `property-${view.id}` : view.name;
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      <ScrollProgress />
       <SiteHeader />
       <main className="flex-1">
         <AnimatePresence mode="wait">

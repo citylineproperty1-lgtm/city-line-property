@@ -15,6 +15,7 @@ import {
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { AnimatedNumber } from "@/components/site/animated-number";
 import { AreaMarquee } from "@/components/site/area-marquee";
+import { AreaMap } from "@/components/site/area-map";
 import { RecentStrip } from "@/components/site/recent-strip";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
@@ -305,6 +306,9 @@ export function HomeView() {
           </Button>
         </div>
       </section>
+
+      {/* ---------- EXPLORE BY AREA (interactive map) ---------- */}
+      <AreaMap />
 
       {/* ---------- CATEGORIES ---------- */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-20 sm:px-6">

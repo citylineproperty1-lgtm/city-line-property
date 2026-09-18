@@ -119,3 +119,26 @@ Work Log:
 Stage Summary:
 - v4 shipped: insights dashboard, team inbox, saved-compare shortcut — 4 new files, 949 insertions. Nav now 5 items.
 - Remaining ideas: map view (SVG district map), dark mode, auth for admin inbox, blog/editorial section, hash-based deep links (#/properties/...) for shareability, saved-view sort options.
+
+---
+Task ID: 7
+Agent: main
+Task: Round 5 — QA, hash deep-links, interactive area map, share fallback, motion polish
+
+Work Log:
+- QA via agent-browser first: 9 views render, load-more 12→15, APIs (stats/insights/properties/inquiries) 200, 0 console errors. Verdict: stable → features.
+- NEW — Hash deep-links + history support:
+  - store.ts: viewToHash/hashToView/sameView helpers (#/properties, #/property/<id>, #/agent/<id>, #/about…); navigate() now pushState's the hash (no scroll jump, no popstate echo).
+  - page.tsx: one-time effect hydrates view from location.hash (deep link works on cold load) + popstate/hashchange listener syncs store on browser back/forward; verified back→insights, forward→property.
+- NEW — Explore-by-area interactive map (area-map.tsx) on home between featured & categories:
+  - Hand-crafted stylised SVG (900×520) of Karachi: wavy Arabian Sea band, dotted arterial roads, 9 district nodes positioned geographically (Gadap NW … DHA-8 on the coast), node size grows with listing count.
+  - Data-driven from /api/insights byDistrict; hover → halo grows, node darkens, HTML tooltip (avg sale/rent, count, CTA) positioned at node; click node OR quick chip → sets search filter + navigates to #/properties.
+  - Staggered spring pop-in per node (outer g positions, inner motion.g animates — avoids framer style.transform overriding SVG transform attr); quick chips row below for mobile tap targets; skeleton while loading; hidden if API empty.
+- FIXED — Share button on detail: URL now uses canonical viewToHash format (#/property/<id>) instead of legacy /#slug; added copyLink() clipboard→execCommand fallback so a toast ALWAYS fires (headless verified: "Copy property link" toast with URL).
+- POLISH — ScrollProgress (new): 2.5px emerald spring-smoothed reading bar pinned top (z-70). Header: active nav pill now animates between items via framer layoutId (bg-neutral-100 spring slide) + aria-current. ui/button.tsx: global active:scale-[0.98] tap feedback.
+- Verified in browser: deep link cold-load (#/insights, #/property/<id>), back/forward sync, map nodes/tooltips/click-through (Clifton → "Clifton" filter), share toast, 390px mobile map+chips, nav pill aria-current, lint clean.
+- Home 200, insights API 200, dev.log clean.
+
+Stage Summary:
+- v5 shipped: shareable URL deep-links with working back/forward, interactive Karachi area map, robust share, scroll progress + nav pill motion — 2 new files, ~340 insertions.
+- Remaining ideas: dark mode, admin auth, blog/editorial, saved-view sort, currency toggle (PKR/USD, touches 8 files — scoped but invasive), map node → district anchor scroll.

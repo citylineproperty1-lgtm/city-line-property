@@ -27,6 +27,50 @@ interface ListingsFilters {
 
 export const MAX_COMPARE = 4;
 
+/* ---------- Hash router helpers (shareable deep links) ---------- */
+
+export function viewToHash(v: View): string {
+  switch (v.name) {
+    case "home":
+      return "#/";
+    case "property":
+      return `#/property/${v.id}`;
+    case "agent":
+      return `#/agent/${v.id}`;
+    default:
+      return `#/${v.name}`;
+  }
+}
+
+export function hashToView(hash: string): View | null {
+  const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  if (parts.length === 0) return { name: "home" };
+  const [head, id] = parts;
+  switch (head) {
+    case "properties":
+    case "about":
+    case "contact":
+    case "saved":
+    case "compare":
+    case "insights":
+    case "admin":
+      return { name: head } as View;
+    case "property":
+      return id ? { name: "property", id } : null;
+    case "agent":
+      return id ? { name: "agent", id } : null;
+    default:
+      return null;
+  }
+}
+
+export function sameView(a: View, b: View): boolean {
+  if (a.name !== b.name) return false;
+  if (a.name === "property") return a.id === (b as { id: string }).id;
+  if (a.name === "agent") return a.id === (b as { id: string }).id;
+  return true;
+}
+
 interface AppState {
   view: View;
   listingsFilters: ListingsFilters;
@@ -65,6 +109,10 @@ export const useAppStore = create<AppState>()(
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
+          const target = viewToHash(view);
+          if (window.location.hash !== target) {
+            history.pushState(null, "", target);
+          }
           window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
         }
       },
