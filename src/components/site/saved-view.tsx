@@ -3,16 +3,28 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { useAppStore } from "@/lib/store";
 import type { Property } from "@/lib/types";
-import { Heart, GitCompareArrows } from "lucide-react";
+import { Heart, GitCompareArrows, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
+
+type SavedSort = "recent" | "price-asc" | "price-desc" | "area-desc" | "beds-desc";
+
+const SORT_OPTIONS: { value: SavedSort; label: string }[] = [
+  { value: "recent", label: "Recently saved" },
+  { value: "price-asc", label: "Price: low to high" },
+  { value: "price-desc", label: "Price: high to low" },
+  { value: "area-desc", label: "Largest first" },
+  { value: "beds-desc", label: "Most bedrooms" },
+];
 
 export function SavedView() {
   const { favorites, navigate, startCompare, compare } = useAppStore();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sort, setSort] = useState<SavedSort>("recent");
 
   useEffect(() => {
     const load = () => {
@@ -30,6 +42,20 @@ export function SavedView() {
     };
     load();
   }, [favorites]);
+
+  const byId = new Map(properties.map((p) => [p.id, p]));
+  const sorted: Property[] =
+    sort === "recent"
+      ? [...favorites].reverse().flatMap((id) => {
+          const p = byId.get(id);
+          return p ? [p] : [];
+        })
+      : [...properties].sort((a, b) => {
+          if (sort === "price-asc") return a.price - b.price;
+          if (sort === "price-desc") return b.price - a.price;
+          if (sort === "area-desc") return b.area - a.area;
+          return b.beds - a.beds;
+        });
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -71,6 +97,24 @@ export function SavedView() {
         </div>
       )}
 
+      {!loading && properties.length > 1 && (
+        <div className="mt-6 flex items-center justify-end gap-2">
+          <ArrowUpDown className="h-3.5 w-3.5 text-neutral-400" />
+          <Select value={sort} onValueChange={(v) => setSort(v as SavedSort)}>
+            <SelectTrigger className="h-10 w-[190px] rounded-full border-neutral-200 text-[13px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value} className="text-[13px]">
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {loading ? (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -101,8 +145,8 @@ export function SavedView() {
           </Button>
         </motion.div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((p, i) => (
+        <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {sorted.map((p, i) => (
             <PropertyCard key={p.id} property={p} index={i} />
           ))}
         </div>

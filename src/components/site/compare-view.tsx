@@ -175,7 +175,7 @@ export function CompareView() {
               )}
             </div>
             <div className="p-4">
-              <p className="text-lg font-semibold tracking-tight text-neutral-900">
+              <p className="text-lg font-semibold tracking-tight tabular-nums text-neutral-900">
                 {formatPKR(p.price, p.status === "RENT")}
               </p>
               <h3 className="mt-1 line-clamp-2 text-[13.5px] font-medium leading-snug text-neutral-700">

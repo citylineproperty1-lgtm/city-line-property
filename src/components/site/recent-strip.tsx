@@ -66,11 +66,11 @@ export function RecentStrip() {
                 alt={p.title}
                 fill
                 sizes="256px"
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                className="object-cover transition-transform duration-500 animate-in fade-in group-hover:scale-[1.04]"
               />
             </div>
             <div className="p-4">
-              <p className="text-[15px] font-semibold tracking-tight text-neutral-900">
+              <p className="text-[15px] font-semibold tracking-tight tabular-nums text-neutral-900">
                 {formatPKR(p.price, p.status === "RENT")}
               </p>
               <h3 className="mt-0.5 line-clamp-1 text-[13px] font-medium text-neutral-600">

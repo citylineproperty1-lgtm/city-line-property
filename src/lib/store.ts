@@ -15,6 +15,8 @@ export type View =
   | { name: "insights" }
   | { name: "admin" };
 
+export type Currency = "PKR" | "USD";
+
 interface ListingsFilters {
   search: string;
   status: string; // ALL | SALE | RENT
@@ -77,7 +79,11 @@ interface AppState {
   favorites: string[];
   compare: string[];
   recent: string[];
+  currency: Currency;
+  paletteOpen: boolean;
   navigate: (view: View) => void;
+  setPalette: (open: boolean) => void;
+  toggleCurrency: () => Currency;
   setFilters: (f: Partial<ListingsFilters>) => void;
   resetFilters: () => void;
   toggleFavorite: (id: string) => void;
@@ -106,6 +112,14 @@ export const useAppStore = create<AppState>()(
       favorites: [],
       compare: [],
       recent: [],
+      currency: "PKR",
+      paletteOpen: false,
+      setPalette: (open) => set({ paletteOpen: open }),
+      toggleCurrency: () => {
+        const next: Currency = get().currency === "PKR" ? "USD" : "PKR";
+        set({ currency: next });
+        return next;
+      },
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
@@ -149,6 +163,7 @@ export const useAppStore = create<AppState>()(
         favorites: s.favorites,
         compare: s.compare,
         recent: s.recent,
+        currency: s.currency,
       }),
     }
   )

@@ -37,7 +37,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           alt={property.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          className="object-cover transition-transform duration-500 animate-in fade-in group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         {/* Status badge */}
@@ -91,7 +91,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       {/* Body */}
       <div className="p-5">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="text-lg font-semibold tracking-tight text-neutral-900">
+          <p className="text-lg font-semibold tracking-tight tabular-nums text-neutral-900">
             {formatPKR(property.price, isRent)}
           </p>
           <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-500">

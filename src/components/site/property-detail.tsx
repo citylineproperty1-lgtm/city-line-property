@@ -322,7 +322,7 @@ export function PropertyDetailView({ id }: { id: string }) {
               </div>
             </div>
 
-            <p className="mt-5 text-3xl font-semibold tracking-tight text-neutral-900">
+            <p className="mt-5 text-3xl font-semibold tracking-tight tabular-nums text-neutral-900">
               {formatPKR(property.price, isRent)}
               {isRent && (
                 <span className="ml-1 text-sm font-normal text-neutral-400">

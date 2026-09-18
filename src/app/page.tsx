@@ -17,6 +17,7 @@ import { AdminView } from "@/components/site/admin-view";
 import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { ScrollProgress } from "@/components/site/scroll-progress";
+import { CommandPalette } from "@/components/site/command-palette";
 import {
   useAppStore,
   hashToView,
@@ -108,6 +109,7 @@ export default function Page() {
       <SiteFooter />
       <CompareBarLoader />
       <WhatsAppButton />
+      <CommandPalette />
     </div>
   );
 }

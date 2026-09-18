@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import { useAppStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Heart, Menu, Building2 } from "lucide-react";
+import { Heart, Menu, Building2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { View } from "@/lib/store";
 
@@ -18,9 +19,17 @@ const NAV: { label: string; view: View }[] = [
 ];
 
 export function SiteHeader() {
-  const { view, navigate, favorites } = useAppStore();
+  const { view, navigate, favorites, currency, toggleCurrency, setPalette } = useAppStore();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const switchCurrency = () => {
+    const next = toggleCurrency();
+    toast.success(
+      next === "USD" ? "Prices now shown in USD" : "Prices now shown in PKR",
+      { description: next === "USD" ? "Converted at a fixed ₨278 / $ rate" : "Crore / Lakh numbering restored" }
+    );
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -93,6 +102,44 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Quick find (⌘K) */}
+          <button
+            onClick={() => setPalette(true)}
+            className="group hidden h-10 items-center gap-2 rounded-full border border-neutral-200 bg-white pl-3 pr-2 text-[13px] text-neutral-400 transition-colors hover:border-neutral-300 hover:text-neutral-600 md:flex lg:pl-3.5 lg:pr-2.5"
+            aria-label="Quick find (Command K)"
+          >
+            <Search className="h-4 w-4" />
+            <span className="hidden lg:inline">Quick find</span>
+            <kbd className="hidden rounded-md border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 lg:inline">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Currency toggle */}
+          <div
+            className="flex h-9 items-center rounded-full border border-neutral-200 bg-white p-0.5"
+            role="group"
+            aria-label="Display currency"
+          >
+            {(["PKR", "USD"] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => {
+                  if (c !== currency) switchCurrency();
+                }}
+                aria-pressed={currency === c}
+                className={cn(
+                  "h-8 rounded-full px-2.5 text-[11px] font-semibold tracking-wide transition-colors",
+                  currency === c
+                    ? "bg-neutral-900 text-white"
+                    : "text-neutral-400 hover:text-neutral-900"
+                )}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
           {/* Saved */}
           <button
             onClick={() => go({ name: "saved" })}
@@ -143,6 +190,19 @@ export function SiteHeader() {
                   <span className="text-sm font-semibold tracking-tight">City Line Property</span>
                 </div>
                 <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
+                  <button
+                    onClick={() => {
+                      setOpen(false);
+                      setPalette(true);
+                    }}
+                    className="mb-1 flex items-center gap-2.5 rounded-xl border border-neutral-200 px-4 py-3 text-left text-[15px] font-medium text-neutral-400"
+                  >
+                    <Search className="h-4 w-4" />
+                    Quick find
+                    <kbd className="ml-auto rounded-md border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-[10px] font-medium text-neutral-500">
+                      ⌘K
+                    </kbd>
+                  </button>
                   {NAV.map((item) => (
                     <button
                       key={item.label}
@@ -167,6 +227,28 @@ export function SiteHeader() {
                       {favorites.length}
                     </span>
                   </button>
+                  <div className="mt-1 flex items-center justify-between rounded-xl bg-neutral-50 px-4 py-3">
+                    <span className="text-[13px] font-medium text-neutral-500">Currency</span>
+                    <div className="flex h-8 items-center rounded-full border border-neutral-200 bg-white p-0.5">
+                      {(["PKR", "USD"] as const).map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => {
+                            if (c !== currency) switchCurrency();
+                          }}
+                          aria-pressed={currency === c}
+                          className={cn(
+                            "h-7 rounded-full px-3 text-[11px] font-semibold transition-colors",
+                            currency === c
+                              ? "bg-neutral-900 text-white"
+                              : "text-neutral-400"
+                          )}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </nav>
                 <div className="mt-auto p-4">
                   <Button

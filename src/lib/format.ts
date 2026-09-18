@@ -1,8 +1,18 @@
 /**
- * PKR currency + misc formatters for City Line Property.
- * Uses South-Asian numbering: Crore (10M) and Lakh (100K).
+ * Currency + misc formatters for City Line Property.
+ * PKR uses South-Asian numbering: Crore (10M) and Lakh (100K).
+ * USD is a fixed-rate display conversion driven by the store toggle.
  */
+import { useAppStore } from "@/lib/store";
+
+/** Fixed display rate for the PKR ⇄ USD toggle (not a live FX quote). */
+export const PKR_PER_USD = 278;
+
 export function formatPKR(price: number, perMonth = false): string {
+  if (useAppStore.getState().currency === "USD") {
+    return `${formatUSD(price)}${perMonth ? "/mo" : ""}`;
+  }
+
   const abs = Math.abs(price);
   let text: string;
 
@@ -17,6 +27,16 @@ export function formatPKR(price: number, perMonth = false): string {
   }
 
   return `PKR ${text}${perMonth ? "/mo" : ""}`;
+}
+
+/** Compact USD rendering of a PKR amount, e.g. $342K, $1.25M, $340/mo. */
+export function formatUSD(pkr: number): string {
+  const usd = pkr / PKR_PER_USD;
+  const abs = Math.abs(usd);
+
+  if (abs >= 1_000_000) return `$${trimZero((usd / 1_000_000).toFixed(2))}M`;
+  if (abs >= 1_000) return `$${trimZero((usd / 1_000).toFixed(abs >= 100_000 ? 0 : 1))}K`;
+  return `$${new Intl.NumberFormat("en-US").format(Math.round(usd))}`;
 }
 
 function trimZero(v: string): string {

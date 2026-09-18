@@ -142,3 +142,29 @@ Work Log:
 Stage Summary:
 - v5 shipped: shareable URL deep-links with working back/forward, interactive Karachi area map, robust share, scroll progress + nav pill motion — 2 new files, ~340 insertions.
 - Remaining ideas: dark mode, admin auth, blog/editorial, saved-view sort, currency toggle (PKR/USD, touches 8 files — scoped but invasive), map node → district anchor scroll.
+
+---
+Task ID: 8
+Agent: main
+Task: Round 6 — QA, command palette (⌘K), PKR/USD currency toggle, saved-sort, styling details
+
+Work Log:
+- QA via agent-browser first: home/properties/detail/insights/admin render, card click navigation verified (was selector syntax issue, not a bug), 0 console errors. Verdict: stable → features.
+- NEW — Command palette (command-palette.tsx):
+  - Opens via header "Quick find" button (desktop pill with ⌘K kbd chip), mobile sheet row, or global ⌘K/Ctrl+K (listener in component, toggles store.paletteOpen).
+  - Empty query: "Go to" group (Home/Properties/Insights/About/Contact) + "Shortcuts" (Saved homes n, Compare n when ≥2, Clear comparison when >0, Team inbox) with icon tiles.
+  - Typing: debounced 220ms live property search via /api/properties?search=&limit=6 with stale-response seq guard; rows show thumb, title, district, price; "See all results for 'q'" applies filters.search + navigates to properties (verified: lands with input prefilled).
+  - Keyboard: ↑/↓ cycle, ↵ runs active row (verified Enter → detail), Esc closes; mouse hover syncs active; footer kbd legend; scroll lock while open; backdrop click closes; z-[80] below lightbox z-[100].
+  - Lint-safe: no setState in effects (fetch state is {key, items} + debounce in onChange handler; loading derived).
+- NEW — Currency toggle PKR ⇄ USD:
+  - store: currency ("PKR"|"USD") + toggleCurrency, persisted in partialize (survives reload — verified).
+  - format.ts: formatPKR reads store state at call time → zero call-site changes; all 8 price-rendering components already subscribe to whole store so toggle re-renders everything. PKR_PER_USD=278 fixed display rate; USD uses compact $ formatting ($342K, $1.2K/mo, $755K).
+  - Header segmented pill (PKR/USD) + duplicate control in mobile sheet; toast announces switch with rate note. Verified: detail $1.2K/mo, similar cards $342K/$245K/$342/mo, palette rows in USD, Crore/Lakh restored on switch-back.
+- NEW — Saved view sort: 5 options (Recently saved [reverse favorites order default], price asc/desc, largest, most beds) via shadcn Select, client-side derivation, shows when >1 saved. Verified order flip on price sort.
+- POLISH — property-card + recent-strip images fade-in on load (animate-in fade-in); prices now tabular-nums (card, detail headline, compare cards, recent strip, palette rows) so digits don't jitter.
+- Verified mobile 390px: header toggle fits, sheet quick-find opens palette, palette full-width panel with query retained.
+- Lint clean; home/APIs 200; dev.log clean.
+
+Stage Summary:
+- v6 shipped: ⌘K command palette with live search, global currency toggle, saved-view sorting, micro-polish — 1 new file, ~450 insertions.
+- Remaining ideas: dark mode, admin auth, blog/editorial, map node → filtered properties with district chip, monthly-views chart in insights, compare-bar keyboard hints.
