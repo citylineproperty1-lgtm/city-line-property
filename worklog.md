@@ -95,3 +95,27 @@ Work Log:
 Stage Summary:
 - v3 shipped: agent profiles end-to-end, paginated browse, recently-viewed, per-view titles — 3 new files, 561 insertions.
 - Remaining ideas: map view, market insights/blog, dark mode, admin inbox for inquiries, SEO meta per view (needs route structure), saved-view compare shortcut.
+
+---
+Task ID: 6
+Agent: main
+Task: Round 4 — QA, market insights, team inbox, saved-compare shortcut
+
+Work Log:
+- QA via agent-browser: home/properties/about/contact/detail/saved render clean, titles correct, 0 errors. Verdict: stable → features.
+- NEW — Market Insights (data-driven, live from DB):
+  - API GET /api/insights: avgSalePrice, avgRent, avgPricePerSqft, avgArea, avgRating, per-district sale/rent aggregates, type mix, top-5 most-viewed.
+  - insights-view.tsx: 4 KPI cards (icons + sub-lines), "Avg sale price by district" animated CSS bar chart (rent annotated per district, count chips), "Listing mix" stacked bar + legend with %, "Sale vs rent" split (AnimatedNumber + proportion bar), "Most viewed this week" ranked list (rank, thumb, beds/baths, price, views, amber popularity bar → clickable to detail), methodology footnote.
+  - Nav: "Insights" added to header (desktop + mobile sheet, tighter px-3.5 gap-0.5 for 5 items) + footer "Market insights".
+- NEW — Team inbox (internal admin surface):
+  - GET /api/inquiries now returns full list (with property title); GET /api/newsletter returns subscribers; PATCH /api/inquiries/[id] validates + persists status (NEW/CONTACTED/CLOSED cycle).
+  - admin-view.tsx: 4 KPI chips (new/in-progress/closed/subscribers), status filter tabs, inquiry cards (kind badge VIEWING/VALUATION/SELL/GENERAL with colors, status chip, mail/tel links, property chip-link, quoted message, date, cycle button "Mark contacted→closed→Reopen"), sticky subscribers panel (scrollable email list), internal-tool disclaimer card.
+  - Footer link "Team inbox".
+- NEW — Saved view: "Compare saved" banner shortcut (≥2 saved) → merges favorites into compare (dedup, max 4) and jumps to compare view. Store: startCompare(ids) action.
+- POLISH: titles for insights/admin views.
+- Verified: insights API numbers correct (8 sale avg 8.67 Cr, 4 rent avg 3.1 Lakh, PKR 18,668/sqft), PATCH validation (BOGUS rejected), status persisted to DB + UI cycle, saved→compare flow (2 cards), insights on mobile 390px (2×2 KPI grid).
+- Lint clean; home 200; committed & pushed origin/main (4d8b29f).
+
+Stage Summary:
+- v4 shipped: insights dashboard, team inbox, saved-compare shortcut — 4 new files, 949 insertions. Nav now 5 items.
+- Remaining ideas: map view (SVG district map), dark mode, auth for admin inbox, blog/editorial section, hash-based deep links (#/properties/...) for shareability, saved-view sort options.
