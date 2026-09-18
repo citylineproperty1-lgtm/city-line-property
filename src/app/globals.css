@@ -182,29 +182,9 @@
   background-image: linear-gradient(135deg, #14a08f 0%, #0f766e 52%, #0b5d56 100%);
 }
 
-/* Legacy alias — components still referencing gold utilities render in the
-   new brand colors until the redesign sweep renames them. */
-@utility gold-gradient {
-  background-image: linear-gradient(135deg, #14a08f 0%, #0f766e 52%, #0b5d56 100%);
-}
-
 /* Emerald gradient text — readable on light backgrounds */
 @utility text-brand-gradient {
   background-image: linear-gradient(120deg, #0f766e 0%, #0b5d56 55%, #084c46 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@utility text-gold-gradient {
-  background-image: linear-gradient(120deg, #0f766e 0%, #0b5d56 55%, #084c46 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@utility text-gold-gradient-dark {
-  background-image: linear-gradient(120deg, #5eb9a9 0%, #14a08f 55%, #0f766e 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -260,17 +240,6 @@
     box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
   }
 }
-@keyframes gold-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.45);
-  }
-  70% {
-    box-shadow: 0 0 0 14px rgba(15, 118, 110, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
-  }
-}
 @utility animate-shimmer {
   background-size: 200% 100%;
   animation: shimmer 2.8s linear infinite;
@@ -278,7 +247,7 @@
 @utility animate-float {
   animation: float 5s ease-in-out infinite;
 }
-@utility animate-gold-pulse {
+@utility animate-brand-pulse {
   animation: brand-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 

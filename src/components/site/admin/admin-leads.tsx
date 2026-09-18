@@ -52,11 +52,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { Lead } from "@/lib/types";
 import { LEAD_STATUSES } from "@/lib/types";
+import { formatPKR } from "@/lib/format";
 import {
   AdminApi,
   AdminCard,
   DUE_CHIP,
-  GOLD_BTN,
+  BRAND_BTN,
   LEAD_STATUS_META,
   SCROLLBAR_CLS,
   SOURCE_LABELS,
@@ -342,7 +343,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   onChange={(e) => setQInput(e.target.value)}
                   placeholder="Search name, phone, message…"
                   aria-label="Search leads"
-                  className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                  className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#0F766E]/35"
                 />
               </div>
               <Button
@@ -361,7 +362,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
           </p>
           {/* Follow-up due filter */}
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-black/[0.05] pt-2.5">
-            <CalendarClock className="h-3.5 w-3.5 text-[#C9A227]" />
+            <CalendarClock className="h-3.5 w-3.5 text-[#0F766E]" />
             <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
               Follow-ups
             </span>
@@ -378,8 +379,8 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                 className={cn(
                   "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition-all",
                   due === f.key
-                    ? "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-sm"
-                    : "bg-black/[0.04] text-neutral-500 hover:bg-[#C9A227]/10 hover:text-[#8A7119]"
+                    ? "brand-gradient text-white shadow-sm"
+                    : "bg-black/[0.04] text-neutral-500 hover:bg-[#E7F4F0] hover:text-[#0B6B5D]"
                 )}
               >
                 {f.label}
@@ -400,7 +401,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
       </motion.div>
 
       {loadError && (
-        <p className="flex items-center gap-2 rounded-2xl border border-[#FF3B30]/25 bg-[#FF3B30]/[0.06] px-4 py-3 text-[13px] text-[#C0392B]">
+        <p className="flex items-center gap-2 rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/[0.06] px-4 py-3 text-[13px] text-[#D5303B]">
           <AlertCircle className="h-4 w-4" /> {loadError}
         </p>
       )}
@@ -487,7 +488,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => void resend(lead)}
                         disabled={busyId === lead.id}
-                        className="h-8 rounded-full border border-black/[0.08] px-3 text-[11.5px] font-semibold text-neutral-600 hover:bg-[#C9A227]/10 hover:text-[#8A7119]"
+                        className="h-8 rounded-full border border-black/[0.08] px-3 text-[11.5px] font-semibold text-neutral-600 hover:bg-[#E7F4F0] hover:text-[#0B6B5D]"
                       >
                         {busyId === lead.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -501,7 +502,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => setDeleteTarget(lead)}
                         aria-label={`Delete lead from ${lead.name}`}
-                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#FF3B30]/10 hover:text-[#FF3B30]"
+                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -509,7 +510,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   </div>
 
                   {lead.waStatus === "FAILED" && lead.waError && (
-                    <p className="mt-2 flex items-start gap-1.5 rounded-xl bg-[#FF3B30]/[0.06] px-3 py-2 text-[11.5px] text-[#C0392B]">
+                    <p className="mt-2 flex items-start gap-1.5 rounded-xl bg-[#E5484D]/[0.06] px-3 py-2 text-[11.5px] text-[#D5303B]">
                       <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
                       WhatsApp error: {lead.waError}
                     </p>
@@ -530,9 +531,9 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                       </span>
                     )}
                     {lead.budget != null && lead.budget > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#C9A227]/10 px-2.5 py-1 font-semibold text-[#8A7119]">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 font-semibold text-[#0B6B5D]">
                         <CircleDollarSign className="h-3 w-3" />
-                        Budget ~ {new Intl.NumberFormat("en-PK").format(lead.budget)}
+                        Budget ~ {formatPKR(lead.budget)}
                       </span>
                     )}
                     {lead.property && (
@@ -544,14 +545,14 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   </div>
 
                   {/* Row 3: message */}
-                  <blockquote className="mt-3 rounded-2xl border-l-[3px] border-[#C9A227]/50 bg-neutral-50/70 px-3.5 py-2.5 text-[13px] leading-relaxed text-neutral-600">
-                    <Quote className="mb-1 h-3.5 w-3.5 text-[#C9A227]/70" />
+                  <blockquote className="mt-3 rounded-2xl border-l-[3px] border-[#0F766E]/40 bg-neutral-50/70 px-3.5 py-2.5 text-[13px] leading-relaxed text-neutral-600">
+                    <Quote className="mb-1 h-3.5 w-3.5 text-[#0F766E]/60" />
                     {lead.message}
                   </blockquote>
 
                   {/* Row 3.5: follow-up reminder */}
-                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-[#F8F4E9]/70 px-3 py-2">
-                    <CalendarClock className="h-3.5 w-3.5 shrink-0 text-[#A8851D]" />
+                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-[#E7F4F0]/60 px-3 py-2">
+                    <CalendarClock className="h-3.5 w-3.5 shrink-0 text-[#0B6B5D]" />
                     {lead.followUpAt ? (
                       <span
                         className={`rounded-full px-2.5 py-1 text-[10.5px] font-bold ${DUE_CHIP[dueState(lead.followUpAt) ?? "later"]}`}
@@ -568,7 +569,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           onClick={() => void remindInDays(lead, d)}
                           disabled={busyId === lead.id}
                           title={`Remind me in ${d} day${d > 1 ? "s" : ""}`}
-                          className="rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-[#8A7119] ring-1 ring-[#C9A227]/30 transition-all hover:bg-[#C9A227]/15 disabled:opacity-50"
+                          className="rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-[#0B6B5D] ring-1 ring-[#0F766E]/30 transition-all hover:bg-[#E7F4F0] disabled:opacity-50"
                         >
                           +{d}d
                         </button>
@@ -675,7 +676,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         }
                         placeholder="Internal notes — call outcomes, viewing times, offers…"
                         aria-label={`Notes for ${lead.name}`}
-                        className="resize-none rounded-xl border-black/[0.08] pl-9 text-[12.5px] focus-visible:ring-[#C9A227]/35"
+                        className="resize-none rounded-xl border-black/[0.08] pl-9 text-[12.5px] focus-visible:ring-[#0F766E]/35"
                       />
                     </div>
                     {notesDirty && (
@@ -684,7 +685,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           size="sm"
                           onClick={() => void saveNotes(lead)}
                           disabled={busyId === lead.id}
-                          className={`h-8 rounded-full px-4 text-[12px] font-semibold ${GOLD_BTN}`}
+                          className={`h-8 rounded-full px-4 text-[12px] font-semibold ${BRAND_BTN}`}
                         >
                           {busyId === lead.id ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -717,7 +718,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
             <AlertDialogAction
               onClick={() => void doDelete()}
               disabled={busyId === deleteTarget?.id}
-              className="rounded-xl bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90"
+              className="rounded-xl bg-[#E5484D] text-white hover:bg-[#E5484D]/90"
             >
               <Trash2 className="h-4 w-4" /> Delete lead
             </AlertDialogAction>

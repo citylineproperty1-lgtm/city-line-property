@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
-import { ApiError, GOLD_BTN, GOLD_OUTLINE, SCROLLBAR_CLS, Segmented } from "./admin/admin-shared";
+import { ApiError, BRAND_OUTLINE, SCROLLBAR_CLS, Segmented } from "./admin/admin-shared";
 import { AdminLogin, type AdminUser } from "./admin/admin-login";
 import { AdminOverview } from "./admin/admin-overview";
 import { AdminInventory } from "./admin/admin-inventory";
@@ -117,11 +117,11 @@ export function AdminView() {
   };
 
   return (
-    <div className="min-h-[70vh] bg-[#F2F2F7] pb-16">
+    <div className="min-h-[70vh] bg-[#F7F9F8] pb-16">
       {session.status === "checking" && (
         <div className="flex min-h-[60vh] items-center justify-center">
           <div className="flex flex-col items-center gap-3 text-neutral-400">
-            <Loader2 className="h-6 w-6 animate-spin text-[#C9A227]" />
+            <Loader2 className="h-6 w-6 animate-spin text-[#0F766E]" />
             <p className="text-[12.5px]">Checking your session…</p>
           </div>
         </div>
@@ -132,7 +132,7 @@ export function AdminView() {
       {session.status === "in" && (
         <>
           {/* Panel top bar (sticky below the public site header) */}
-          <header className="sticky top-16 z-30 border-b border-black/[0.05] bg-[#F2F2F7]/90 backdrop-blur">
+          <header className="sticky top-16 z-30 border-b border-black/[0.06] bg-[#F7F9F8]/90 backdrop-blur">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
               <div className="flex min-w-0 items-center gap-2.5">
                 <Image
@@ -145,7 +145,7 @@ export function AdminView() {
                 <div className="min-w-0">
                   <p className="truncate text-[13.5px] font-semibold leading-tight tracking-tight text-neutral-900">
                     City Line Property
-                    <span className="ml-2 rounded-full bg-[#C9A227]/12 px-2 py-0.5 align-middle text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#8A7119]">
+                    <span className="ml-2 rounded-full bg-[#E7F4F0] px-2 py-0.5 align-middle text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#0B6B5D]">
                       Admin
                     </span>
                   </p>
@@ -165,7 +165,7 @@ export function AdminView() {
                 <Button
                   size="sm"
                   onClick={() => void logout()}
-                  className={`h-9 rounded-full px-3 text-[12.5px] font-semibold sm:px-4 ${GOLD_OUTLINE}`}
+                  className={`h-9 rounded-full px-3 text-[12.5px] font-semibold sm:px-4 ${BRAND_OUTLINE}`}
                 >
                   <LogOut className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Logout</span>
@@ -199,7 +199,7 @@ export function AdminView() {
                         />
                       )}
                       <span className="relative z-10 flex items-center justify-center gap-1.5">
-                        <t.icon className={`h-3.5 w-3.5 ${active ? "text-[#C9A227]" : "text-neutral-400"}`} />
+                        <t.icon className={`h-3.5 w-3.5 ${active ? "text-[#0F766E]" : "text-neutral-400"}`} />
                         {t.label}
                       </span>
                     </button>

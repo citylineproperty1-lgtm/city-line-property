@@ -64,7 +64,7 @@ import {
 import {
   AdminApi,
   AdminCard,
-  GOLD_BTN,
+  BRAND_BTN,
   errorMessage,
   fadeUp,
   isAuthLoss,
@@ -101,7 +101,7 @@ interface CatForm {
   sortOrder: string;
 }
 
-const EMPTY_FORM: CatForm = { name: "", icon: "Building2", color: "#C9A227", description: "", sortOrder: "99" };
+const EMPTY_FORM: CatForm = { name: "", icon: "Building2", color: "#0F766E", description: "", sortOrder: "99" };
 
 export function AdminCategories({ api }: { api: AdminApi }) {
   const [state, setState] = useState<{ key: string; cats: AdminCat[] } | null>(null);
@@ -217,7 +217,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
             </div>
             <Button
               onClick={openAdd}
-              className={`h-10 rounded-xl px-4 text-[13px] font-semibold ${GOLD_BTN}`}
+              className={`h-10 rounded-xl px-4 text-[13px] font-semibold ${BRAND_BTN}`}
             >
               <Plus className="h-4 w-4" /> Add category
             </Button>
@@ -226,7 +226,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
       </motion.div>
 
       {loadError && (
-        <p className="rounded-2xl border border-[#FF3B30]/25 bg-[#FF3B30]/[0.06] px-4 py-3 text-[13px] text-[#C0392B]">
+        <p className="rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/[0.06] px-4 py-3 text-[13px] text-[#D5303B]">
           {loadError}
         </p>
       )}
@@ -280,7 +280,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => setDeleteTarget(c)}
                         aria-label={`Delete ${c.name}`}
-                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#FF3B30]/10 hover:text-[#FF3B30]"
+                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -333,7 +333,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Farm Houses"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
               />
             </div>
             <div className="grid grid-cols-[1fr_auto] gap-3">
@@ -346,7 +346,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                   value={form.icon}
                   onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))}
                   placeholder="Building2"
-                  className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#C9A227]/35"
+                  className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#0F766E]/35"
                 />
                 <p className="text-[10.5px] leading-tight text-neutral-400">
                   Try: LandPlot, Store, Home, Building2, Warehouse, BedDouble, KeyRound, Hotel, Trees…
@@ -385,7 +385,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Short blurb shown on the homepage tile"
-                className="resize-none rounded-xl border-black/[0.09] text-[13px] focus-visible:ring-[#C9A227]/35"
+                className="resize-none rounded-xl border-black/[0.09] text-[13px] focus-visible:ring-[#0F766E]/35"
               />
             </div>
             <div className="w-32 space-y-1.5">
@@ -397,7 +397,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 type="number"
                 value={form.sortOrder}
                 onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))}
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#C9A227]/35"
+                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#0F766E]/35"
               />
             </div>
           </div>
@@ -414,7 +414,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
             <Button
               onClick={() => void save()}
               disabled={saving || form.name.trim().length < 3}
-              className={`rounded-xl px-5 text-[13px] font-semibold ${GOLD_BTN}`}
+              className={`rounded-xl px-5 text-[13px] font-semibold ${BRAND_BTN}`}
             >
               {editing ? "Save changes" : "Create category"}
             </Button>
@@ -440,7 +440,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
             <AlertDialogAction
               onClick={() => void doDelete()}
               disabled={deleting}
-              className="rounded-xl bg-[#FF3B30] text-white hover:bg-[#FF3B30]/90"
+              className="rounded-xl bg-[#E5484D] text-white hover:bg-[#E5484D]/90"
             >
               <Trash2 className="h-4 w-4" /> Delete
             </AlertDialogAction>

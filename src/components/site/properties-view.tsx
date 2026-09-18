@@ -149,11 +149,11 @@ export function PropertiesView() {
   const savedCount = favorites.length;
 
   return (
-    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
       {/* Heading */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
             Etihad Town &amp; enclaves
           </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
@@ -186,7 +186,7 @@ export function PropertiesView() {
       </div>
 
       {/* Filter bar */}
-      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-black/[0.07] bg-white/90 p-3 shadow-[0_10px_40px_-18px_rgba(140,105,25,0.3)] backdrop-blur-xl">
+      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-black/[0.07] bg-white/90 p-3 shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* search */}
           <form onSubmit={submitSearch} className="relative flex-1">
@@ -195,7 +195,7 @@ export function PropertiesView() {
               value={f.search}
               onChange={(e) => setFilters({ search: e.target.value })}
               placeholder="Search by area, society or keyword…"
-              className="h-11 rounded-full border-neutral-200 bg-neutral-50 pl-11 pr-10 text-sm focus-visible:ring-[#C9A227]/40"
+              className="h-11 rounded-full border-neutral-200 bg-neutral-50 pl-11 pr-10 text-sm focus-visible:ring-[#0F766E]/40"
               aria-label="Search listings"
             />
             {f.search && (
@@ -317,12 +317,12 @@ export function PropertiesView() {
             {chips.map((c) => (
               <span
                 key={c.label}
-                className="inline-flex items-center gap-1.5 rounded-full gold-gradient py-1 pl-3 pr-1.5 text-[12px] font-medium text-white shadow-[0_4px_12px_-4px_rgba(154,123,26,0.6)]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#E7F4F0] py-1 pl-3 pr-1.5 text-[12px] font-medium text-[#0B6B5D] ring-1 ring-[#0F766E]/20"
               >
                 {c.label}
                 <button
                   onClick={c.clear}
-                  className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/30"
+                  className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#0F766E]/10 transition-colors hover:bg-[#0F766E]/25"
                   aria-label={`Remove filter ${c.label}`}
                 >
                   <X className="h-3 w-3" />
@@ -359,7 +359,7 @@ export function PropertiesView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-[#C9A227]/40 bg-[#C9A227]/[0.04] py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-[#0F766E]/30 bg-[#E7F4F0]/40 py-20 text-center"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06]">
             <SearchX className="h-6 w-6 text-neutral-400" />
@@ -374,7 +374,7 @@ export function PropertiesView() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Button
               onClick={resetFilters}
-              className="h-11 rounded-full gold-gradient px-6 text-sm font-medium text-white shadow-[0_6px_16px_-6px_rgba(154,123,26,0.7)] hover:opacity-95"
+              className="brand-gradient h-11 rounded-full px-6 text-sm font-medium text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.65)] hover:opacity-95"
             >
               Clear all filters
             </Button>

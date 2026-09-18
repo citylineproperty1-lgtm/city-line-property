@@ -143,7 +143,7 @@ export function AdminOverview({
   return (
     <div className="space-y-5">
       {failed && (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#FF3B30]/25 bg-[#FF3B30]/[0.06] px-4 py-3 text-[13px] text-[#C0392B]">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/[0.06] px-4 py-3 text-[13px] text-[#D5303B]">
           <span className="flex items-center gap-2">
             <AlertCircle className="h-4 w-4" /> {failed}
           </span>
@@ -210,7 +210,7 @@ export function AdminOverview({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
-                <TrendingUp className="h-4 w-4 text-[#C9A227]" />
+                <TrendingUp className="h-4 w-4 text-[#0F766E]" />
                 Last 14 days
               </h3>
               <p className="mt-0.5 text-[12px] text-neutral-400">New leads captured, day by day.</p>
@@ -236,12 +236,12 @@ export function AdminOverview({
             ) : (
               <div className="mt-5 space-y-2.5">
                 {[
-                  { key: "NEW", label: "New", count: o.leads.new, color: "#C9A227" },
+                  { key: "NEW", label: "New", count: o.leads.new, color: "#0F766E" },
                   { key: "CONTACTED", label: "Contacted", count: o.leads.contacted, color: "#30B0C7" },
                   { key: "SITE_VISIT", label: "Site visit", count: o.leads.siteVisits, color: "#AF52DE" },
                   { key: "NEGOTIATION", label: "Negotiation", count: o.leads.negotiation, color: "#FF9500" },
                   { key: "WON", label: "Won", count: o.leads.won, color: "#34C759" },
-                  { key: "LOST", label: "Lost", count: o.leads.lost, color: "#FF3B30" },
+                  { key: "LOST", label: "Lost", count: o.leads.lost, color: "#E5484D" },
                 ].map((s, i) => (
                   <div key={s.key} className="flex items-center gap-3">
                     <span className="w-20 shrink-0 text-right text-[12px] font-medium text-neutral-500">{s.label}</span>
@@ -329,7 +329,7 @@ export function AdminOverview({
                         initial={{ width: 0 }}
                         animate={{ width: `${(a.count / maxArea) * 100}%` }}
                         transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 + i * 0.05 }}
-                        className="h-full rounded-full bg-[linear-gradient(90deg,#DCB94F,#C9A227)]"
+                        className="h-full rounded-full bg-[linear-gradient(90deg,#14A08F,#0F766E)]"
                       />
                     </div>
                   </li>
@@ -344,13 +344,13 @@ export function AdminOverview({
           <AdminCard className="h-full">
             <div className="flex items-center justify-between gap-2">
               <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
-                <CalendarClock className="h-4 w-4 text-[#C9A227]" />
+                <CalendarClock className="h-4 w-4 text-[#0F766E]" />
                 Follow-ups due
               </h3>
               {onOpenLeads && (o.followUps.overdue > 0 || o.followUps.today > 0) && (
                 <button
                   onClick={onOpenLeads}
-                  className="rounded-full bg-[#F5EDD7] px-3 py-1 text-[11px] font-semibold text-[#8A7119] transition-colors hover:bg-[#F0E4BE]"
+                  className="rounded-full bg-[#E7F4F0] px-3 py-1 text-[11px] font-semibold text-[#0B6B5D] transition-colors hover:bg-[#D9EEE8]"
                 >
                   Open Leads
                 </button>
@@ -365,14 +365,14 @@ export function AdminOverview({
                     className={cn(
                       "rounded-2xl px-4 py-3",
                       o.followUps.overdue > 0
-                        ? "bg-[#FF3B30]/[0.08] ring-1 ring-[#FF3B30]/25"
+                        ? "bg-[#E5484D]/[0.08] ring-1 ring-[#E5484D]/25"
                         : "bg-black/[0.03]"
                     )}
                   >
                     <p
                       className={cn(
                         "text-xl font-bold tabular-nums",
-                        o.followUps.overdue > 0 ? "text-[#C0392B]" : "text-neutral-400"
+                        o.followUps.overdue > 0 ? "text-[#D5303B]" : "text-neutral-400"
                       )}
                     >
                       {o.followUps.overdue}
@@ -383,14 +383,14 @@ export function AdminOverview({
                     className={cn(
                       "rounded-2xl px-4 py-3",
                       o.followUps.today > 0
-                        ? "bg-[linear-gradient(135deg,rgba(233,206,122,0.28),rgba(201,162,39,0.16))] ring-1 ring-[#C9A227]/30"
+                        ? "bg-[linear-gradient(135deg,rgba(20,160,143,0.22),rgba(15,118,110,0.12))] ring-1 ring-[#0F766E]/30"
                         : "bg-black/[0.03]"
                     )}
                   >
                     <p
                       className={cn(
                         "text-xl font-bold tabular-nums",
-                        o.followUps.today > 0 ? "text-[#8A7119]" : "text-neutral-400"
+                        o.followUps.today > 0 ? "text-[#0B6B5D]" : "text-neutral-400"
                       )}
                     >
                       {o.followUps.today}
@@ -463,7 +463,7 @@ export function AdminOverview({
                         {SOURCE_LABELS[l.source] ?? l.source}
                       </span>
                       {l.property && (
-                        <span className="max-w-52 truncate rounded-full bg-[#C9A227]/10 px-2 py-0.5 font-medium text-[#8A7119]">
+                        <span className="max-w-52 truncate rounded-full bg-[#E7F4F0] px-2 py-0.5 font-medium text-[#0B6B5D]">
                           {l.property}
                         </span>
                       )}

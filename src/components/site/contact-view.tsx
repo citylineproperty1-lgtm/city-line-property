@@ -51,9 +51,9 @@ const FAQS = [
 
 export function ContactView() {
   return (
-    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
           Contact
         </p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
@@ -70,7 +70,7 @@ export function ContactView() {
         {/* Requirement form → saved as a CRM lead */}
         <motion.div
           {...fadeUp}
-          className="rounded-3xl border border-black/[0.07] bg-white p-6 shadow-[0_24px_60px_-30px_rgba(140,105,25,0.35)] sm:p-8"
+          className="rounded-3xl border border-black/[0.07] bg-white p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.35)] sm:p-8"
         >
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
             Post your requirement — we call you back
@@ -86,9 +86,9 @@ export function ContactView() {
 
         {/* Info cards — real office details */}
         <motion.div {...fadeUp} className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-[#C9A227]/30 bg-gradient-to-br from-[#FFFDF5] to-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-[#0F766E]/20 bg-[#E7F4F0]/60 p-5 shadow-sm">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#DCBB55] to-[#A8851D] text-white">
+              <span className="brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
                 <MapPin className="h-4.5 w-4.5" />
               </span>
               <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
@@ -103,7 +103,7 @@ export function ContactView() {
                 href="https://maps.google.com/?q=Etihad+Town+Phase+1+Lahore"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#8F7018] transition-colors hover:text-[#A8851D]"
+                className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#0B6B5D] transition-colors hover:text-[#0F766E]"
               >
                 <Navigation className="h-3.5 w-3.5" />
                 Open in Maps →
@@ -122,13 +122,13 @@ export function ContactView() {
             </div>
             <div className="mt-3 space-y-1 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
               <p>
-                <a href={`tel:${BUSINESS.telPrimary}`} className="font-medium text-neutral-700 hover:text-[#8F7018]">
+                <a href={`tel:${BUSINESS.telPrimary}`} className="font-medium text-neutral-700 hover:text-[#0B6B5D]">
                   {BUSINESS.phonePrimary}
                 </a>{" "}
                 (WhatsApp)
               </p>
               <p>
-                <a href={`tel:${BUSINESS.telSecondary}`} className="font-medium text-neutral-700 hover:text-[#8F7018]">
+                <a href={`tel:${BUSINESS.telSecondary}`} className="font-medium text-neutral-700 hover:text-[#0B6B5D]">
                   {BUSINESS.phoneSecondary}
                 </a>
               </p>
@@ -137,7 +137,7 @@ export function ContactView() {
               href={waLink("Hi City Line Property — I have a question about property in Etihad Town.")}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 ml-[52px] inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#8F7018] transition-colors hover:text-[#A8851D]"
+              className="mt-3 ml-[52px] inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#15803D] transition-colors hover:text-[#16A34A]"
             >
               <MessageCircle className="h-3.5 w-3.5" />
               Chat on WhatsApp →
@@ -154,7 +154,7 @@ export function ContactView() {
               </h3>
             </div>
             <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
-              <a href={`mailto:${BUSINESS.email}`} className="break-all font-medium text-neutral-700 hover:text-[#8F7018]">
+              <a href={`mailto:${BUSINESS.email}`} className="break-all font-medium text-neutral-700 hover:text-[#0B6B5D]">
                 {BUSINESS.email}
               </a>
             </p>
@@ -208,11 +208,11 @@ export function ContactView() {
 
       {/* Bottom CTA */}
       <motion.div {...fadeUp} className="mt-14 flex flex-col items-center text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
           Prefer to talk first?
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-          <Button asChild className="h-12 rounded-full gold-gradient px-7 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95">
+          <Button asChild className="brand-gradient h-12 rounded-full px-7 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95">
             <a href={`tel:${BUSINESS.telPrimary}`}>
               <Phone className="mr-2 h-4 w-4" />
               Call {BUSINESS.phonePrimary}
@@ -221,7 +221,7 @@ export function ContactView() {
           <Button
             asChild
             variant="outline"
-            className="h-12 rounded-full border-[#C9A227]/40 bg-white px-7 text-sm font-semibold text-[#8F7018] hover:bg-[#C9A227]/10"
+            className="h-12 rounded-full border-[#22C55E]/40 bg-white px-7 text-sm font-semibold text-[#15803D] hover:bg-[#22C55E]/10"
           >
             <a
               href={waLink("Hi City Line Property — I'd like to discuss a property requirement.")}

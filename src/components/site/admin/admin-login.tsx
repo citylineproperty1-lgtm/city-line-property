@@ -12,7 +12,7 @@ import { Eye, EyeOff, Loader2, LockKeyhole, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GOLD_BTN, GOLD_TEXT } from "./admin-shared";
+import { BRAND_BTN, BRAND_TEXT } from "./admin-shared";
 
 export interface AdminUser {
   id: string;
@@ -72,7 +72,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
             <h1 className="mt-4 text-xl font-semibold tracking-tight text-neutral-900">
               City Line Property
             </h1>
-            <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] ${GOLD_TEXT}`}>
+            <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] ${BRAND_TEXT}`}>
               <LockKeyhole className="h-3.5 w-3.5" />
               Admin panel
             </p>
@@ -90,7 +90,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                 placeholder="you@citylineproperty.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-11 rounded-xl border-black/[0.09] bg-white text-[14px] focus-visible:ring-[#C9A227]/35"
+                className="h-11 rounded-xl border-black/[0.09] bg-white text-[14px] focus-visible:ring-[#0F766E]/35"
                 disabled={busy}
                 required
               />
@@ -108,7 +108,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                   placeholder="••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-xl border-black/[0.09] bg-white pr-11 text-[14px] focus-visible:ring-[#C9A227]/35"
+                  className="h-11 rounded-xl border-black/[0.09] bg-white pr-11 text-[14px] focus-visible:ring-[#0F766E]/35"
                   disabled={busy}
                   required
                 />
@@ -128,7 +128,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 role="alert"
-                className="rounded-xl bg-[#FF3B30]/[0.07] px-3.5 py-2.5 text-[12.5px] font-medium text-[#C0392B]"
+                className="rounded-xl bg-[#E5484D]/[0.08] px-3.5 py-2.5 text-[12.5px] font-medium text-[#D5303B]"
               >
                 {error}
               </motion.p>
@@ -137,7 +137,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
             <Button
               type="submit"
               disabled={busy}
-              className={`h-11 w-full rounded-xl text-[14px] font-semibold ${GOLD_BTN}`}
+              className={`h-11 w-full rounded-xl text-[14px] font-semibold ${BRAND_BTN}`}
             >
               {busy ? (
                 <>

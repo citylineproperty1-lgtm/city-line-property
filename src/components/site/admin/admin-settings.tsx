@@ -30,8 +30,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   AdminApi,
   AdminCard,
-  GOLD_BTN,
-  GOLD_OUTLINE,
+  BRAND_BTN,
+  BRAND_OUTLINE,
   errorMessage,
   fadeUp,
   isAuthLoss,
@@ -95,7 +95,7 @@ export function AdminSettings({ api }: { api: AdminApi }) {
   return (
     <div className="space-y-5">
       {loadError && (
-        <p className="rounded-2xl border border-[#FF3B30]/25 bg-[#FF3B30]/[0.06] px-4 py-3 text-[13px] text-[#C0392B]">
+        <p className="rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/[0.06] px-4 py-3 text-[13px] text-[#D5303B]">
           {loadError}
         </p>
       )}
@@ -160,7 +160,7 @@ function WebhookCard({
       <AdminCard>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#C9A227]/10 text-[#8A7119]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
               <BellRing className="h-4.5 w-4.5" />
             </span>
             <div>
@@ -201,7 +201,7 @@ function WebhookCard({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://api.callmebot.com/whatsapp.php?phone=923…&text={MESSAGE}&apikey=…"
-              className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#C9A227]/35"
+              className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#0F766E]/35"
               autoComplete="off"
               spellCheck={false}
             />
@@ -210,7 +210,7 @@ function WebhookCard({
             <Button
               onClick={() => void save()}
               disabled={saving}
-              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${GOLD_BTN}`}
+              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${BRAND_BTN}`}
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save URL
@@ -218,15 +218,15 @@ function WebhookCard({
             <Button
               onClick={() => void test()}
               disabled={testing || (!configured && !url.trim())}
-              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${GOLD_OUTLINE}`}
+              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${BRAND_OUTLINE}`}
             >
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Send test message
             </Button>
           </div>
 
-          <div className="rounded-2xl border border-[#C9A227]/25 bg-[#C9A227]/[0.06] p-4">
-            <p className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide text-[#8A7119]">
+          <div className="rounded-2xl border border-[#0F766E]/20 bg-[#E7F4F0]/60 p-4">
+            <p className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide text-[#0B6B5D]">
               <Info className="h-3.5 w-3.5" /> How it works
             </p>
             <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-[12.5px] leading-relaxed text-neutral-600">
@@ -307,7 +307,7 @@ function ContactCard({
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.06 }}>
       <AdminCard>
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-black/[0.045] text-[#8A7119]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
             <ExternalLink className="h-4.5 w-4.5" />
           </span>
           <div>
@@ -329,7 +329,7 @@ function ContactCard({
                 value={form[f.key]}
                 onChange={(e) => setForm((s) => ({ ...s, [f.key]: e.target.value }))}
                 placeholder={f.placeholder}
-                className={`mt-1.5 h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35 ${f.mono ? "font-mono text-[12.5px]" : ""}`}
+                className={`mt-1.5 h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35 ${f.mono ? "font-mono text-[12.5px]" : ""}`}
               />
             </div>
           ))}
@@ -339,7 +339,7 @@ function ContactCard({
           <Button
             onClick={() => void save()}
             disabled={saving}
-            className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${GOLD_BTN}`}
+            className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${BRAND_BTN}`}
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save contact info
@@ -406,7 +406,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
-          className="h-10 rounded-xl border-black/[0.09] pr-10 text-[13.5px] focus-visible:ring-[#C9A227]/35"
+          className="h-10 rounded-xl border-black/[0.09] pr-10 text-[13.5px] focus-visible:ring-[#0F766E]/35"
           required
         />
         {id === "pw-current" && (
@@ -427,7 +427,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.12 }}>
       <AdminCard>
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-black/[0.045] text-[#8A7119]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
             <KeyRound className="h-4.5 w-4.5" />
           </span>
           <div>
@@ -446,7 +446,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
           {error && (
             <p
               role="alert"
-              className="rounded-xl bg-[#FF3B30]/[0.07] px-3.5 py-2.5 text-[12.5px] font-medium text-[#C0392B] sm:col-span-3"
+              className="rounded-xl bg-[#E5484D]/[0.08] px-3.5 py-2.5 text-[12.5px] font-medium text-[#D5303B] sm:col-span-3"
             >
               {error}
             </p>
@@ -456,7 +456,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
             <Button
               type="submit"
               disabled={busy || !current || !next || !confirm}
-              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${GOLD_BTN}`}
+              className={`h-10 rounded-xl px-5 text-[13px] font-semibold ${BRAND_BTN}`}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
               Update password

@@ -102,15 +102,15 @@ export function AreasIndexView() {
   const stats = useDistrictStats();
 
   return (
-    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
       {/* Header */}
       <motion.header {...fadeUp} transition={{ duration: 0.4, ease: "easeOut" }}>
-        <p className="flex items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.18em] text-[#8C6D1F]">
+        <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
           <MapPin className="h-4 w-4" />
           Area guides
         </p>
         <h1 className="mt-3 max-w-xl text-3xl font-bold leading-[1.1] tracking-tight text-neutral-900 sm:text-[44px]">
-          Five areas. <span className="bg-gradient-to-r from-[#E9CE7A] via-[#C9A227] to-[#9A7B1A] bg-clip-text text-transparent">Known street by street.</span>
+          Five areas. <span className="text-brand-gradient">Known street by street.</span>
         </h1>
         <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-neutral-500">
           We only deal where we can vouch for every file — the Etihad Town pocket
@@ -129,7 +129,7 @@ export function AreasIndexView() {
               {...fadeUp}
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 + i * 0.06 }}
               className={cn(
-                "group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_-14px_rgba(201,162,39,0.4)]",
+                "group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_48px_-18px_rgba(15,23,42,0.22)]",
                 i === 0 && "sm:col-span-2 lg:col-span-1"
               )}
               onClick={() => navigate({ name: "area", slug: area.slug })}
@@ -153,7 +153,7 @@ export function AreasIndexView() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" aria-hidden />
                 {area.office && (
-                  <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] px-3 py-1 text-[10.5px] font-bold uppercase tracking-[0.1em] text-white shadow-sm">
+                  <span className="brand-gradient absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10.5px] font-bold uppercase tracking-[0.1em] text-white shadow-sm">
                     <Star className="h-3 w-3" />
                     Our office here
                   </span>
@@ -162,7 +162,7 @@ export function AreasIndexView() {
                   <h2 className="text-[19px] font-bold leading-tight tracking-tight text-white drop-shadow-sm">
                     {area.name}
                   </h2>
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/90 text-[#8C6D1F] opacity-0 shadow-sm transition-all duration-300 group-hover:opacity-100">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/90 text-[#0B6B5D] opacity-0 shadow-sm transition-all duration-300 group-hover:opacity-100">
                     <ArrowUpRight className="h-4 w-4" />
                   </span>
                 </div>
@@ -172,12 +172,12 @@ export function AreasIndexView() {
                 <p className="text-[13px] font-medium leading-relaxed text-neutral-500">
                   {area.tagline}
                 </p>
-                <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-[#F8F4E9] p-3 text-center">
+                <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-[#F7F9F8] p-3 text-center">
                   <div>
                     <p className="text-[15px] font-bold tabular-nums text-neutral-900">{stat.count}</p>
                     <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">Listings</p>
                   </div>
-                  <div className="border-x border-[#C9A227]/15">
+                  <div className="border-x border-black/[0.06]">
                     <p className="text-[15px] font-bold tabular-nums text-neutral-900">
                       {stat.saleAvg > 0 ? compactPKR(stat.saleAvg) : "—"}
                     </p>
@@ -194,13 +194,13 @@ export function AreasIndexView() {
                   {area.goodFor.map((g) => (
                     <span
                       key={g}
-                      className="rounded-full border border-[#C9A227]/25 bg-[#F5EDD7]/70 px-2.5 py-1 text-[10.5px] font-semibold text-[#8C6D1F]"
+                      className="rounded-full border border-[#0F766E]/20 bg-[#E7F4F0]/70 px-2.5 py-1 text-[10.5px] font-semibold text-[#0B6B5D]"
                     >
                       {g}
                     </span>
                   ))}
                 </div>
-                <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-[12.5px] font-semibold text-[#8C6D1F]">
+                <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-[12.5px] font-semibold text-[#0B6B5D]">
                   Read the area guide
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -213,7 +213,7 @@ export function AreasIndexView() {
         <motion.aside
           {...fadeUp}
           transition={{ duration: 0.4, ease: "easeOut", delay: 0.4 }}
-          className="flex flex-col justify-between overflow-hidden rounded-3xl bg-[linear-gradient(135deg,#E9CE7A_0%,#C9A227_55%,#9A7B1A_100%)] p-6 sm:col-span-2 lg:col-span-1"
+          className="flex flex-col justify-between overflow-hidden rounded-3xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_55%,#084C46_100%)] p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.7)] sm:col-span-2 lg:col-span-1"
         >
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10.5px] font-bold uppercase tracking-[0.1em] text-white">
@@ -232,7 +232,7 @@ export function AreasIndexView() {
           <div className="mt-6 flex flex-wrap gap-2.5">
             <Button
               onClick={() => navigate({ name: "contact" })}
-              className="rounded-full bg-white px-5 text-[13px] font-semibold text-[#8C6D1F] hover:bg-white/90"
+              className="rounded-full bg-white px-5 text-[13px] font-semibold text-[#0B6B5D] hover:bg-white/90"
             >
               Post a requirement
             </Button>
@@ -279,13 +279,13 @@ export function AreaDetailView({ slug }: { slug: string }) {
   // Unknown slug → friendly not-found.
   if (!area) {
     return (
-      <div className="mx-auto max-w-3xl bg-[#FAF7EF] px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-3xl bg-background px-4 py-16 sm:px-6">
         <div className="rounded-3xl border border-neutral-200/80 bg-white p-10 text-center">
           <MapPin className="mx-auto h-8 w-8 text-neutral-300" />
           <p className="mt-3 text-[14px] text-neutral-500">That area guide doesn&rsquo;t exist.</p>
           <Button
             onClick={() => navigate({ name: "areas" })}
-            className={`mt-5 rounded-full px-5 bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white hover:brightness-[1.06]`}
+            className={`brand-gradient mt-5 rounded-full px-5 text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95`}
           >
             All areas
           </Button>
@@ -313,10 +313,10 @@ export function AreaDetailView({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
       <button
         onClick={() => navigate({ name: "areas" })}
-        className="group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white px-4 py-2 text-[13px] font-medium text-neutral-600 transition-all hover:border-[#C9A227]/40 hover:text-[#8C6D1F]"
+        className="group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white px-4 py-2 text-[13px] font-medium text-neutral-600 transition-all hover:border-[#0F766E]/40 hover:text-[#0B6B5D]"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         All areas
@@ -325,11 +325,11 @@ export function AreaDetailView({ slug }: { slug: string }) {
       {/* Hero */}
       <div className="grid items-start gap-8 lg:grid-cols-[1.05fr_1fr]">
         <motion.div {...fadeUp} transition={{ duration: 0.45, ease: "easeOut" }}>
-          <p className="flex flex-wrap items-center gap-2 text-[11.5px] font-bold uppercase tracking-[0.18em] text-[#8C6D1F]">
+          <p className="flex flex-wrap items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
             <MapPin className="h-4 w-4" />
             Area guide · Etihad Town, Lahore
             {area.office && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#F5EDD7] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#8C6D1F] ring-1 ring-[#C9A227]/30">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D] ring-1 ring-[#0F766E]/25">
                 <Star className="h-3 w-3" />
                 Our office here
               </span>
@@ -338,23 +338,23 @@ export function AreaDetailView({ slug }: { slug: string }) {
           <h1 className="mt-3 text-3xl font-bold leading-[1.08] tracking-tight text-neutral-900 sm:text-[42px]">
             {area.name}
           </h1>
-          <p className="mt-3 text-[16px] font-medium text-[#8C6D1F]">{area.tagline}</p>
+          <p className="mt-3 text-[16px] font-medium text-[#0B6B5D]">{area.tagline}</p>
 
           {/* Live stat pills */}
           <div className="mt-6 flex flex-wrap gap-2.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C9A227]/25 bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-              <Building2 className="h-3.5 w-3.5 text-[#C9A227]" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
+              <Building2 className="h-3.5 w-3.5 text-[#0F766E]" />
               {stat.count} live {stat.count === 1 ? "listing" : "listings"}
             </span>
             {stat.saleAvg > 0 && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#C9A227]/25 bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-                <TrendingUp className="h-3.5 w-3.5 text-[#C9A227]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
+                <TrendingUp className="h-3.5 w-3.5 text-[#0F766E]" />
                 Avg. sale {formatPKR(stat.saleAvg)}
               </span>
             )}
             {stat.rentAvg > 0 && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#C9A227]/25 bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-                <TrendingUp className="h-3.5 w-3.5 text-[#C9A227]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
+                <TrendingUp className="h-3.5 w-3.5 text-[#0F766E]" />
                 Avg. rent {formatPKR(stat.rentAvg, true)}
               </span>
             )}
@@ -363,7 +363,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           <div className="mt-7 flex flex-wrap gap-2.5">
             <Button
               onClick={browseArea}
-              className="gold-gradient h-11 rounded-full px-5 text-[13.5px] font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95"
+              className="brand-gradient h-11 rounded-full px-5 text-[13.5px] font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95"
             >
               Browse {stat.count > 0 ? `${stat.count} ` : ""}listings in {AREA_SHORT[area.name] ?? area.name}
               <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -374,7 +374,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 items-center rounded-full border border-neutral-300 bg-white px-5 text-[13.5px] font-semibold text-neutral-700 transition-colors hover:border-[#C9A227]/50 hover:text-[#8C6D1F]"
+              className="inline-flex h-11 items-center rounded-full border border-neutral-300 bg-white px-5 text-[13.5px] font-semibold text-neutral-700 transition-colors hover:border-[#0F766E]/50 hover:text-[#0B6B5D]"
             >
               Ask about this area
             </a>
@@ -385,7 +385,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55, ease: "easeOut", delay: 0.08 }}
-          className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-white/70 shadow-[0_28px_70px_-30px_rgba(120,90,20,0.5)]"
+          className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-white/70 shadow-[0_28px_70px_-30px_rgba(15,23,42,0.4)]"
         >
           <Image
             src={area.cover}
@@ -413,7 +413,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
             {area.goodFor.map((g) => (
               <span
                 key={g}
-                className="rounded-full border border-[#C9A227]/25 bg-[#F5EDD7]/70 px-3 py-1.5 text-[11.5px] font-semibold text-[#8C6D1F]"
+                className="rounded-full border border-[#0F766E]/20 bg-[#E7F4F0]/70 px-3 py-1.5 text-[11.5px] font-semibold text-[#0B6B5D]"
               >
                 Good for {g.toLowerCase()}
               </span>
@@ -421,7 +421,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           </div>
         </motion.section>
 
-        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-[#C9A227]/25 bg-[linear-gradient(135deg,rgba(233,206,122,0.16),rgba(201,162,39,0.10))] p-6 sm:p-8">
+        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-[#0F766E]/20 bg-[linear-gradient(135deg,rgba(231,244,240,0.9),rgba(231,244,240,0.45))] p-6 sm:p-8">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
             Why buyers pick it
           </h2>
@@ -435,7 +435,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
                 transition={{ duration: 0.35, delay: 0.15 + i * 0.08 }}
                 className="flex items-start gap-3 text-[13.5px] leading-relaxed text-neutral-700"
               >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#A8851D]" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#0F766E]" />
                 {h}
               </motion.li>
             ))}
@@ -447,7 +447,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
       <section className="mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8C6D1F]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
               Live on the market
             </p>
             <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
@@ -456,7 +456,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           </div>
           <button
             onClick={browseArea}
-            className="group inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-[#F5EDD7]/60 px-4 py-2 text-[12.5px] font-semibold text-[#8C6D1F] transition-all hover:border-[#C9A227]/60 hover:bg-[#F5EDD7]"
+            className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
           >
             Browse all in {area.name}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -465,7 +465,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
 
         {loading ? (
           <div className="mt-6 flex min-h-40 items-center justify-center rounded-3xl border border-neutral-200/70 bg-white">
-            <Loader2 className="h-5 w-5 animate-spin text-[#C9A227]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#0F766E]" />
           </div>
         ) : listings.items.length === 0 ? (
           <div className="mt-6 rounded-3xl border border-neutral-200/80 bg-white p-10 text-center">
@@ -506,20 +506,20 @@ export function AreaDetailView({ slug }: { slug: string }) {
                   navigate({ name: "area", slug: a.slug });
                   window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
                 }}
-                className="group flex items-center gap-3.5 rounded-2xl border border-neutral-200/80 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#C9A227]/40 hover:shadow-[0_10px_28px_-14px_rgba(201,162,39,0.45)]"
+                className="group flex items-center gap-3.5 rounded-2xl border border-neutral-200/80 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#0F766E]/35 hover:shadow-[0_12px_32px_-16px_rgba(15,118,110,0.45)]"
               >
                 <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
                   <Image src={a.cover} alt="" fill sizes="48px" className="object-cover transition-transform duration-500 group-hover:scale-110" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13.5px] font-semibold text-neutral-900 transition-colors group-hover:text-[#8C6D1F]">
+                  <span className="block truncate text-[13.5px] font-semibold text-neutral-900 transition-colors group-hover:text-[#0B6B5D]">
                     {a.name}
                   </span>
                   <span className="block text-[11.5px] text-neutral-400">
                     {s.count} {s.count === 1 ? "listing" : "listings"}
                   </span>
                 </span>
-                <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition-colors group-hover:text-[#C9A227]" />
+                <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition-colors group-hover:text-[#0F766E]" />
               </motion.button>
             );
           })}

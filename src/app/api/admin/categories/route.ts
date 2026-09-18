@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         name,
         slug,
         icon: (body.icon ?? "Building2").toString(),
-        color: (body.color ?? "#C9A227").toString(),
+        color: (body.color ?? "#0F766E").toString(),
         description: (body.description ?? "").toString(),
         sortOrder: Number(body.sortOrder ?? (maxOrder._max.sortOrder ?? 0) + 1) | 0,
       },

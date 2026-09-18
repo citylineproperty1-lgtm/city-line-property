@@ -122,11 +122,11 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="flex flex-col items-center rounded-2xl border border-[#C9A227]/30 bg-gradient-to-b from-[#FFFDF5] to-white px-6 py-12 text-center"
+        className="flex flex-col items-center rounded-2xl border border-[#0F766E]/20 bg-gradient-to-b from-[#E7F4F0]/70 to-white px-6 py-12 text-center"
         role="status"
       >
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#C9A227]/15">
-          <CheckCircle2 className="h-8 w-8 text-[#A8851D]" />
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0F766E]/10">
+          <CheckCircle2 className="h-8 w-8 text-[#0F766E]" />
         </span>
         <h3 className="mt-5 text-xl font-semibold tracking-tight text-neutral-900">
           Requirement saved — our team will call you
@@ -137,7 +137,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         </p>
         <Button
           onClick={() => window.open(waLinkOut, "_blank", "noopener")}
-          className="mt-6 h-12 w-full rounded-full bg-gradient-to-r from-[#D9B44A] via-[#C9A227] to-[#A8851D] text-[15px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(201,162,39,0.7)] hover:opacity-95 sm:w-auto sm:px-8"
+          className="mt-6 h-12 w-full rounded-full bg-[#22C55E] text-[15px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(34,197,94,0.6)] transition-colors hover:bg-[#16A34A] sm:w-auto sm:px-8"
         >
           <MessageCircle className="mr-2 h-4.5 w-4.5" />
           Send on WhatsApp instead
@@ -167,7 +167,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Ali Hassan"
-            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#C9A227]/40"
+            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
             autoComplete="name"
           />
         </div>
@@ -182,7 +182,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="03xx xxx xxxx"
-            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#C9A227]/40"
+            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
             autoComplete="tel"
           />
         </div>
@@ -198,7 +198,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#C9A227]/40"
+          className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
           autoComplete="email"
         />
       </div>
@@ -264,7 +264,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="e.g. 5 Marla plot near the main boulevard, ideally corner…"
-          className="resize-none rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#C9A227]/40"
+          className="resize-none rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
         />
       </div>
 
@@ -282,7 +282,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       <Button
         type="submit"
         disabled={sending}
-        className="h-12 w-full rounded-full gold-gradient text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.75)] hover:opacity-95"
+        className="h-12 w-full rounded-full brand-gradient text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95"
       >
         {sending ? (
           <>

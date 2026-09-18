@@ -47,8 +47,8 @@ import { AREAS } from "@/lib/business";
 import { LISTING_STATES, type Property } from "@/lib/types";
 import {
   AdminApi,
-  GOLD_BTN,
-  GOLD_TEXT,
+  BRAND_BTN,
+  BRAND_TEXT,
   LISTING_STATE_META,
   Segmented,
   errorMessage,
@@ -249,7 +249,7 @@ export function AdminListingDrawer({
         placeholder={props.placeholder}
         value={form[k] as string}
         onChange={(e) => set(k, e.target.value as ListingForm[typeof k])}
-        className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+        className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
       />
     </div>
   );
@@ -265,7 +265,7 @@ export function AdminListingDrawer({
             {listing ? (
               <>
                 Edit listing{" "}
-                <span className={`text-[12.5px] font-semibold ${GOLD_TEXT}`}>{listing.reference}</span>
+                <span className={`text-[12.5px] font-semibold ${BRAND_TEXT}`}>{listing.reference}</span>
               </>
             ) : (
               "Add new listing"
@@ -284,7 +284,7 @@ export function AdminListingDrawer({
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               role="alert"
-              className="rounded-xl bg-[#FF3B30]/[0.07] px-3.5 py-2.5 text-[12.5px] font-medium text-[#C0392B]"
+              className="rounded-xl bg-[#E5484D]/[0.08] px-3.5 py-2.5 text-[12.5px] font-medium text-[#D5303B]"
             >
               {error}
             </motion.p>
@@ -301,7 +301,7 @@ export function AdminListingDrawer({
                 value={form.title}
                 onChange={(e) => set("title", e.target.value)}
                 placeholder="5 Marla house — Royal Enclave"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
               />
             </div>
             <div className="space-y-1.5">
@@ -314,7 +314,7 @@ export function AdminListingDrawer({
                 value={form.description}
                 onChange={(e) => set("description", e.target.value)}
                 placeholder="Highlight the block, plot number, facing, possession status…"
-                className="resize-none rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                className="resize-none rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -329,7 +329,7 @@ export function AdminListingDrawer({
                   value={form.price}
                   onChange={(e) => set("price", e.target.value)}
                   placeholder="12500000"
-                  className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#C9A227]/35"
+                  className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#0F766E]/35"
                 />
               </div>
               <div className="space-y-1.5">
@@ -350,7 +350,7 @@ export function AdminListingDrawer({
               <div className="space-y-1.5">
                 <Label className="text-[12px] text-neutral-500">Category *</Label>
                 <Select value={form.type} onValueChange={(v) => set("type", v)}>
-                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35">
+                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
                     <SelectValue placeholder="Choose category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -368,7 +368,7 @@ export function AdminListingDrawer({
               <div className="space-y-1.5">
                 <Label className="text-[12px] text-neutral-500">Area *</Label>
                 <Select value={form.district} onValueChange={(v) => set("district", v)}>
-                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35">
+                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
                     <SelectValue placeholder="Choose area" />
                   </SelectTrigger>
                   <SelectContent>
@@ -390,7 +390,7 @@ export function AdminListingDrawer({
                 value={form.address}
                 onChange={(e) => set("address", e.target.value)}
                 placeholder="Block C, 150 ft boulevard"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
               />
             </div>
           </div>
@@ -414,7 +414,7 @@ export function AdminListingDrawer({
             <div className="space-y-1.5">
               <Label className="text-[12px] text-neutral-500">Listing state</Label>
               <Select value={form.listingState} onValueChange={(v) => set("listingState", v)}>
-                <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35">
+                <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -428,7 +428,7 @@ export function AdminListingDrawer({
             </div>
             <label className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-4 py-3">
               <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700">
-                <Star className="h-4 w-4 text-[#C9A227]" /> Published
+                <Star className="h-4 w-4 text-[#0F766E]" /> Published
               </span>
               <Switch
                 checked={form.published}
@@ -438,7 +438,7 @@ export function AdminListingDrawer({
             </label>
             <label className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-4 py-3">
               <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700">
-                <Crown className="h-4 w-4 text-[#C9A227]" /> Featured
+                <Crown className="h-4 w-4 text-[#0F766E]" /> Featured
               </span>
               <Switch
                 checked={form.featured}
@@ -462,7 +462,7 @@ export function AdminListingDrawer({
                   }
                 }}
                 placeholder="e.g. Solar system, Servant quarter…"
-                className="h-10 flex-1 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                className="h-10 flex-1 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
               />
               <Button
                 type="button"
@@ -478,14 +478,14 @@ export function AdminListingDrawer({
                 {form.amenities.map((a) => (
                   <span
                     key={a}
-                    className="inline-flex items-center gap-1 rounded-full border border-[#C9A227]/30 bg-[#C9A227]/[0.08] py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-[#8A7119]"
+                    className="inline-flex items-center gap-1 rounded-full border border-[#0F766E]/30 bg-[#E7F4F0] py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-[#0B6B5D]"
                   >
                     {a}
                     <button
                       type="button"
                       onClick={() => set("amenities", form.amenities.filter((x) => x !== a))}
                       aria-label={`Remove amenity ${a}`}
-                      className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-[#C9A227]/20"
+                      className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-[#0F766E]/15"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -523,7 +523,7 @@ export function AdminListingDrawer({
                     onDragEnd={() => setDragIdx(null)}
                     className={cn(
                       "group relative aspect-[4/3] overflow-hidden rounded-xl border border-black/[0.08] cursor-grab active:cursor-grabbing",
-                      dragIdx === i && "opacity-40 ring-2 ring-[#C9A227]"
+                      dragIdx === i && "opacity-40 ring-2 ring-[#0F766E]"
                     )}
                   >
                     <Image
@@ -535,7 +535,7 @@ export function AdminListingDrawer({
                       unoptimized
                     />
                     {i === 0 && (
-                      <span className="absolute left-1.5 top-1.5 rounded-full bg-[#C9A227] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-white">
+                      <span className="absolute left-1.5 top-1.5 rounded-full bg-[#0F766E] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-white">
                         Cover
                       </span>
                     )}
@@ -598,7 +598,7 @@ export function AdminListingDrawer({
                       }
                     }}
                     placeholder="Paste image URL…"
-                    className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13px] focus-visible:ring-[#C9A227]/35"
+                    className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13px] focus-visible:ring-[#0F766E]/35"
                   />
                 </div>
                 <Button
@@ -661,7 +661,7 @@ export function AdminListingDrawer({
             type="button"
             onClick={() => void save()}
             disabled={saving}
-            className={`h-10 rounded-xl px-5 text-[13.5px] font-semibold ${GOLD_BTN}`}
+            className={`h-10 rounded-xl px-5 text-[13.5px] font-semibold ${BRAND_BTN}`}
           >
             {saving ? (
               <>

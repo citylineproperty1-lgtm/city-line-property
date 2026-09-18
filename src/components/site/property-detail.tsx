@@ -147,7 +147,7 @@ export function PropertyDetailView({ id }: { id: string }) {
         </p>
         <Button
           onClick={() => navigate({ name: "properties" })}
-          className="mt-6 h-11 rounded-full bg-[#C9A227] px-6 text-sm hover:bg-[#A8851D]"
+          className="brand-gradient mt-6 h-11 rounded-full px-6 text-sm text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95"
         >
           Browse all properties
         </Button>
@@ -227,7 +227,7 @@ export function PropertyDetailView({ id }: { id: string }) {
               </button>
             </>
           )}
-          <span className="absolute bottom-4 left-4 rounded-full bg-[#2A2210]/75 px-2.5 py-1 text-[11.5px] font-semibold tabular-nums text-white backdrop-blur print:hidden">
+          <span className="absolute bottom-4 left-4 rounded-full bg-neutral-900/75 px-2.5 py-1 text-[11.5px] font-semibold tabular-nums text-white backdrop-blur print:hidden">
             {imgIndex + 1} / {property.images.length}
           </span>
           <button
@@ -240,8 +240,10 @@ export function PropertyDetailView({ id }: { id: string }) {
           </button>
           <span
             className={cn(
-              "absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-white backdrop-blur",
-              isRent ? "bg-[#007AFF]/95" : "bg-[#C9A227]/95"
+              "absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[12px] font-semibold backdrop-blur",
+              isRent
+                ? "border border-[#0F766E]/30 bg-white/95 text-[#0B6B5D]"
+                : "brand-gradient text-white"
             )}
           >
             {isRent ? "For Rent" : "For Sale"}
@@ -259,7 +261,7 @@ export function PropertyDetailView({ id }: { id: string }) {
               className={cn(
                 "relative aspect-[16/10] overflow-hidden rounded-xl border-2 bg-neutral-100 transition-all",
                 imgIndex === i
-                  ? "border-[#C9A227] opacity-100 shadow-[0_0_0_3px_rgba(201,162,39,0.18)]"
+                  ? "border-[#0F766E] opacity-100 shadow-[0_0_0_3px_rgba(15,118,110,0.18)]"
                   : "border-transparent opacity-70 hover:opacity-100"
               )}
               aria-label={`View photo ${i + 1}`}
@@ -290,7 +292,7 @@ export function PropertyDetailView({ id }: { id: string }) {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#F7EFD4] px-2.5 py-1 text-[12px] font-semibold text-[#8C6D1F]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[12px] font-semibold text-[#0B6B5D]">
                     <BadgeCheck className="h-3.5 w-3.5" />
                     Verified listing
                   </span>
@@ -403,7 +405,7 @@ export function PropertyDetailView({ id }: { id: string }) {
             </p>
             <p className="mt-4 text-[13px] text-neutral-400">
               Listed {formatDate(property.createdAt)} · Ref{" "}
-              <span className="font-semibold tracking-wide text-[#8C6D1F]">
+              <span className="font-semibold tracking-wide text-[#0B6B5D]">
                 {property.reference}
               </span>
             </p>
@@ -425,7 +427,7 @@ export function PropertyDetailView({ id }: { id: string }) {
                   key={a}
                   className="flex items-center gap-2.5 rounded-xl border border-neutral-100 bg-neutral-50/60 px-4 py-3 text-[14px] text-neutral-700"
                 >
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[#A8851D]" />
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0F766E]" />
                   {a}
                 </div>
               ))}
@@ -450,7 +452,7 @@ export function PropertyDetailView({ id }: { id: string }) {
         <section className="mt-16 print:hidden">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#8C6D1F]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
                 Keep exploring
               </p>
               <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
@@ -462,7 +464,7 @@ export function PropertyDetailView({ id }: { id: string }) {
                 setFilters({ search: property.district, type: property.type });
                 navigate({ name: "properties" });
               }}
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-[#F5EDD7]/60 px-4 py-2 text-[12.5px] font-semibold text-[#8C6D1F] transition-all hover:border-[#C9A227]/60 hover:bg-[#F5EDD7]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
             >
               Browse {categoryLabel(property.type)} in {property.district}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -696,7 +698,7 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
     return (
       <div className="rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E9CE7A] to-[#A8851D] text-white">
+          <span className="brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
             <Calculator className="h-4 w-4" />
           </span>
           <h3 className="text-[15px] font-semibold text-neutral-900">Annual rent outlook</h3>
@@ -724,7 +726,7 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
   return (
     <div className="rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E9CE7A] to-[#A8851D] text-white">
+        <span className="brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
           <Calculator className="h-4 w-4" />
         </span>
         <h3 className="text-[15px] font-semibold text-neutral-900">Instalment estimator</h3>
@@ -744,7 +746,7 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={5}
             value={downPct}
             onChange={(e) => setDownPct(Number(e.target.value))}
-            className="mt-2 w-full accent-[#A8851D]"
+            className="mt-2 w-full accent-[#0F766E]"
             aria-label="Down payment percentage"
           />
         </div>
@@ -760,7 +762,7 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={5}
             value={years}
             onChange={(e) => setYears(Number(e.target.value))}
-            className="mt-2 w-full accent-[#A8851D]"
+            className="mt-2 w-full accent-[#0F766E]"
             aria-label="Loan term in years"
           />
         </div>
@@ -776,16 +778,16 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={0.5}
             value={rate}
             onChange={(e) => setRate(Number(e.target.value))}
-            className="mt-2 w-full accent-[#A8851D]"
+            className="mt-2 w-full accent-[#0F766E]"
             aria-label="Annual interest rate"
           />
         </div>
-        <div className="rounded-xl bg-gradient-to-br from-[#8C6D1F] to-[#6B5310] p-4 text-white">
-          <p className="text-[12px] text-neutral-400">Estimated monthly instalment</p>
+        <div className="rounded-xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_100%)] p-4 text-white">
+          <p className="text-[12px] text-white/70">Estimated monthly instalment</p>
           <p className="mt-1 text-xl font-semibold tracking-tight">
             {formatPKR(monthly, true)}
           </p>
-          <p className="mt-1 text-[11px] leading-relaxed text-neutral-400">
+          <p className="mt-1 text-[11px] leading-relaxed text-white/60">
             Indicative only — actual bank terms vary.
           </p>
         </div>

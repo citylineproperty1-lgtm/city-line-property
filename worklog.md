@@ -340,3 +340,93 @@ Stage Summary:
 - v12 shipped: Area Guide pages end-to-end (index + 5 detail guides with live stats/listings, wired into map/footer/palette/insights), lead follow-up reminder system (self-healing columns + full admin UX + overview widget + CSV/SQL parity).
 - Known notes: dueState "soon" = within 48h labelled "Tomorrow"; follow-up data lives outside Prisma client (by design); footer area links now open guides instead of pre-filtered listings (guide has browse CTA).
 - Next ideas: WhatsApp Cloud API upgrade, Supabase storage switch for uploads, admin activity log, per-area photo covers (AI-generate dedicated images), digest article per area guide cross-link.
+
+---
+Task ID: 13
+Agent: main
+Task: User redesign mandate — remove ALL extra folders/features, kill yellow-gold theme → pure-white family.co-style UI, PKR-only, real (not fake) maps + real office map location
+
+Work Log:
+- Baseline check: repo at v12 (4721787), dev server healthy, Supabase env present.
+- DELETED extra folders: examples/, scripts/. DELETED extra features end-to-end (components + APIs + models):
+  compare (view/bar/store), insights (view/api/traffic-chart), digest/blog (views, /api/posts, admin CMS, lib/posts.ts, Post model),
+  agents/team (views, /api/agents, admin team, Agent model), testimonials (api + model), newsletter (api + footer + model),
+  command palette (⌘K), saved-search alerts, RecentStrip, ViewEvent model, USD/currency toggle (PKR-only format.ts now).
+- Prisma schema slimmed to: Property (no agentId/rating), Category, Lead (+follow-up cols), AdminUser, Setting. Manual raw-SQL drop of
+  Agent/Testimonial/Newsletter/ViewEvent/Post tables (SQLite refused UNIQUE-index drop via db push), then db:push OK.
+- Theme rewrite (globals.css): "paper & emerald" — pure white bg #FFFFFF, near-black ink #0C1210, brand emerald #0F766E ramp,
+  hairline borders, radius 1rem, emerald selection/scrollbar. Legacy .gold-gradient/.text-gold-gradient* kept as ALIASES → render
+  brand colors until component sweep renames them. Added Leaflet CSS + .clp-pin + popup/zoom-control styling.
+- REAL MAPS: installed leaflet + @types/leaflet. New src/components/site/real-map.tsx (client-only dynamic import, OSM raster tiles,
+  custom divIcon pins, popups with PKR price + "View details", office popup with Google Maps "Get Directions", fit-bounds).
+  Verified REAL coordinates via Nominatim/Photon: Etihad Town Phase 1 is on RAIWIND ROAD (not Multan Rd), 3.5 km from Thokar Niaz Baig
+  (reverse geocode at 31.4408,74.2309 → "Agrics Town, Barkat Pur, Raiwind Tehsil, Lahore"). OFFICE_COORD + AREA_COORDS (5 blocks) +
+  officeDirectionsLink() added to business.ts. Home <AreaMap/> (fake SVG) → RealMap section with 5 area pins + office pin.
+- Components re-wired: site-header (rewritten: no currency toggle/palette/dead links, emerald pill nav), site-footer (rewritten: dark
+  ink+emerald, newsletter/digest removed, Get-directions CTA), saved-view (rewritten: favorites+sort only), property-card (rewritten:
+  no compare, emerald accents), properties-view (save-search removed), property-detail (compare+rating removed, AgentCardWithForm →
+  OfficeCardWithForm with real BUSINESS phones/WhatsApp + inquiries form; FIXED corrupted `const essage` line), about-view (team section
+  removed), admin-view (team/digest tabs removed), areas-view (stats now computed from /api/properties client-side).
+- Admin APIs slimmed: /api/admin/overview (newsletter/agents/ViewEvent removed, single-series leadTrend), admin-overview.tsx chart
+  rewritten single-series emerald, admin-listing-drawer (agent select + /api/agents fetch removed), stats route slimmed.
+- Seeds: deleted seed.ts/seed-views.ts/seed-posts.ts; seed-lahore.ts slimmed to categories/properties/leads/settings/admin (no agents,
+  no testimonials, no view traffic). supabase/schema.sql REGENERATED COMPLETE: 5 tables + indexes + touch triggers + RLS
+  (published-only reads, anon lead-insert with length checks) + property-media bucket + 7 categories + 16 Lahore listings
+  (parsed from seed) + settings + scrypt admin hash. Supabase REST verified reachable (tables pending user running the SQL).
+- INCIDENT: sandbox filesystem served stale file replicas during property-detail edits (python vs rg disagreed, content flip-flopped);
+  resolved via temp-file + os.replace (new inode). No cron/agent interference found (cron list empty).
+- Dev server restarted after Prisma client regen (old process held stale client → P2022). Smoke: / , stats, properties, featured,
+  categories, settings → 200; admin login → me/overview/properties/leads all 200. Lint clean. Committed 98a3945.
+
+Stage Summary:
+- v13-foundation shipped: extras stripped, white+emerald theme live on real coordinates, complete Supabase SQL ready to run.
+- NOTE: legacy .gold-* utility NAMES still aliased in globals.css until Task 14 sweep; some gold hex literals remain inside
+  home-view/properties-view/detail/areas/admin components (cosmetic — Task 14/15 remove them).
+- Next: Task 14 = full public UI redesign sweep (family.co-style, no gold); Task 15 = admin restyle + polish; then QA + commit.
+
+---
+Task ID: 14
+Agent: frontend-styling-expert
+Task: Full public UI redesign sweep — all gold/yellow literals + legacy gold utility classes removed from every public site component (white + emerald "paper & emerald" family.co-style language)
+
+Work Log:
+- Baseline: counted 203 gold-pattern matches in src/components/site (135 in public components, 68 in admin files — admin left untouched per ownership rules; admin-view.tsx not opened for edit).
+- logo.tsx — REWRITTEN: dropped gold /logo.png image mark; new inline emerald monogram (squircle, brand-gradient teal→emerald, white "city line" skyline glyph + baseline), ink/white wordmark, emerald tagline; same API (size/withWordmark/tagline/tone); Monogram now exported for reuse. Workmark: light→#0C1210 ink, dark→white.
+- home-view.tsx (39 refs) — full sweep: bg-[#FAF7EF]→bg-background; hero gold radials → faint emerald washes; hero eyebrow pill, accent H1 words (gold gradient→text-brand-gradient), copy highlight (#8F7018→#0B6B5D), search card → white hairline card w/ neutral shadow + brand-gradient Search button; trust-row icons + AnimatedNumber band → emerald, 1% chip → #E7F4F0/#0B6B5D ring; hero image card shadow neutral; floating office card now uses <Monogram> (logo.png gone); scroll cue hover emerald; commission marquee band → deep emerald gradient w/ white text + #7FE0CD stars; savings calculator → white card, emerald slider/track/thumb, emerald preset active state, "You save" #0F766E, note tile #E7F4F0; GOLD const → BRAND_EMERALD; category filler tile + why-us icon tiles + process circles/lines/step chips → brand-gradient/emerald; requirement WhatsApp pill → green #22C55E outline style; final CTA band → deep emerald gradient with white Call pill + ghost WhatsApp button + Monogram; alt text "golden hour" → "bright morning".
+- areas-view.tsx (34 refs): index + detail — headline gradient→text-brand-gradient, all eyebrows→#0B6B5D (12px/0.14em spec), office badges→brand-gradient, stat tiles #F8F4E9→#F7F9F8, goodFor chips→#E7F4F0/#0B6B5D, office aside + card shadows→emerald ramp, stat pills/borders/icons→emerald, loader, browse pills, nearby-card hovers→emerald/neutral.
+- property-detail.tsx (15 refs): not-found CTA→brand-gradient; photo counter #2A2210→neutral-900; For Rent badge → white bg + emerald border/text, For Sale → brand-gradient; filmstrip active border→#0F766E; verified chip→#E7F4F0/#0B6B5D; ref#, amenity checks, "Keep exploring" eyebrow + browse pill→emerald; mortgage/rent calculator icon tiles→brand-gradient, range inputs accent-[#0F766E], result box→emerald gradient w/ white/70 text.
+- properties-view.tsx (6): bg white; eyebrow emerald; toolbar shadow neutral; search focus ring #0F766E; active chips gold-gradient→#E7F4F0/#0B6B5D ring-1 ring-[#0F766E]/20 (X chip bg #0F766E/10); empty state emerald dashed; clear-filters→brand-gradient.
+- contact-view.tsx (12): bg white; eyebrows emerald; office card→#E7F4F0 tint w/ brand-gradient icon; all #8F7018 links→#0B6B5D (WhatsApp link→green #15803D); bottom CTAs brand-gradient + green-outline WhatsApp.
+- about-view.tsx (15): bg white; headline→text-brand-gradient; stats values→#0F766E; value/story icon tiles + year chips→brand-gradient; office card→emerald tint; inner info card #FAF7EF→#F7F9F8; story highlight→#0B6B5D; promise band gold→deep emerald gradient w/ white text.
+- requirement-form.tsx (9): success card→emerald tint + #0F766E check; WhatsApp send→solid #22C55E hover #16A34A; all 4 input/textarea focus rings→#0F766E/40; submit→brand-gradient.
+- scroll-progress.tsx: bar → emerald gradient #2DD4BF→#0F766E→#0B5B54.
+- whatsapp-button.tsx: #25D366→#22C55E + hover #16A34A, neutral shadow, animate-gold-pulse→green animate-ping (inline Tailwind, no globals.css edit).
+- Verified no-ops (already clean from Task 13): site-header, site-footer, property-card, saved-view, lightbox, animated-number, real-map (untouched as instructed).
+- Verification: mandated rg gold sweep → 0 matches (exit 1); wider sweep (DCC059/D3AC35/FFF3D0/2E2606 etc.) → 0; bun run lint → exit 0; curl / → 200; curl /api/properties?limit=1 → 200 (stats+categories also 200); rendered HTML contains 52× #0F766E, 15× brand-gradient, 0 gold hexes.
+- NOTE (pattern recurrence): MultiEdit partial-application struck again — first home-view batch applied edit 1 then aborted on a whitespace mismatch (file was left with BRAND_EMERALD const but GOLD usages); caught via rg, re-ran remaining edits, verified. Confirm file state after ANY MultiEdit failure.
+- Admin components untouched: src/components/site/admin/** and admin-view.tsx still contain gold literals by design (Task 15 scope).
+
+Stage Summary:
+- Task 14 complete: public site is 100% gold-free — pure white canvas, emerald brand system, green WhatsApp accents, PKR-only, all animations/layout preserved. Gold grep clean, lint clean, dev server 200s on / and public APIs.
+- Next: Task 15 = admin restyle (admin/** + admin-view.tsx still hold 68 gold refs); globals.css still keeps .gold-gradient/.text-gold-* alias utilities (safe to delete after Task 15); logo.png asset now unused by public components (still used by admin login).
+
+---
+Task ID: 15
+Agent: frontend-styling-expert
+Task: Restyle entire admin CRM to white+emerald "paper & emerald" language — zero yellow, all flows verified
+Work Log:
+- admin-shared.tsx: renamed GOLD_BTN→BRAND_BTN ("brand-gradient text-white shadow-[0_6px_18px_-8px_rgba(15,118,110,0.65)] hover:opacity-95"), GOLD_OUTLINE→BRAND_OUTLINE (border-[#0F766E]/35 text-[#0B6B5D] hover:bg-[#E7F4F0]), GOLD_TEXT→BRAND_TEXT, removed unused GOLD const; AdminCard/StatCard → rounded-2xl border-black/[0.08]; StatCard highlight → emerald tint/text; LEAD_STATUS_META.NEW → #0F766E/#0B6B5D on #E7F4F0; Segmented active badge → bg-[#0F766E]; WA_META pending dot → neutral #8E8E93, failed → #E5484D; DUE_CHIP per spec (overdue #E5484D, today brand-gradient, soon #F59E0B amber-only, later neutral). SCROLLBAR_CLS had no gold (left as-is).
+- admin-view.tsx: shell bg #F2F2F7→#F7F9F8 (incl. sticky header), loader emerald, ADMIN badge bg-[#E7F4F0] text-[#0B6B5D], logout → BRAND_OUTLINE, active tab icon → text-[#0F766E].
+- admin-login.tsx: BRAND submit + BRAND_TEXT kicker, emerald focus rings, error state #E5484D; white card/ink headline kept.
+- admin-overview.tsx: funnel NEW bar gold→emerald, LOST red→#E5484D; listings-by-area bar → emerald gradient (#14A08F→#0F766E); TrendingUp/CalendarClock icons emerald; "Open Leads" pill → emerald soft; due-today tile → emerald tint; recent-lead property chip → #E7F4F0/#0B6B5D; error banner → #E5484D.
+- admin-inventory.tsx: BRAND_BTN add/save-price buttons, emerald focus rings + row hover, references text-[#0B6B5D], featured stars fill emerald, CategoryChip fallback dot #0F766E, PriceEditor hover emerald, delete affordances #E5484D, empty-state copy "gold button"→"emerald button".
+- admin-leads.tsx: BRAND_BTN save-notes, emerald focus rings/icons; follow-up filter active chip → brand-gradient; follow-up strip #F8F4E9→#E7F4F0/60 with #0B6B5D accents; +1d/+3d/+7d pills → emerald ring/hover; quote border/Quote icon → emerald; budget chip → #E7F4F0/#0B6B5D AND switched Intl.NumberFormat → formatPKR (PKR-only mandate); Resend hover emerald; error/delete states #E5484D.
+- admin-categories.tsx: BRAND_BTN add/save, default new-category color #C9A227→#0F766E, emerald focus rings, #E5484D delete states.
+- admin-settings.tsx: verified keys webhook_url/whatsapp_number/whatsapp_number_2/office_address/business_email/office_hours (unchanged logic, restyle only); BRAND_BTN×3 + BRAND_OUTLINE test button; icon tiles → #E7F4F0/#0B6B5D; "How it works" explainer → emerald-soft panel; emerald focus rings; #E5484D error states.
+- admin-listing-drawer.tsx: BRAND_BTN submit, BRAND_TEXT reference, Star/Crown icons emerald, amenity chips → emerald soft, drag-reorder ring → #0F766E, Cover badge → bg-[#0F766E], emerald focus rings, #E5484D error.
+- Verified: mandatory grep (incl. extra gold hexes 8A7119/DCB94F/F8F4E9/F0E4BE/F5C13D) → ZERO matches in admin files; bun run lint exit 0; login curl {"ok":true} + all 5 admin APIs 200; browser QA (agent-browser): login → all 5 tabs render (Overview chart/funnel/follow-ups, Inventory table+Add-listing drawer with specs/photos, Leads pipeline+due chips+CSV, Categories, Settings with all 6 keys) — 0 page errors, 0 console errors; computed styles confirm #F7F9F8 shell, #E5484D-free chrome, brand-gradient button, #0F766E tab icon; pixel-scanned 5 admin screenshots — 0 UI-chrome yellow (remaining ~0.02% matches are warm tones inside property photos).
+- NOTE (transient, not mine): during this task / returned 500 for ~3 min because Task 14's in-flight edit of home-view.tsx left `GOLD is not defined` (line 669); self-resolved at 19:35 when that agent saved the fixed file — file ownership respected, no intervention.
+Stage Summary:
+- Task 15 shipped: full admin CRM on white+#F7F9F8 canvas with emerald #0F766E/#0B6B5D/#E7F4F0 tokens — GOLD_* constants gone (BRAND_* everywhere), zero yellow in admin code or chrome, amber confined to follow-up "soon" chip, all forms emerald-ring + #E5484D errors, PKR-only (formatPKR) in leads budget.
+- All CRM flows intact: auth (login/401-flip/logout), Overview KPIs/chart/funnel, Inventory CRUD + inline price/state/publish/feature + drawer + upload, Leads pipeline/follow-ups/CSV/WhatsApp resend, Categories CRUD, Settings save/test + password change.
+- Next: merge-ready for QA/commit round (Task 14 public sweep + Task 15 admin sweep both land on the shared globals.css brand-gradient utilities).

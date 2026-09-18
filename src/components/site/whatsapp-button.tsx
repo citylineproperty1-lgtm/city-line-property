@@ -41,13 +41,13 @@ export function WhatsAppButton() {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="group fixed bottom-5 right-5 z-40 flex items-center gap-0 rounded-full bg-[#25D366] p-3.5 text-white shadow-[0_10px_32px_-6px_rgba(37,211,102,0.55)] transition-all duration-300 hover:gap-2 hover:pr-5 sm:bottom-6 sm:right-6 print:hidden"
+          className="group fixed bottom-5 right-5 z-40 flex items-center gap-0 rounded-full bg-[#22C55E] p-3.5 text-white shadow-[0_12px_30px_-10px_rgba(15,23,42,0.4)] transition-all duration-300 hover:gap-2 hover:bg-[#16A34A] hover:pr-5 sm:bottom-6 sm:right-6 print:hidden"
           aria-label="Chat with us on WhatsApp"
         >
-          {/* Gold ring pulse */}
+          {/* Green ring pulse */}
           <span
             aria-hidden
-            className="animate-gold-pulse pointer-events-none absolute inset-0 rounded-full"
+            className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-[#22C55E]/50"
           />
           <WhatsAppIcon className="h-6 w-6 shrink-0" />
           <span className="max-w-0 overflow-hidden whitespace-nowrap text-[13.5px] font-semibold opacity-0 transition-all duration-300 group-hover:max-w-[120px] group-hover:opacity-100">

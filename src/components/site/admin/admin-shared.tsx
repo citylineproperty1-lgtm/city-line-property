@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Shared building blocks for the admin panel (iOS-gold design language).
- * Warm ivory canvas #F2F2F7, white rounded-3xl cards, hairline borders,
- * gold #C9A227 accents. Colors are inline Tailwind values on purpose —
+ * Shared building blocks for the admin panel ("paper & emerald" design language).
+ * Soft mist canvas #F7F9F8, white rounded-2xl cards, hairline borders,
+ * brand emerald #0F766E accents. Colors are inline Tailwind values on purpose —
  * the admin surface must stay on-brand even if the public theme changes.
  */
 
@@ -38,18 +38,17 @@ export function errorMessage(err: unknown): string {
 
 /* ------------------------------ Design tokens ----------------------------- */
 
-/** Gold gradient primary action — white text on gold. */
-export const GOLD_BTN =
-  "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-[0_4px_14px_rgba(201,162,39,0.35)] hover:brightness-[1.06] border-0";
+/** Brand emerald gradient primary action — white text on emerald. */
+export const BRAND_BTN =
+  "brand-gradient text-white shadow-[0_6px_18px_-8px_rgba(15,118,110,0.65)] hover:opacity-95 border-0";
 
-/** Gold outline action (logout, secondary gold CTAs). */
-export const GOLD_OUTLINE =
-  "border border-[#C9A227]/45 bg-white text-[#8A7119] hover:bg-[#C9A227]/10";
+/** Emerald outline action (logout, secondary CTAs). */
+export const BRAND_OUTLINE =
+  "border border-[#0F766E]/35 bg-white text-[#0B6B5D] hover:bg-[#E7F4F0]";
 
-export const GOLD_TEXT = "text-[#8A7119]";
-export const GOLD = "#C9A227";
+export const BRAND_TEXT = "text-[#0B6B5D]";
 
-/** White rounded-3xl card with hairline border. */
+/** White rounded-2xl card with hairline border. */
 export function AdminCard({
   className,
   children,
@@ -60,7 +59,7 @@ export function AdminCard({
   return (
     <div
       className={cn(
-        "rounded-3xl border border-black/[0.06] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-6",
+        "rounded-2xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-6",
         className
       )}
     >
@@ -138,7 +137,7 @@ export function Segmented<T extends string>({
                 <span
                   className={cn(
                     "rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums",
-                    active ? "bg-[#C9A227] text-white" : "bg-black/[0.07] text-neutral-500"
+                    active ? "bg-[#0F766E] text-white" : "bg-black/[0.07] text-neutral-500"
                   )}
                 >
                   {o.badge}
@@ -175,17 +174,17 @@ export function StatCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut", delay }}
       className={cn(
-        "rounded-3xl border bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-5",
+        "rounded-2xl border bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-5",
         highlight
-          ? "border-[#C9A227]/40 bg-[linear-gradient(180deg,rgba(201,162,39,0.10),rgba(255,255,255,1))]"
-          : "border-black/[0.06]"
+          ? "border-[#0F766E]/35 bg-[linear-gradient(180deg,rgba(15,118,110,0.10),rgba(255,255,255,1))]"
+          : "border-black/[0.08]"
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <p
           className={cn(
             "text-[22px] font-semibold leading-none tracking-tight tabular-nums sm:text-2xl",
-            highlight ? "text-[#8A7119]" : "text-neutral-900"
+            highlight ? "text-[#0B6B5D]" : "text-neutral-900"
           )}
         >
           {value}
@@ -193,7 +192,7 @@ export function StatCard({
         <span
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
-            highlight ? "bg-[#C9A227]/15 text-[#8A7119]" : "bg-black/[0.045] text-[#8A7119]"
+            highlight ? "bg-[#E7F4F0] text-[#0B6B5D]" : "bg-black/[0.045] text-[#0F766E]"
           )}
         >
           <Icon className="h-4 w-4" />
@@ -213,8 +212,8 @@ export const LEAD_STATUS_META: Record<
 > = {
   NEW: {
     label: "New",
-    color: "#C9A227",
-    chip: "bg-[#C9A227]/12 text-[#8A7119] border-[#C9A227]/30",
+    color: "#0F766E",
+    chip: "bg-[#E7F4F0] text-[#0B6B5D] border-[#0F766E]/30",
   },
   CONTACTED: {
     label: "Contacted",
@@ -245,9 +244,9 @@ export const LEAD_STATUS_META: Record<
 
 export const WA_META: Record<string, { label: string; dot: string }> = {
   SENT: { label: "WhatsApp sent", dot: "#34C759" },
-  FAILED: { label: "WhatsApp failed", dot: "#FF3B30" },
+  FAILED: { label: "WhatsApp failed", dot: "#E5484D" },
   SKIPPED: { label: "WhatsApp skipped", dot: "#8E8E93" },
-  PENDING: { label: "WhatsApp pending", dot: "#F5C13D" },
+  PENDING: { label: "WhatsApp pending", dot: "#8E8E93" },
 };
 
 export const LISTING_STATE_META: Record<string, { label: string; chip: string }> = {
@@ -353,11 +352,11 @@ export function dueLabel(iso: string | null | undefined): string {
   return `${dayMonth} ${time}`;
 }
 
-/** Chip classes per due state (iOS palette, gold-forward). */
+/** Chip classes per due state — overdue red · today brand · soon amber · later neutral. */
 export const DUE_CHIP: Record<DueState, string> = {
-  overdue: "bg-[#FF3B30]/10 text-[#C0392B] ring-1 ring-[#FF3B30]/25",
-  today: "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-sm",
-  soon: "bg-[#F5EDD7] text-[#8C6D1F] ring-1 ring-[#C9A227]/30",
+  overdue: "bg-[#E5484D]/10 text-[#D5303B] ring-1 ring-[#E5484D]/25",
+  today: "brand-gradient text-white shadow-sm",
+  soon: "bg-[#F59E0B]/12 text-[#B45309] ring-1 ring-[#F59E0B]/30",
   later: "bg-black/[0.05] text-neutral-500",
 };
 
