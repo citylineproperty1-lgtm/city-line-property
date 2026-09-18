@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { AREAS, AREA_SHORT } from "@/lib/business";
+import { areaSlug } from "@/lib/areas";
 
 type DistrictStat = {
   district: string;
@@ -66,6 +67,10 @@ export function AreaMap() {
   }
 
   const goArea = (name: string) => {
+    navigate({ name: "area", slug: areaSlug(name) });
+  };
+
+  const browseListings = (name: string) => {
     setFilters({
       search: name,
       status: "ALL",
@@ -101,7 +106,8 @@ export function AreaMap() {
           </h2>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-500">
             We only work where we can vouch for every file — the Etihad Town pocket
-            and its neighbouring enclaves. Tap an area to browse its listings.
+            and its neighbouring enclaves. Tap an area to read its guide, or use the
+            chips below to jump straight to listings.
           </p>
         </div>
         <Button
@@ -232,7 +238,7 @@ export function AreaMap() {
                   onMouseEnter={() => setHovered(area)}
                   onMouseLeave={() => setHovered(null)}
                   role="button"
-                  aria-label={`${area} — ${stat.count} listings. Browse ${area} properties.`}
+                  aria-label={`${area} — ${stat.count} listings. Open the ${area} area guide.`}
                 >
                   {/* gold pulse halo on the office node */}
                   {isOffice && (
@@ -348,7 +354,7 @@ export function AreaMap() {
             </div>
             <p className="mt-2 flex items-center gap-1 text-[11.5px] font-semibold text-[#8F7018]">
               <TrendingUp className="h-3 w-3" />
-              Click to browse this area
+              Open the area guide
             </p>
           </div>
         )}
@@ -362,8 +368,9 @@ export function AreaMap() {
           return (
             <button
               key={area}
-              onClick={() => goArea(area)}
+              onClick={() => browseListings(area)}
               className="group flex items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3.5 py-1.5 text-[12.5px] font-medium text-neutral-600 transition-all hover:border-[#C9A227]/50 hover:bg-[#C9A227]/10 hover:text-[#8F7018]"
+              aria-label={`Browse listings in ${area}`}
             >
               {isOffice && <Star className="h-3 w-3 fill-[#C9A227] text-[#C9A227]" />}
               {AREA_SHORT[area] ?? area}

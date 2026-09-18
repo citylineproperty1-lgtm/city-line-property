@@ -129,9 +129,17 @@ create table public.leads (
   wa_status   public.wa_status not null default 'PENDING',
   wa_sent_at  timestamptz,
   wa_error    text,
+  -- Follow-up reminders (CRM): when to call next, and when we last reached them
+  follow_up_at      timestamptz,
+  last_contacted_at timestamptz,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
+
+-- Reminder-driven views: overdue + today's due follow-ups first (open leads only)
+create index if not exists leads_follow_up_due_idx
+  on public.leads (follow_up_at)
+  where follow_up_at is not null and status not in ('WON', 'LOST');
 
 create table public.testimonials (
   id         uuid primary key default gen_random_uuid(),

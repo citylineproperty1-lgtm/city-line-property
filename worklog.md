@@ -312,3 +312,31 @@ Stage Summary:
 - v11 shipped: full iOS-gold theme enforcement (0 bg-neutral-900 left in public views), gallery UX upgrade, scored similar listings with area cross-link, digest article deep-linking + home editorial teaser, admin 14-day trend chart + pipeline funnel.
 - Known notes: digest article cache lives per-mount (re-opening same article re-fetches on new mount — fine, counts views); facts grid may show one empty slot for 7 tiles (gap-fill bg makes it read as intentional); MultiEdit partial-application now a CONFIRMED pattern — always verify file after failure.
 - Next ideas: per-area guide pages (#/areas/<slug>), lead follow-up reminders (due-date column needs schema work — use raw-SQL self-healing pattern), WhatsApp Cloud API upgrade, Supabase storage switch for uploads, admin activity log.
+
+---
+Task ID: r12
+Agent: main (webDevReview cron round 12)
+Task: QA assessment → stable → feature round: Area Guide pages (#/areas), lead follow-up reminders (CRM), styling details
+
+Work Log:
+- QA sweep first (agent-browser): home/listings/detail/insights/admin-login+overview/mobile 390 all render, 0 console errors; wa.me deep-link verified live (accidental floating-button click opened prefilled WhatsApp chat). Verdict STABLE → feature round. `agent-browser fill` + eval-click works for the React login form (plain JS value assignment does NOT trigger React state — use fill or native-setter).
+- FEATURE — Area Guide pages (worklog r11 next-idea #1):
+  - src/lib/areas.ts: AREA_GUIDES content library (5 areas, slug map, 2-para honest-copy per area, 4 highlights, goodFor tags, covers reusing existing property images, map coords).
+  - store.ts: View += "areas" + "area"(slug); hashToView #/areas/<slug>, viewToHash, sameView. page.tsx renders AreasIndexView/AreaDetailView + titles.
+  - areas-view.tsx (index): gold-gradient headline, 5 cover cards (image zoom hover, office badge, live stat tiles: listings/avg sale/avg rent via /api/insights, goodFor chips) + 6th gold CTA card ("Not sure which area fits you?" → contact/WhatsApp). compactPKR helper ("PKR 1.6 Cr") so stat tiles don't truncate.
+  - areas-view.tsx (detail): back pill, hero with office badge + live stat pills + gold "Browse N listings" CTA (sets search=area.name → listings), WhatsApp "Ask about this area", "The honest picture" 2-para card + "Why buyers pick it" highlights card, "Current listings in {area}" grid (6 via /api/properties?district=), nearby-areas mini-cards, empty state.
+  - Wiring: AreaMap node click → area guide (chips below still browse listings directly; tooltip says "Open the area guide"); footer OUR AREAS → guides; ⌘K "Area guides" entry; insights district bar labels → clickable guide links.
+- FEATURE — Lead follow-up reminders (worklog r11 next-idea #2):
+  - src/lib/lead-followup.ts: self-healing ALTER TABLE "Lead" ADD "followUpAt"/"lastContactedAt" (memoized, duplicate-column safe) + dueFollowUpIds + followUpQueue(overdue/today counts + upcoming) — raw SQL, dev-server-safe (no Prisma regen).
+  - APIs: GET /api/admin/leads merges follow-up fields via one raw SELECT+map; PATCH /api/admin/leads/[id] accepts followUpAt (ISO|null) + lastContactedAt via raw UPDATE; GET /api/admin/overview returns followUps{overdue,today,upcoming[4]}.
+  - Admin Leads tab: follow-up filter chips row (All/Overdue/Due today/Scheduled with red-hot badges, due-order sort), per-card reminder strip (due chip colored by state: overdue red / today gold-gradient / soon amber / later neutral; +1d/+3d/+7d quick-set; Done = clear+stamp contacted; X = clear; "Mark contacted now" when no reminder; "· contacted X ago"), header due badge. CSV export gains Follow-up/Last-contacted columns.
+  - Admin Overview: "Follow-ups due" widget card (overdue red tile, due-today gold tile, next-3 upcoming list with chips, "Open Leads" jumps tab via onOpenLeads prop).
+  - Prisma schema documents followUpAt/lastContactedAt (docs-only, runtime raw SQL); supabase/schema.sql gains follow_up_at/last_contacted_at timestamptz + partial index on open leads.
+- QA of new features (agent-browser): areas index cards + Phase 1/Royal Enclave-style detail (stats live: 6/3/2 listings, avg sale/rent correct), map node → guide, mobile 390 guide clean, ⌘K entry present; admin: +1d click → "Tomorrow 18:38" chip → Scheduled filter "1 of 3 leads shown" → Done clears + stamps contacted; overview widget empty-state verified; API cycle overdue-count set→cleared verified via curl. 0 console errors; lint exit 0; browser closed.
+- BUGS FOUND+FIXED during QA: (1) hero-lahore.png cover path was /images/properties/… but file lives at /images/… → Phase 1 card alt-text shown, fixed; (2) "Browse N listings in Phase Phase 1" double-replace copy bug → replaced with AREA_SHORT lookup.
+- Committed & pushed to origin main.
+
+Stage Summary:
+- v12 shipped: Area Guide pages end-to-end (index + 5 detail guides with live stats/listings, wired into map/footer/palette/insights), lead follow-up reminder system (self-healing columns + full admin UX + overview widget + CSV/SQL parity).
+- Known notes: dueState "soon" = within 48h labelled "Tomorrow"; follow-up data lives outside Prisma client (by design); footer area links now open guides instead of pre-filtered listings (guide has browse CTA).
+- Next ideas: WhatsApp Cloud API upgrade, Supabase storage switch for uploads, admin activity log, per-area photo covers (AI-generate dedicated images), digest article per area guide cross-link.

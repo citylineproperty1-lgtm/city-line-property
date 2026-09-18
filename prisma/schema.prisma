@@ -89,6 +89,10 @@ model Lead {
   waStatus   String    @default("PENDING")
   waSentAt   DateTime?
   waError    String?
+  // Follow-up reminders — managed via raw SQL (self-healing columns, see
+  // src/lib/lead-followup.ts). Documented here for schema parity only.
+  followUpAt      DateTime?
+  lastContactedAt DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }

@@ -318,6 +318,49 @@ export function toInternationalPhone(phone: string): string {
   return digits;
 }
 
+export type DueState = "overdue" | "today" | "soon" | "later";
+
+/** Classify a follow-up date relative to now (end of today / +48h window). */
+export function dueState(iso: string | null | undefined): DueState | null {
+  if (!iso) return null;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return null;
+  const now = new Date();
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+  const endOfDayAfterTomorrow = new Date(endOfToday);
+  endOfDayAfterTomorrow.setDate(endOfDayAfterTomorrow.getDate() + 2);
+  if (t < now) return "overdue";
+  if (t <= endOfToday.getTime()) return "today";
+  if (t <= endOfDayAfterTomorrow.getTime()) return "soon";
+  return "later";
+}
+
+/** Short human label for a follow-up date: "Overdue 2d" · "Today 4 PM" · "Fri 20 Sep". */
+export function dueLabel(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const state = dueState(iso);
+  const time = d.toLocaleTimeString("en-GB", { hour: "numeric", minute: "2-digit" });
+  const dayMonth = d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  if (state === "overdue") {
+    const days = Math.max(1, Math.round((Date.now() - d.getTime()) / 86_400_000));
+    return `Overdue ${days}d`;
+  }
+  if (state === "today") return `Today ${time}`;
+  if (state === "soon") return `Tomorrow ${time}`;
+  return `${dayMonth} ${time}`;
+}
+
+/** Chip classes per due state (iOS palette, gold-forward). */
+export const DUE_CHIP: Record<DueState, string> = {
+  overdue: "bg-[#FF3B30]/10 text-[#C0392B] ring-1 ring-[#FF3B30]/25",
+  today: "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-sm",
+  soon: "bg-[#F5EDD7] text-[#8C6D1F] ring-1 ring-[#C9A227]/30",
+  later: "bg-black/[0.05] text-neutral-500",
+};
+
 /** Debounce any value (search inputs etc.). */
 export function useDebounced<T>(value: T, ms = 250): T {
   const [debounced, setDebounced] = useState(value);

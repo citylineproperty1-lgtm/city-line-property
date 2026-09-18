@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
+import { ensureFollowUpColumns } from "@/lib/lead-followup";
 
 export const dynamic = "force-dynamic";
 
 const STATUSES = ["NEW", "CONTACTED", "SITE_VISIT", "NEGOTIATION", "WON", "LOST"];
 
-/** Update lead status / notes. */
+/** Update lead status / notes / follow-up reminder. */
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const denied = await guardAdmin();
   if (denied) return denied;
@@ -25,7 +26,37 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     if (body.notes !== undefined) data.notes = body.notes?.toString() ?? null;
 
     const row = await db.lead.update({ where: { id }, data });
-    return NextResponse.json({ ok: true, status: row.status, notes: row.notes });
+
+    // Follow-up fields live outside the Prisma client — raw SQL.
+    let followUpAt: string | null | undefined;
+    let lastContactedAt: string | null | undefined;
+    if (body.followUpAt !== undefined) {
+      await ensureFollowUpColumns();
+      const ms = body.followUpAt === null ? null : new Date(body.followUpAt).getTime();
+      if (body.followUpAt !== null && (ms == null || Number.isNaN(ms))) {
+        return NextResponse.json({ error: "Invalid followUpAt." }, { status: 400 });
+      }
+      await db.$executeRawUnsafe(`UPDATE "Lead" SET "followUpAt" = ? WHERE "id" = ?`, ms, id);
+      followUpAt = ms == null ? null : new Date(ms).toISOString();
+    }
+    if (body.lastContactedAt !== undefined) {
+      await ensureFollowUpColumns();
+      const ms = body.lastContactedAt === null ? null : new Date(body.lastContactedAt).getTime();
+      await db.$executeRawUnsafe(
+        `UPDATE "Lead" SET "lastContactedAt" = ? WHERE "id" = ?`,
+        ms ?? Date.now(),
+        id
+      );
+      lastContactedAt = new Date(ms ?? Date.now()).toISOString();
+    }
+
+    return NextResponse.json({
+      ok: true,
+      status: row.status,
+      notes: row.notes,
+      ...(followUpAt !== undefined ? { followUpAt } : {}),
+      ...(lastContactedAt !== undefined ? { lastContactedAt } : {}),
+    });
   } catch (e) {
     console.error("PATCH /api/admin/leads/[id]", e);
     return NextResponse.json({ error: "Could not update lead." }, { status: 500 });

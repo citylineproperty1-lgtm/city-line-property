@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
+import { followUpQueue } from "@/lib/lead-followup";
 
 export const dynamic = "force-dynamic";
 
@@ -112,6 +113,8 @@ export async function GET() {
     const viewTrend = bucket(viewEventRows);
     const leadTrend = bucket(leadRows14);
 
+    const followUps = await followUpQueue(4);
+
     return NextResponse.json({
       overview: {
         properties: { total: totalProperties, published, available, reserved, sold, rented, featured },
@@ -124,6 +127,7 @@ export async function GET() {
         recentLeads,
         viewTrend,
         leadTrend,
+        followUps,
       },
     });
   } catch (e) {

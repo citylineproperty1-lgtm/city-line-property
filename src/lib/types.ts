@@ -141,6 +141,10 @@ export interface Lead {
   waStatus: string;
   waSentAt: string | null;
   waError: string | null;
+  /** Next follow-up reminder (ISO) — self-healing column, optional. */
+  followUpAt?: string | null;
+  /** Last time the team actually reached this lead (ISO). */
+  lastContactedAt?: string | null;
   createdAt: string;
 }
 

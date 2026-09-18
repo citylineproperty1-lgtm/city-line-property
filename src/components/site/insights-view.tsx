@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber } from "@/components/site/animated-number";
 import { TrafficChart, type DayPoint } from "@/components/site/traffic-chart";
 import { useAppStore } from "@/lib/store";
+import { areaSlug } from "@/lib/areas";
 import { formatPKR } from "@/lib/format";
 import { categoryLabel } from "@/lib/types";
 import {
@@ -193,13 +194,20 @@ export function InsightsView() {
             {data.byDistrict.map((d, i) => (
               <div key={d.district}>
                 <div className="flex items-baseline justify-between gap-3">
-                  <p className="flex items-center gap-1.5 text-[13.5px] font-medium text-neutral-700">
-                    <MapPin className="h-3.5 w-3.5 text-neutral-400" />
-                    {d.district}
+                  <button
+                    onClick={() => {
+                      const slug = areaSlug(d.district);
+                      if (slug) navigate({ name: "area", slug });
+                    }}
+                    className="group flex items-center gap-1.5 text-[13.5px] font-medium text-neutral-700 transition-colors hover:text-[#8C6D1F]"
+                    aria-label={`Open the ${d.district} area guide`}
+                  >
+                    <MapPin className="h-3.5 w-3.5 text-neutral-400 transition-colors group-hover:text-[#C9A227]" />
+                    <span className="underline-offset-2 group-hover:underline">{d.district}</span>
                     <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10.5px] font-semibold text-neutral-500">
                       {d.count}
                     </span>
-                  </p>
+                  </button>
                   <p className="text-[13px] font-semibold tabular-nums text-neutral-900">
                     {d.saleAvg > 0 ? formatPKR(d.saleAvg) : "—"}
                     {d.rentAvg > 0 && (

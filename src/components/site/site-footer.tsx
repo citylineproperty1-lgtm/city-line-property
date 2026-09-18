@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { AREAS, BUSINESS, telLink } from "@/lib/business";
+import { areaSlug } from "@/lib/areas";
 import { CATEGORIES } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,8 +49,12 @@ export function SiteFooter() {
   };
 
   const goArea = (area: string) => {
-    setFilters({ search: area });
-    navigate({ name: "properties" });
+    const slug = areaSlug(area);
+    if (slug) navigate({ name: "area", slug });
+    else {
+      setFilters({ search: area });
+      navigate({ name: "properties" });
+    }
   };
 
   const goCategory = (slug: string) => {

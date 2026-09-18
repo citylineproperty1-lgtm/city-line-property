@@ -16,6 +16,8 @@ export type View =
   | { name: "compare" }
   | { name: "insights" }
   | { name: "digest"; slug?: string }
+  | { name: "areas" }
+  | { name: "area"; slug: string }
   | { name: "admin" };
 
 export type Currency = "PKR" | "USD";
@@ -101,6 +103,8 @@ export function viewToHash(v: View, filters?: ListingsFilters): string {
       return `#/agent/${v.id}`;
     case "digest":
       return v.slug ? `#/digest/${v.slug}` : "#/digest";
+    case "area":
+      return `#/areas/${v.slug}`;
     case "properties":
       return `#/properties${filters ? filtersToQuery(filters) : ""}`;
     default:
@@ -124,6 +128,8 @@ export function hashToView(hash: string): View | null {
       return { name: head } as View;
     case "digest":
       return { name: "digest", slug: id || undefined } as View;
+    case "areas":
+      return id ? { name: "area", slug: id } as View : { name: "areas" };
     case "property":
       return id ? { name: "property", id } : null;
     case "agent":
@@ -139,6 +145,7 @@ export function sameView(a: View, b: View): boolean {
   if (a.name === "agent") return a.id === (b as { id: string }).id;
   if (a.name === "digest")
     return (a.slug ?? undefined) === ((b as { slug?: string }).slug ?? undefined);
+  if (a.name === "area") return a.slug === (b as { slug: string }).slug;
   return true;
 }
 

@@ -225,7 +225,7 @@ export function AdminView() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                {tab === "overview" && <AdminOverview api={api} />}
+                {tab === "overview" && <AdminOverview api={api} onOpenLeads={() => setTab("leads")} />}
                 {tab === "inventory" && <AdminInventory api={api} />}
                 {tab === "leads" && <AdminLeads api={api} />}
                 {tab === "team" && <AdminTeam api={api} />}

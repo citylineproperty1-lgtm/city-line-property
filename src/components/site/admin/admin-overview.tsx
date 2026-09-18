@@ -18,16 +18,21 @@ import {
   Phone,
   TrendingUp,
   Eye,
+  CalendarClock,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import {
   AdminApi,
   AdminCard,
+  DUE_CHIP,
   SCROLLBAR_CLS,
   StatusChip,
   WaChip,
   SOURCE_LABELS,
   StatCard,
+  dueLabel,
+  dueState,
   fadeUp,
   isAuthLoss,
   timeAgo,
@@ -60,6 +65,17 @@ interface Overview {
   byArea: { area: string; count: number }[];
   viewTrend: { label: string; count: number }[];
   leadTrend: { label: string; count: number }[];
+  followUps: {
+    overdue: number;
+    today: number;
+    upcoming: {
+      id: string;
+      name: string;
+      phone: string;
+      followUpAt: string;
+      status: string;
+    }[];
+  };
   recentLeads: {
     id: string;
     name: string;
@@ -73,7 +89,13 @@ interface Overview {
   }[];
 }
 
-export function AdminOverview({ api }: { api: AdminApi }) {
+export function AdminOverview({
+  api,
+  onOpenLeads,
+}: {
+  api: AdminApi;
+  onOpenLeads?: () => void;
+}) {
   const [state, setState] = useState<{ key: string; data: Overview } | null>(null);
   const [reload, setReload] = useState(0);
   const [failed, setFailed] = useState<string | null>(null);
@@ -323,6 +345,93 @@ export function AdminOverview({ api }: { api: AdminApi }) {
             )}
           </AdminCard>
         </motion.section>
+
+        {/* Follow-up reminders */}
+        <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.18 }}>
+          <AdminCard className="h-full">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
+                <CalendarClock className="h-4 w-4 text-[#C9A227]" />
+                Follow-ups due
+              </h3>
+              {onOpenLeads && (o.followUps.overdue > 0 || o.followUps.today > 0) && (
+                <button
+                  onClick={onOpenLeads}
+                  className="rounded-full bg-[#F5EDD7] px-3 py-1 text-[11px] font-semibold text-[#8A7119] transition-colors hover:bg-[#F0E4BE]"
+                >
+                  Open Leads
+                </button>
+              )}
+            </div>
+            {o.followUps.overdue === 0 && o.followUps.today === 0 && o.followUps.upcoming.length === 0 ? (
+              <EmptyLine text="No reminders scheduled — set them from any lead card." />
+            ) : (
+              <>
+                <div className="mt-4 grid grid-cols-2 gap-2.5">
+                  <div
+                    className={cn(
+                      "rounded-2xl px-4 py-3",
+                      o.followUps.overdue > 0
+                        ? "bg-[#FF3B30]/[0.08] ring-1 ring-[#FF3B30]/25"
+                        : "bg-black/[0.03]"
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-xl font-bold tabular-nums",
+                        o.followUps.overdue > 0 ? "text-[#C0392B]" : "text-neutral-400"
+                      )}
+                    >
+                      {o.followUps.overdue}
+                    </p>
+                    <p className="text-[11px] font-medium text-neutral-400">overdue</p>
+                  </div>
+                  <div
+                    className={cn(
+                      "rounded-2xl px-4 py-3",
+                      o.followUps.today > 0
+                        ? "bg-[linear-gradient(135deg,rgba(233,206,122,0.28),rgba(201,162,39,0.16))] ring-1 ring-[#C9A227]/30"
+                        : "bg-black/[0.03]"
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-xl font-bold tabular-nums",
+                        o.followUps.today > 0 ? "text-[#8A7119]" : "text-neutral-400"
+                      )}
+                    >
+                      {o.followUps.today}
+                    </p>
+                    <p className="text-[11px] font-medium text-neutral-400">due today</p>
+                  </div>
+                </div>
+                {o.followUps.upcoming.length > 0 && (
+                  <ul className="mt-3 space-y-1.5" aria-label="Next follow-ups">
+                    {o.followUps.upcoming.slice(0, 3).map((u) => (
+                      <li
+                        key={u.id}
+                        className="flex items-center justify-between gap-2 rounded-xl bg-neutral-50/80 px-3 py-2 text-[12px]"
+                      >
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Phone className="h-3 w-3 shrink-0 text-neutral-400" />
+                          <span className="truncate font-semibold text-neutral-700">{u.name}</span>
+                        </span>
+                        <span
+                          className={cn(
+                            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold",
+                            DUE_CHIP[dueState(u.followUpAt) ?? "later"]
+                          )}
+                        >
+                          {dueLabel(u.followUpAt)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+          </AdminCard>
+        </motion.section>
       </div>
 
       {/* Recent leads */}
@@ -510,5 +619,6 @@ const EMPTY: Overview = {
   byArea: [],
   viewTrend: [],
   leadTrend: [],
+  followUps: { overdue: 0, today: 0, upcoming: [] },
   recentLeads: [],
 };

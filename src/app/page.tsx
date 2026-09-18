@@ -14,6 +14,7 @@ import { SavedView } from "@/components/site/saved-view";
 import { CompareView } from "@/components/site/compare-view";
 import { InsightsView } from "@/components/site/insights-view";
 import { DigestView } from "@/components/site/digest-view";
+import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
 import { AdminView } from "@/components/site/admin-view";
 import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
@@ -38,6 +39,8 @@ const TITLES: Record<string, string> = {
   compare: "Compare Properties — City Line Property",
   insights: "Market Insights — City Line Property",
   digest: "Property Digest — City Line Property",
+  areas: "Area Guides — City Line Property",
+  area: "Area Guide — City Line Property",
   admin: "City Line Property",
 };
 
@@ -118,6 +121,8 @@ export default function Page() {
             {view.name === "compare" && <CompareView />}
             {view.name === "insights" && <InsightsView />}
             {view.name === "digest" && <DigestView slug={view.slug} />}
+            {view.name === "areas" && <AreasIndexView />}
+            {view.name === "area" && <AreaDetailView slug={view.slug} />}
             {view.name === "admin" && <AdminView />}
           </motion.div>
         </AnimatePresence>

@@ -24,11 +24,15 @@ import {
   Search,
   Send,
   Trash2,
+  BellPlus,
+  CheckCheck,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -51,6 +55,7 @@ import { LEAD_STATUSES } from "@/lib/types";
 import {
   AdminApi,
   AdminCard,
+  DUE_CHIP,
   GOLD_BTN,
   LEAD_STATUS_META,
   SCROLLBAR_CLS,
@@ -58,6 +63,8 @@ import {
   Segmented,
   StatusChip,
   WaChip,
+  dueLabel,
+  dueState,
   errorMessage,
   fadeUp,
   isAuthLoss,
@@ -66,12 +73,16 @@ import {
 } from "./admin-shared";
 
 type Pipeline = "ALL" | (typeof LEAD_STATUSES)[number];
+type DueFilter = "ALL" | "overdue" | "today" | "scheduled";
+
+const DAY_MS = 86_400_000;
 
 export function AdminLeads({ api }: { api: AdminApi }) {
   const [state, setState] = useState<{ key: string; leads: Lead[] } | null>(null);
   const [reload, setReload] = useState(0);
   const [qInput, setQInput] = useState("");
   const [pipeline, setPipeline] = useState<Pipeline>("ALL");
+  const [due, setDue] = useState<DueFilter>("ALL");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notesDrafts, setNotesDrafts] = useState<Record<string, string>>({});
   const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null);
@@ -107,8 +118,12 @@ export function AdminLeads({ api }: { api: AdminApi }) {
 
   const q = qInput.trim().toLowerCase();
   const filtered = useMemo(() => {
-    return leads.filter((l) => {
+    const list = leads.filter((l) => {
       if (pipeline !== "ALL" && l.status !== pipeline) return false;
+      const ds = dueState(l.followUpAt);
+      if (due === "overdue" && ds !== "overdue") return false;
+      if (due === "today" && ds !== "today") return false;
+      if (due === "scheduled" && !l.followUpAt) return false;
       if (!q) return true;
       return (
         l.name.toLowerCase().includes(q) ||
@@ -118,7 +133,28 @@ export function AdminLeads({ api }: { api: AdminApi }) {
         (l.property?.title ?? "").toLowerCase().includes(q)
       );
     });
-  }, [leads, pipeline, q]);
+    // Reminder-driven views read best in due order (oldest first).
+    if (due !== "ALL") {
+      return [...list].sort(
+        (a, b) =>
+          new Date(a.followUpAt ?? 0).getTime() - new Date(b.followUpAt ?? 0).getTime()
+      );
+    }
+    return list;
+  }, [leads, pipeline, due, q]);
+
+  const dueCounts = useMemo(() => {
+    let overdue = 0;
+    let today = 0;
+    let scheduled = 0;
+    for (const l of leads) {
+      const ds = dueState(l.followUpAt);
+      if (ds === "overdue") overdue++;
+      if (ds === "today") today++;
+      if (l.followUpAt) scheduled++;
+    }
+    return { overdue, today, scheduled };
+  }, [leads]);
 
   const updateLead = (id: string, patch: Partial<Lead>) =>
     setState((prev) =>
@@ -207,6 +243,34 @@ export function AdminLeads({ api }: { api: AdminApi }) {
     window.open(`https://wa.me/${digits}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
   };
 
+  /** Set/clear the follow-up reminder (and optionally stamp lastContactedAt). */
+  const setFollowUp = async (lead: Lead, ms: number | null, markContacted = false) => {
+    setBusyId(lead.id);
+    try {
+      const body: Record<string, string | null> = {
+        followUpAt: ms == null ? null : new Date(ms).toISOString(),
+        ...(markContacted ? { lastContactedAt: new Date().toISOString() } : {}),
+      };
+      await api(`/api/admin/leads/${lead.id}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      });
+      updateLead(lead.id, {
+        followUpAt: ms == null ? null : new Date(ms).toISOString(),
+        ...(markContacted ? { lastContactedAt: new Date().toISOString() } : {}),
+      });
+      if (ms == null && markContacted) toast.success(`Follow-up done — ${lead.name} marked contacted`);
+      else if (ms != null) toast.success(`Reminder set for ${lead.name}`);
+    } catch (err) {
+      if (!isAuthLoss(err)) toast.error(errorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const remindInDays = (lead: Lead, days: number) =>
+    setFollowUp(lead, Date.now() + days * DAY_MS);
+
   /** Export the currently filtered leads as a CSV file (Excel-friendly). */
   const exportCsv = () => {
     if (filtered.length === 0) {
@@ -214,7 +278,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
       return;
     }
     const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
-    const header = ["Date", "Name", "Phone", "Email", "Category", "Area", "Budget (PKR)", "Property", "Source", "Status", "WhatsApp", "Message"];
+    const header = ["Date", "Name", "Phone", "Email", "Category", "Area", "Budget (PKR)", "Property", "Source", "Status", "WhatsApp", "Follow-up", "Last contacted", "Message"];
     const rows = filtered.map((l) =>
       [
         new Date(l.createdAt).toLocaleString("en-GB"),
@@ -228,6 +292,8 @@ export function AdminLeads({ api }: { api: AdminApi }) {
         l.source,
         l.status,
         l.waStatus,
+        l.followUpAt ? new Date(l.followUpAt).toLocaleString("en-GB") : "",
+        l.lastContactedAt ? new Date(l.lastContactedAt).toLocaleString("en-GB") : "",
         l.message,
       ]
         .map(esc)
@@ -293,6 +359,43 @@ export function AdminLeads({ api }: { api: AdminApi }) {
           <p className="mt-2.5 text-[11.5px] text-neutral-400">
             {loading ? "Loading leads…" : `${filtered.length} of ${leads.length} leads shown`}
           </p>
+          {/* Follow-up due filter */}
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-black/[0.05] pt-2.5">
+            <CalendarClock className="h-3.5 w-3.5 text-[#C9A227]" />
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+              Follow-ups
+            </span>
+            {([
+              { key: "ALL" as DueFilter, label: "All" },
+              { key: "overdue" as DueFilter, label: "Overdue", badge: dueCounts.overdue, hot: dueCounts.overdue > 0 },
+              { key: "today" as DueFilter, label: "Due today", badge: dueCounts.today, hot: dueCounts.today > 0 },
+              { key: "scheduled" as DueFilter, label: "Scheduled", badge: dueCounts.scheduled },
+            ]).map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setDue(f.key)}
+                aria-pressed={due === f.key}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition-all",
+                  due === f.key
+                    ? "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-sm"
+                    : "bg-black/[0.04] text-neutral-500 hover:bg-[#C9A227]/10 hover:text-[#8A7119]"
+                )}
+              >
+                {f.label}
+                {f.badge != null && f.badge > 0 && (
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums",
+                      due === f.key ? "bg-white/25 text-white" : f.hot ? "bg-[#FF3B30] text-white" : "bg-white text-neutral-500"
+                    )}
+                  >
+                    {f.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </AdminCard>
       </motion.div>
 
@@ -345,6 +448,15 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           {lead.name}
                         </h3>
                         <StatusChip status={lead.status} />
+                        {lead.followUpAt && (
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${DUE_CHIP[dueState(lead.followUpAt) ?? "later"]}`}
+                            title={`Follow-up ${dueLabel(lead.followUpAt)}`}
+                          >
+                            <CalendarClock className="mr-1 inline h-3 w-3 align-[-1px]" />
+                            {dueLabel(lead.followUpAt)}
+                          </span>
+                        )}
                         <span className="rounded-full bg-black/[0.05] px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-neutral-500">
                           {SOURCE_LABELS[lead.source] ?? lead.source}
                         </span>
@@ -436,6 +548,71 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                     <Quote className="mb-1 h-3.5 w-3.5 text-[#C9A227]/70" />
                     {lead.message}
                   </blockquote>
+
+                  {/* Row 3.5: follow-up reminder */}
+                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-[#F8F4E9]/70 px-3 py-2">
+                    <CalendarClock className="h-3.5 w-3.5 shrink-0 text-[#A8851D]" />
+                    {lead.followUpAt ? (
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10.5px] font-bold ${DUE_CHIP[dueState(lead.followUpAt) ?? "later"]}`}
+                      >
+                        {dueLabel(lead.followUpAt)}
+                      </span>
+                    ) : (
+                      <span className="text-[11.5px] font-medium text-neutral-400">No reminder set</span>
+                    )}
+                    <span className="flex flex-wrap items-center gap-1">
+                      {[1, 3, 7].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => void remindInDays(lead, d)}
+                          disabled={busyId === lead.id}
+                          title={`Remind me in ${d} day${d > 1 ? "s" : ""}`}
+                          className="rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-[#8A7119] ring-1 ring-[#C9A227]/30 transition-all hover:bg-[#C9A227]/15 disabled:opacity-50"
+                        >
+                          +{d}d
+                        </button>
+                      ))}
+                    </span>
+                    {lead.followUpAt && (
+                      <span className="flex flex-wrap items-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => void setFollowUp(lead, null, true)}
+                          disabled={busyId === lead.id}
+                          className="h-7 rounded-full bg-white px-2.5 text-[10.5px] font-semibold text-[#1E8E3E] ring-1 ring-[#34C759]/35 hover:bg-[#34C759]/10"
+                        >
+                          <CheckCheck className="h-3 w-3" />
+                          Done
+                        </Button>
+                        <button
+                          onClick={() => void setFollowUp(lead, null)}
+                          disabled={busyId === lead.id}
+                          title="Clear reminder"
+                          aria-label={`Clear reminder for ${lead.name}`}
+                          className="flex h-7 w-7 items-center justify-center rounded-full text-neutral-300 transition-colors hover:bg-black/[0.05] hover:text-neutral-500 disabled:opacity-50"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    )}
+                    {!lead.followUpAt && (
+                      <button
+                        onClick={() => void setFollowUp(lead, null, true)}
+                        disabled={busyId === lead.id}
+                        className="ml-auto flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-neutral-500 ring-1 ring-black/[0.08] transition-all hover:text-[#1E8E3E] disabled:opacity-50"
+                      >
+                        <BellPlus className="h-3 w-3" />
+                        Mark contacted now
+                      </button>
+                    )}
+                    {lead.lastContactedAt && (
+                      <span className="text-[10.5px] font-medium text-neutral-400">
+                        · contacted {timeAgo(lead.lastContactedAt)}
+                      </span>
+                    )}
+                  </div>
 
                   {/* Row 4: pipeline + actions */}
                   <div className="mt-3.5 flex flex-col gap-3 border-t border-black/[0.05] pt-3.5 sm:flex-row sm:items-center sm:justify-between">

@@ -136,6 +136,13 @@ export function CommandPalette() {
       icon: iconBox(<Newspaper className="h-4 w-4" />),
       run: () => go({ name: "digest" }),
     },
+    {
+      key: "areas",
+      label: "Area guides",
+      sub: "The five areas we cover",
+      icon: iconBox(<MapPin className="h-4 w-4" />),
+      run: () => go({ name: "areas" }),
+    },
     { key: "about", label: "About us", icon: iconBox(<Users className="h-4 w-4" />), run: () => go({ name: "about" }) },
     { key: "contact", label: "Contact", icon: iconBox(<Mail className="h-4 w-4" />), run: () => go({ name: "contact" }) },
   ];
