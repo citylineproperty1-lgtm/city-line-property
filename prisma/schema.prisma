@@ -1,0 +1,87 @@
+// City Line Property — Prisma schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id        String    @id @default(cuid())
+  title     String
+  slug      String    @unique
+  // description
+  description String
+  // price in PKR
+  price     Float
+  // SALE | RENT
+  status    String
+  // HOUSE | APARTMENT | VILLA | PENTHOUSE | TOWNHOUSE | OFFICE | FARMHOUSE
+  type      String
+  beds      Int
+  baths     Int
+  // area in sqft
+  area      Int
+  address   String
+  city      String
+  district  String
+  // JSON string array of image paths
+  images    String
+  // JSON string array of amenity names
+  amenities String
+  featured  Boolean   @default(false)
+  yearBuilt Int
+  parking   Int
+  views     Int       @default(0)
+  rating    Float     @default(4.6)
+  agentId   String
+  agent     Agent     @relation(fields: [agentId], references: [id])
+  inquiries Inquiry[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Agent {
+  id          String     @id @default(cuid())
+  name        String
+  title       String
+  email       String     @unique
+  phone       String
+  initials    String
+  accent      String
+  bio         String
+  properties  Property[]
+  createdAt   DateTime   @default(now())
+}
+
+model Inquiry {
+  id         String    @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  // GENERAL | VIEWING | VALUATION | SELL
+  kind       String    @default("GENERAL")
+  message    String
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id])
+  // NEW | CONTACTED | CLOSED
+  status     String    @default("NEW")
+  createdAt  DateTime  @default(now())
+}
+
+model Testimonial {
+  id       String @id @default(cuid())
+  name     String
+  role     String
+  content  String
+  rating   Int    @default(5)
+  initials String
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
