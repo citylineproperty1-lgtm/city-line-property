@@ -42,39 +42,76 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/*
+ * City Line Property — iOS-gold theme (Task 7-a)
+ * Warm iOS systemGroupedBackground, white cards, hairline separators,
+ * iOS system accents and a brand GOLD primary.
+ * The shadcn CSS variable contract is unchanged — only the values were re-themed.
+ */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.875rem;
+
+  /* Warm ivory canvas (iOS systemGroupedBackground, gold-tinted) */
+  --background: #f6f4ee;
+  --foreground: #201b10;
+
+  --card: #ffffff;
+  --card-foreground: #201b10;
+  --popover: #ffffff;
+  --popover-foreground: #201b10;
+
+  /* Brand gold */
+  --primary: #c9a227;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f4f1e8;
+  --secondary-foreground: #3f3828;
+  --muted: #f4f1e8;
+  --muted-foreground: #6f6a5c;
+
+  /* Soft gold-tinted accent (active pills, hover states) */
+  --accent: #f5edd7;
+  --accent-foreground: #8c6d1f;
+
+  /* iOS red */
+  --destructive: #ff3b30;
+
+  /* iOS hairline separator */
+  --border: rgba(60, 60, 67, 0.14);
+  --input: rgba(60, 60, 67, 0.2);
+  --ring: #c9a227;
+
+  --chart-1: #c9a227; /* gold */
+  --chart-2: #007aff; /* iOS blue */
+  --chart-3: #34c759; /* iOS green */
+  --chart-4: #ff9500; /* iOS orange */
+  --chart-5: #af52de; /* iOS purple */
+
+  --sidebar: #fbf9f3;
+  --sidebar-foreground: #201b10;
+  --sidebar-primary: #c9a227;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5edd7;
+  --sidebar-accent-foreground: #8c6d1f;
+  --sidebar-border: rgba(60, 60, 67, 0.14);
+  --sidebar-ring: #c9a227;
+
+  /* Brand gold ramp */
+  --gold-light: #e9ce7a;
+  --gold: #c9a227;
+  --gold-dark: #9a7b1a;
+  --gold-deep: #8c6d1f;
+
+  /* iOS system accents — exposed for feature components */
+  --ios-blue: #007aff;
+  --ios-green: #34c759;
+  --ios-orange: #ff9500;
+  --ios-teal: #30b0c7;
+  --ios-purple: #af52de;
+  --ios-pink: #ff2d55;
+  --ios-brown: #a2845e;
+  --ios-gray: #8e8e93;
+  --ios-red: #ff3b30;
 }
 
 .dark {
@@ -121,15 +158,18 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv11", "ss01";
+    /* SF-style tight tracking */
+    letter-spacing: -0.011em;
     text-rendering: optimizeLegibility;
   }
+  /* Gold selection */
   ::selection {
-    background: oklch(0.906 0.065 165);
-    color: oklch(0.3 0.05 165);
+    background: rgba(201, 162, 39, 0.28);
+    color: #5c470f;
   }
 }
 
-/* slim, modern scrollbar */
+/* Warm gold scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -138,14 +178,14 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.87 0 0);
+  background: rgba(201, 162, 39, 0.35);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.78 0 0);
+  background: rgba(154, 123, 26, 0.55);
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: oklch(0.35 0 0);
+  background: rgba(201, 162, 39, 0.3);
 }
 
 @utility no-scrollbar {
@@ -156,10 +196,97 @@
   }
 }
 
-/* subtle dotted backdrop used behind hero sections */
+/* ---------- Brand gold helpers (Task 7-a) ---------- */
+
+/* Gold gradient surface (CTAs, badges, active segments) */
+@utility gold-gradient {
+  background-image: linear-gradient(135deg, #e9ce7a 0%, #c9a227 52%, #9a7b1a 100%);
+}
+
+/* Gold gradient text — readable on light backgrounds */
+@utility text-gold-gradient {
+  background-image: linear-gradient(120deg, #c9a227 0%, #a8851e 45%, #8c6d1f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gold gradient text — lighter ramp for dark surfaces (footer, hero bands) */
+@utility text-gold-gradient-dark {
+  background-image: linear-gradient(120deg, #f0dfa8 0%, #e9ce7a 45%, #c9a227 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* iOS frosted glass */
+@utility glass {
+  background-color: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* Soft layered iOS card shadow with a warm gold undertone */
+@utility card-shadow {
+  box-shadow:
+    0 1px 2px rgba(60, 60, 67, 0.06),
+    0 4px 14px -4px rgba(60, 60, 67, 0.1),
+    0 16px 40px -12px rgba(154, 123, 26, 0.14);
+}
+
+/* Subtle gold-tinted dotted backdrop (hero sections) */
 @utility bg-dots {
-  background-image: radial-gradient(oklch(0.88 0 0) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(201, 162, 39, 0.18) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+/* ---------- Motion helpers ---------- */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes gold-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(201, 162, 39, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0);
+  }
+}
+/* Pair with a gold gradient background + background-size 200% (e.g. gold-gradient) */
+@utility animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2.8s linear infinite;
+}
+@utility animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+@utility animate-gold-pulse {
+  animation: gold-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* The SPA shell div in page.tsx hardcodes bg-white; redirect it to the warm
+   ivory canvas without touching that file (owned by another agent).
+   Unlayered rule wins over the bg-white utility. Safe to delete once
+   page.tsx uses bg-background. */
+body > div:first-of-type {
+  background-color: var(--background);
 }
 
 /* Print: turn the property page into a clean flyer.

@@ -8,7 +8,7 @@ import { AnimatedNumber } from "@/components/site/animated-number";
 import { TrafficChart, type DayPoint } from "@/components/site/traffic-chart";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { TYPE_LABELS } from "@/lib/types";
+import { categoryLabel } from "@/lib/types";
 import {
   TrendingUp,
   Home,
@@ -241,7 +241,7 @@ export function InsightsView() {
                   transition={{ duration: 0.6, delay: 0.2 + i * 0.08 }}
                   style={{ width: `${(t.count / typeTotal) * 100}%` }}
                   className={cn("h-full origin-left", BAR_COLORS[i % BAR_COLORS.length])}
-                  title={`${TYPE_LABELS[t.type] ?? t.type}: ${t.count}`}
+                  title={`${categoryLabel(t.type)}: ${t.count}`}
                 />
               ))}
             </div>
@@ -250,7 +250,7 @@ export function InsightsView() {
                 <li key={t.type} className="flex items-center gap-2.5 text-[13px]">
                   <span className={cn("h-2.5 w-2.5 rounded-full", BAR_COLORS[i % BAR_COLORS.length])} />
                   <span className="font-medium text-neutral-700">
-                    {TYPE_LABELS[t.type] ?? t.type}
+                    {categoryLabel(t.type)}
                   </span>
                   <span className="ml-auto tabular-nums text-neutral-400">
                     {t.count} · {Math.round((t.count / typeTotal) * 100)}%

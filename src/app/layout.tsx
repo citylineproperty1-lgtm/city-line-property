@@ -10,19 +10,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "City Line Property — Karachi's Trusted Real Estate Partner",
+  title: "City Line Property — Your Key to the City | Etihad Town, Lahore",
   description:
-    "Buy, sell and rent premium homes, apartments, villas and offices across Karachi. City Line Property combines deep local expertise with a modern, transparent experience.",
+    "City Line Property is a real estate office in Etihad Town, Lahore — only 1% commission, direct dealing, no hidden margin, no middlemen. Buy and rent plots, houses and apartments in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave and Overseas Block. Call 0309 4499940.",
   keywords: [
     "City Line Property",
-    "real estate Karachi",
-    "property for sale Karachi",
-    "rent apartment Karachi",
-    "DHA Clifton villas",
+    "Etihad Town Phase 1",
+    "Etihad Town Phase 2",
+    "Royal Enclave Lahore",
+    "Premier Enclave Lahore",
+    "Overseas Block Lahore",
+    "1% commission property Lahore",
+    "plots for sale Etihad Town",
+    "houses for sale Lahore",
+    "apartments for rent Lahore",
+    "property dealer Lahore",
   ],
   openGraph: {
-    title: "City Line Property",
-    description: "Find a place you'll love to live — premium real estate across Karachi.",
+    title: "City Line Property — Your Key to the City",
+    description:
+      "Only 1% commission. Plots, houses & apartments in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave and Overseas Block — Lahore. Call 0309 4499940.",
     siteName: "City Line Property",
     type: "website",
   },
@@ -35,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-white text-neutral-900`}>
+      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}>
         {children}
         <Toaster position="top-center" richColors />
       </body>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { TYPE_LABELS, type Property } from "@/lib/types";
+import { categoryLabel, type Property } from "@/lib/types";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -212,7 +212,7 @@ export function CompareView() {
         </Row>
         <Row count={items.length} label="Type" striped>
           {items.map((p) => (
-            <Cell key={p.id}>{TYPE_LABELS[p.type] ?? p.type}</Cell>
+            <Cell key={p.id}>{categoryLabel(p.type)}</Cell>
           ))}
         </Row>
         <Row count={items.length} label="Location">

@@ -14,7 +14,8 @@ import {
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { PROPERTY_TYPES, type Property } from "@/lib/types";
+import { AREAS } from "@/lib/business";
+import { CATEGORIES, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
 import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +53,22 @@ export function PropertiesView() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive) return;
+        const list: CategoryDef[] = d.categories ?? [];
+        if (list.length) setCats(list);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const query = useMemo(() => {
     const p = new URLSearchParams();
@@ -108,11 +125,13 @@ export function PropertiesView() {
     e.preventDefault();
   };
 
+  const activeArea = AREAS.find((a) => a === f.search) ?? "ALL";
+
   const chips: { label: string; clear: () => void }[] = [];
   if (f.search) chips.push({ label: `"${f.search}"`, clear: () => setFilters({ search: "" }) });
   if (f.type !== "ALL")
     chips.push({
-      label: PROPERTY_TYPES.find((t) => t.value === f.type)?.label ?? f.type,
+      label: categoryLabel(f.type),
       clear: () => setFilters({ type: "ALL" }),
     });
   if (f.beds > 0) chips.push({ label: `${f.beds}+ beds`, clear: () => setFilters({ beds: 0 }) });
@@ -130,16 +149,19 @@ export function PropertiesView() {
   const savedCount = favorites.length;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
       {/* Heading */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
-            Browse properties
+          <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+            Etihad Town &amp; enclaves
+          </p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
+            Browse listings
           </h1>
           <p className="mt-2 text-[15px] text-neutral-500">
             {loading
-              ? "Finding the right homes…"
+              ? "Finding the right files…"
               : `${total} ${total === 1 ? "listing" : "listings"} available${
                   savedCount ? ` · ${savedCount} saved` : ""
                 }`}
@@ -164,7 +186,7 @@ export function PropertiesView() {
       </div>
 
       {/* Filter bar */}
-      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-neutral-200/80 bg-white/90 p-3 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-black/[0.07] bg-white/90 p-3 shadow-[0_10px_40px_-18px_rgba(140,105,25,0.3)] backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* search */}
           <form onSubmit={submitSearch} className="relative flex-1">
@@ -172,8 +194,8 @@ export function PropertiesView() {
             <Input
               value={f.search}
               onChange={(e) => setFilters({ search: e.target.value })}
-              placeholder="Search by area, city or keyword…"
-              className="h-11 rounded-full border-neutral-200 bg-neutral-50 pl-11 pr-10 text-sm focus-visible:ring-neutral-300"
+              placeholder="Search by area, society or keyword…"
+              className="h-11 rounded-full border-neutral-200 bg-neutral-50 pl-11 pr-10 text-sm focus-visible:ring-[#C9A227]/40"
               aria-label="Search listings"
             />
             {f.search && (
@@ -208,15 +230,31 @@ export function PropertiesView() {
               ))}
             </div>
 
+            {/* category */}
             <Select value={f.type} onValueChange={(v) => setFilters({ type: v })}>
-              <SelectTrigger className="h-11 w-[130px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
-                <SelectValue placeholder="Type" />
+              <SelectTrigger className="h-11 w-[150px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+                <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Any type</SelectItem>
-                {PROPERTY_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
+                <SelectItem value="ALL">Any category</SelectItem>
+                {cats.map((c) => (
+                  <SelectItem key={c.slug} value={c.slug}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* area */}
+            <Select value={activeArea} onValueChange={(v) => setFilters({ search: v === "ALL" ? "" : v })}>
+              <SelectTrigger className="h-11 w-[160px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+                <SelectValue placeholder="Area" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All areas</SelectItem>
+                {AREAS.map((a) => (
+                  <SelectItem key={a} value={a}>
+                    {a}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -304,7 +342,7 @@ export function PropertiesView() {
 
       {/* Results */}
       {error ? (
-        <div className="mt-10 flex flex-col items-center rounded-2xl border border-neutral-200 bg-white py-16 text-center">
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-black/[0.07] bg-white py-16 text-center">
           <SearchX className="h-10 w-10 text-neutral-300" />
           <p className="mt-4 text-[15px] font-medium text-neutral-700">{error}</p>
           <Button onClick={load} variant="outline" className="mt-5 h-10 rounded-full text-sm">
@@ -321,24 +359,36 @@ export function PropertiesView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/60 py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-[#C9A227]/40 bg-[#C9A227]/[0.04] py-20 text-center"
         >
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-neutral-200">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06]">
             <SearchX className="h-6 w-6 text-neutral-400" />
           </span>
           <h3 className="mt-5 text-lg font-semibold tracking-tight text-neutral-900">
-            No matches found
+            No matches in our five areas
           </h3>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
-            Try widening your price range, removing a filter, or searching a
-            different neighbourhood — new listings arrive weekly.
+            Try widening your price range, removing a filter, or searching another
+            area — or just tell us what you need and we&rsquo;ll hunt it down for you.
           </p>
-          <Button
-            onClick={resetFilters}
-            className="mt-6 h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium hover:bg-neutral-700"
-          >
-            Clear all filters
-          </Button>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Button
+              onClick={resetFilters}
+              className="h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium hover:bg-neutral-800"
+            >
+              Clear all filters
+            </Button>
+            <Button
+              onClick={() => {
+                resetFilters();
+                useAppStore.getState().navigate({ name: "contact" });
+              }}
+              variant="outline"
+              className="h-11 rounded-full border-neutral-200 bg-white px-6 text-sm font-medium"
+            >
+              Post a requirement
+            </Button>
+          </div>
         </motion.div>
       ) : (
         <>
@@ -358,7 +408,7 @@ export function PropertiesView() {
                 onClick={loadMore}
                 disabled={loadingMore}
                 variant="outline"
-                className="h-11 rounded-full border-neutral-200 px-8 text-sm font-medium hover:bg-neutral-50"
+                className="h-11 rounded-full border-neutral-200 bg-white px-8 text-sm font-medium hover:bg-neutral-50"
               >
                 {loadingMore ? (
                   <>

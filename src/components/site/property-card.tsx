@@ -4,10 +4,45 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { TYPE_LABELS, type Property } from "@/lib/types";
+import { CATEGORIES, categoryLabel, type Property } from "@/lib/types";
 import { BedDouble, Bath, Ruler, Car, Heart, MapPin, GitCompareArrows, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
+/** Small tinted chip for the property's category (iOS-style soft background). */
+export function CategoryChip({ type, className }: { type: string; className?: string }) {
+  const cat = CATEGORIES.find((c) => c.slug === type);
+  const label = categoryLabel(type);
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide",
+        className
+      )}
+      style={
+        cat
+          ? { backgroundColor: `${cat.color}1A`, color: cat.color }
+          : { backgroundColor: "rgba(0,0,0,0.05)", color: "#52525B" }
+      }
+    >
+      {label}
+    </span>
+  );
+}
+
+/** Availability badge — only rendered when the listing is not AVAILABLE. */
+function StateBadge({ state }: { state: Property["listingState"] }) {
+  if (state === "AVAILABLE") return null;
+  const style =
+    state === "RESERVED"
+      ? "bg-amber-400/95 text-amber-950"
+      : "bg-neutral-600/95 text-white";
+  return (
+    <span className={cn("rounded-full px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wider backdrop-blur", style)}>
+      {state === "RENTED" ? "Rented" : state === "SOLD" ? "Sold" : "Reserved"}
+    </span>
+  );
+}
 
 export function PropertyCard({ property, index = 0 }: { property: Property; index?: number }) {
   const { navigate, favorites, toggleFavorite, compare, toggleCompare } = useAppStore();
@@ -21,7 +56,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.3), ease: "easeOut" }}
       whileHover={{ y: -4 }}
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-neutral-200/80 bg-white transition-shadow duration-300 hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.15)]"
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_16px_44px_-14px_rgba(120,90,20,0.22)]"
       onClick={() => navigate({ name: "property", id: property.id })}
       role="button"
       tabIndex={0}
@@ -40,15 +75,18 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           className="object-cover transition-transform duration-500 animate-in fade-in group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        {/* Status badge */}
-        <span
-          className={cn(
-            "absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
-            isRent ? "bg-emerald-600/95 text-white" : "bg-neutral-900/90 text-white"
-          )}
-        >
-          {isRent ? "For Rent" : "For Sale"}
-        </span>
+        {/* Status + availability badges */}
+        <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+          <span
+            className={cn(
+              "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
+              isRent ? "bg-[#C9A227]/95 text-white" : "bg-neutral-900/90 text-white"
+            )}
+          >
+            {isRent ? "For Rent" : "For Sale"}
+          </span>
+          <StateBadge state={property.listingState} />
+        </div>
         {/* Favorite */}
         <button
           onClick={(e) => {
@@ -94,15 +132,13 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
 
       {/* Body */}
       <div className="p-5">
-        <div className="flex items-baseline justify-between gap-2">
+        <div className="flex items-center justify-between gap-2">
           <p className="text-lg font-semibold tracking-tight tabular-nums text-neutral-900">
             {formatPKR(property.price, isRent)}
           </p>
-          <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-500">
-            {TYPE_LABELS[property.type] ?? property.type}
-          </span>
+          <CategoryChip type={property.type} />
         </div>
-        <h3 className="mt-1.5 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-emerald-700">
+        <h3 className="mt-1.5 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#8F7018]">
           {property.title}
         </h3>
         <p className="mt-1 flex items-center gap-1 text-[13px] text-neutral-400">
@@ -143,7 +179,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
 
 export function PropertyCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white">
+    <div className="overflow-hidden rounded-2xl border border-black/[0.07] bg-white">
       <div className="aspect-[4/3] animate-pulse bg-neutral-100" />
       <div className="space-y-3 p-5">
         <div className="h-5 w-1/2 animate-pulse rounded bg-neutral-100" />

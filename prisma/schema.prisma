@@ -1,4 +1,6 @@
 // City Line Property — Prisma schema
+// CRM-enabled schema: categories, inventory fields, leads, admin users, settings.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,67 +11,115 @@ datasource db {
 }
 
 model Property {
-  id        String    @id @default(cuid())
-  title     String
-  slug      String    @unique
-  // description
-  description String
-  // price in PKR
-  price     Float
-  // SALE | RENT
-  status    String
-  // HOUSE | APARTMENT | VILLA | PENTHOUSE | TOWNHOUSE | OFFICE | FARMHOUSE
-  type      String
-  beds      Int
-  baths     Int
-  // area in sqft
-  area      Int
-  address   String
-  city      String
-  district  String
-  // JSON string array of image paths
-  images    String
-  // JSON string array of amenity names
-  amenities String
-  featured  Boolean   @default(false)
-  yearBuilt Int
-  parking   Int
-  views     Int       @default(0)
-  rating    Float     @default(4.6)
-  agentId   String
-  agent     Agent     @relation(fields: [agentId], references: [id])
-  inquiries Inquiry[]
-  viewEvents ViewEvent[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Agent {
-  id          String     @id @default(cuid())
-  name        String
+  id          String   @id @default(cuid())
   title       String
-  email       String     @unique
-  phone       String
-  initials    String
-  accent      String
-  bio         String
-  properties  Property[]
-  createdAt   DateTime   @default(now())
+  slug        String   @unique
+  // Short inventory code, e.g. CLP-101 (auto-assigned on create)
+  reference   String   @unique
+  description String
+  // price in PKR (per month when status = RENT)
+  price       Float
+  // SALE | RENT
+  status      String
+  // Category slug from Category table (residential-plots, houses, for-rent, ...)
+  type        String
+  beds        Int
+  baths       Int
+  // area in sqft (plots: total sqft of the plot)
+  area        Int
+  address     String
+  city        String
+  // One of the 5 areas: Etihad Town Phase 1 | Etihad Town Phase 2 | Royal Enclave | Premier Enclave | Overseas Block
+  district    String
+  // JSON string array of image paths
+  images      String
+  // JSON string array of amenity names
+  amenities   String
+  featured    Boolean  @default(false)
+  // Inventory availability: AVAILABLE | RESERVED | SOLD | RENTED
+  listingState String  @default("AVAILABLE")
+  // Draft listings are hidden from the public site
+  published   Boolean  @default(true)
+  yearBuilt   Int
+  parking     Int
+  views       Int      @default(0)
+  rating      Float    @default(4.6)
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  leads       Lead[]
+  viewEvents  ViewEvent[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model Inquiry {
+// Managed from the admin panel — icons are lucide icon names, colors are iOS-palette hex.
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  icon        String   @default("Building2")
+  color       String   @default("#C9A227")
+  description String   @default("")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// Client requirement / inquiry captured from the website — the CRM inbox.
+model Lead {
   id         String    @id @default(cuid())
   name       String
-  email      String
-  phone      String?
-  // GENERAL | VIEWING | VALUATION | SELL
-  kind       String    @default("GENERAL")
+  phone      String
+  email      String?
+  // interested category slug
+  category   String?
+  // interested area (one of the 5 areas)
+  area       String?
+  // budget in PKR
+  budget     Int?
   message    String
   propertyId String?
   property   Property? @relation(fields: [propertyId], references: [id])
-  // NEW | CONTACTED | CLOSED
+  // WEBSITE | CONTACT | PROPERTY | REQUIREMENT
+  source     String    @default("WEBSITE")
+  // NEW | CONTACTED | SITE_VISIT | NEGOTIATION | WON | LOST
   status     String    @default("NEW")
+  // internal notes (admin)
+  notes      String?
+  // WhatsApp webhook delivery: PENDING | SENT | FAILED | SKIPPED
+  waStatus   String    @default("PENDING")
+  waSentAt   DateTime?
+  waError    String?
   createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+// Single-admin auth (password hashed with scrypt: "salt:hash" hex)
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String   @default("Administrator")
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+// Key-value store for panel settings (webhook_url, whatsapp_number, ...)
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Agent {
+  id         String     @id @default(cuid())
+  name       String
+  title      String
+  email      String     @unique
+  phone      String
+  initials   String
+  accent     String
+  bio        String
+  properties Property[]
+  createdAt  DateTime   @default(now())
 }
 
 model Testimonial {

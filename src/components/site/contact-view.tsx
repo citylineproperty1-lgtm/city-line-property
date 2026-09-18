@@ -1,302 +1,180 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { RequirementForm } from "@/components/site/requirement-form";
+import { BUSINESS, AREAS, waLink } from "@/lib/business";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Loader2,
-  CheckCircle2,
   MapPin,
   Phone,
   Mail,
   Clock,
-  Send,
+  MessageCircle,
+  Navigation,
 } from "lucide-react";
-import { toast } from "sonner";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-60px" },
+  viewport: { once: true, margin: "-80px" },
   transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
 const FAQS = [
   {
-    q: "Do you charge for viewings?",
-    a: "Never. Viewings are free and unlimited — we want you to be certain before you commit to anything.",
+    q: "What commission do you charge?",
+    a: "A flat 1% of the transaction value — confirmed in writing before we start. No hidden margin, no 'service charges', no middlemen taking a cut. Rentals are charged at an agreed flat rate, also disclosed up front.",
   },
   {
-    q: "What commission do you take?",
-    a: "Sales: 1% of the transaction value. Rentals: half a month's rent from each side. Commercial leasing is quoted per requirement. Everything is disclosed up front in writing.",
+    q: "Which areas do you cover?",
+    a: `Only five, so we know every file personally: ${AREAS.join(", ")}. If you're buying elsewhere, we'll honestly tell you to find a local specialist — we don't deal where we can't vouch for the property.`,
+  },
+  {
+    q: "What does 'direct dealing' actually mean?",
+    a: "You meet the owner and negotiate face to face — we facilitate, verify documents and handle paperwork. We never buy cheap to sell dear, never take a margin on top, and the price on the file is always the owner's price.",
   },
   {
     q: "How do you verify listings?",
-    a: "Every listing passes a 21-point check: physical inspection, ownership documents verified against society records, and photos taken by our own team — never supplied by owners.",
+    a: "Every file is physically inspected and ownership documents are checked against society records before it goes live. Photos are taken by our own team — never supplied by owners.",
   },
   {
-    q: "Can you help with legal transfer and paperwork?",
-    a: "Yes. We coordinate society transfer processes, token and bayana documentation, and can recommend independent lawyers for title opinion.",
-  },
-  {
-    q: "I'm overseas — can I buy remotely?",
-    a: "Absolutely. We regularly complete purchases for overseas Pakistanis with video tours, digital documentation and power-of-attorney guidance.",
+    q: "I'm overseas — can I buy or rent remotely?",
+    a: "Yes. We regularly complete deals for overseas Pakistanis with video tours, digital documentation and power-of-attorney guidance. Start by posting your requirement here or on WhatsApp.",
   },
 ];
 
 export function ContactView() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [kind, setKind] = useState("GENERAL");
-  const [message, setMessage] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSending(true);
-    try {
-      const res = await fetch("/api/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, kind, message }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send");
-      setSent(true);
-      toast.success("Message sent — thank you!", {
-        description: "A senior agent will reply within a few working hours.",
-      });
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to send");
-    } finally {
-      setSending(false);
-    }
-  };
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-6xl bg-[#FAF7EF] px-4 py-10 sm:px-6 sm:py-14">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-        <p className="text-[13px] font-semibold uppercase tracking-wider text-emerald-600">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
           Contact
         </p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
           Let&rsquo;s talk property.
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
-          Buying, selling, renting or just curious what your home is worth — drop us
-          a line and a senior agent (never a call centre) will get back to you.
+          Buying, selling, renting or just want to know what your file is worth — post
+          your requirement and a real person from the City Line office (never a call
+          centre) will call you back.
         </p>
       </motion.div>
 
       <div className="mt-12 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
-        {/* Form */}
+        {/* Requirement form → saved as a CRM lead */}
         <motion.div
           {...fadeUp}
-          className="rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-sm sm:p-8"
+          className="rounded-3xl border border-black/[0.07] bg-white p-6 shadow-[0_24px_60px_-30px_rgba(140,105,25,0.35)] sm:p-8"
         >
-          {sent ? (
-            <div className="flex flex-col items-center py-14 text-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-                <CheckCircle2 className="h-8 w-8 text-emerald-600" />
-              </span>
-              <h2 className="mt-5 text-xl font-semibold tracking-tight text-neutral-900">
-                Message received
-              </h2>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
-                Thanks {name.split(" ")[0]} — your {kind === "VALUATION" ? "valuation request" : "message"} is
-                with our team. Expect a reply at {email} within a few working hours.
-              </p>
-              <Button
-                onClick={() => {
-                  setSent(false);
-                  setName("");
-                  setEmail("");
-                  setPhone("");
-                  setMessage("");
-                  setKind("GENERAL");
-                }}
-                variant="outline"
-                className="mt-7 h-11 rounded-full border-neutral-200 text-sm"
-              >
-                Send another message
-              </Button>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
-                Send us a message
-              </h2>
-              <form onSubmit={submit} className="mt-6 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="c-name" className="text-[13px] text-neutral-600">
-                      Full name *
-                    </Label>
-                    <Input
-                      id="c-name"
-                      required
-                      minLength={2}
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Ali Hassan"
-                      className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="c-email" className="text-[13px] text-neutral-600">
-                      Email *
-                    </Label>
-                    <Input
-                      id="c-email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="c-phone" className="text-[13px] text-neutral-600">
-                      Phone
-                    </Label>
-                    <Input
-                      id="c-phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+92 3xx xxx xxxx"
-                      className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[13px] text-neutral-600">I&rsquo;m here to</Label>
-                    <Select value={kind} onValueChange={setKind}>
-                      <SelectTrigger className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus:ring-0">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="GENERAL">Ask a general question</SelectItem>
-                        <SelectItem value="VIEWING">Book a viewing</SelectItem>
-                        <SelectItem value="VALUATION">Get a free valuation</SelectItem>
-                        <SelectItem value="SELL">List my property for sale</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="c-msg" className="text-[13px] text-neutral-600">
-                    Message *
-                  </Label>
-                  <Textarea
-                    id="c-msg"
-                    required
-                    minLength={5}
-                    rows={5}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell us about what you're looking for, your budget, or the property you'd like to sell…"
-                    className="resize-none rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  disabled={sending}
-                  className="h-12 w-full rounded-full bg-neutral-900 text-sm font-semibold hover:bg-neutral-700 sm:w-auto sm:px-8"
-                >
-                  {sending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send message
-                    </>
-                  )}
-                </Button>
-              </form>
-            </>
-          )}
+          <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+            Post your requirement — we call you back
+          </h2>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-400">
+            Free and non-binding. On the next screen you can also send the same brief
+            straight to our WhatsApp.
+          </p>
+          <div className="mt-6">
+            <RequirementForm source="CONTACT" />
+          </div>
         </motion.div>
 
-        {/* Info cards */}
+        {/* Info cards — real office details */}
         <motion.div {...fadeUp} className="flex flex-col gap-4">
-          {[
-            {
-              icon: MapPin,
-              title: "Visit the office",
-              lines: ["14-C Khayaban-e-Ittehad", "DHA Phase 6, Karachi"],
-              action: { label: "Open in Maps", href: "https://maps.google.com/?q=DHA+Phase+6+Karachi" },
-            },
-            {
-              icon: Phone,
-              title: "Call or WhatsApp",
-              lines: ["+92 300 111 2233", "+92 21 3584 2211"],
-              action: { label: "Call now", href: "tel:+923001112233" },
-            },
-            {
-              icon: Mail,
-              title: "Email us",
-              lines: ["hello@citylineproperty.pk", "listings@citylineproperty.pk"],
-              action: { label: "Write an email", href: "mailto:hello@citylineproperty.pk" },
-            },
-            {
-              icon: Clock,
-              title: "Office hours",
-              lines: ["Mon – Sat · 9:00 AM – 8:00 PM", "Sunday viewings by appointment"],
-            },
-          ].map((c) => (
-            <div
-              key={c.title}
-              className="rounded-2xl border border-neutral-200/80 bg-white p-5 transition-shadow hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
-                  <c.icon className="h-4.5 w-4.5" />
-                </span>
-                <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
-                  {c.title}
-                </h3>
-              </div>
-              <div className="mt-3 space-y-1 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
-                {c.lines.map((l) => (
-                  <p key={l}>{l}</p>
-                ))}
-              </div>
-              {c.action && (
-                <a
-                  href={c.action.href}
-                  target={c.action.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                  className="mt-3 ml-[52px] inline-block text-[13px] font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
-                >
-                  {c.action.label} →
-                </a>
-              )}
+          <div className="rounded-2xl border border-[#C9A227]/30 bg-gradient-to-br from-[#FFFDF5] to-white p-5 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#DCBB55] to-[#A8851D] text-white">
+                <MapPin className="h-4.5 w-4.5" />
+              </span>
+              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                Visit the office
+              </h3>
             </div>
-          ))}
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+              {BUSINESS.officeAddress}
+            </p>
+            <div className="mt-3 ml-[52px] flex flex-wrap gap-3">
+              <a
+                href="https://maps.google.com/?q=Etihad+Town+Phase+1+Lahore"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#8F7018] transition-colors hover:text-[#A8851D]"
+              >
+                <Navigation className="h-3.5 w-3.5" />
+                Open in Maps →
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+                <Phone className="h-4.5 w-4.5" />
+              </span>
+              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                Call or WhatsApp
+              </h3>
+            </div>
+            <div className="mt-3 space-y-1 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+              <p>
+                <a href={`tel:${BUSINESS.telPrimary}`} className="font-medium text-neutral-700 hover:text-[#8F7018]">
+                  {BUSINESS.phonePrimary}
+                </a>{" "}
+                (WhatsApp)
+              </p>
+              <p>
+                <a href={`tel:${BUSINESS.telSecondary}`} className="font-medium text-neutral-700 hover:text-[#8F7018]">
+                  {BUSINESS.phoneSecondary}
+                </a>
+              </p>
+            </div>
+            <a
+              href={waLink("Hi City Line Property — I have a question about property in Etihad Town.")}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 ml-[52px] inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#8F7018] transition-colors hover:text-[#A8851D]"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              Chat on WhatsApp →
+            </a>
+          </div>
+
+          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+                <Mail className="h-4.5 w-4.5" />
+              </span>
+              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                Email us
+              </h3>
+            </div>
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+              <a href={`mailto:${BUSINESS.email}`} className="break-all font-medium text-neutral-700 hover:text-[#8F7018]">
+                {BUSINESS.email}
+              </a>
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+                <Clock className="h-4.5 w-4.5" />
+              </span>
+              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                Office hours
+              </h3>
+            </div>
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+              {BUSINESS.hours}
+              <br />
+              <span className="text-neutral-400">Sunday — viewings by appointment</span>
+            </p>
+          </div>
         </motion.div>
       </div>
 
@@ -314,7 +192,7 @@ export function ContactView() {
               <AccordionItem
                 key={i}
                 value={`faq-${i}`}
-                className="rounded-2xl border border-neutral-200/80 bg-white px-5 shadow-none last:border-b"
+                className="rounded-2xl border border-black/[0.07] bg-white px-5 shadow-none last:border-b"
               >
                 <AccordionTrigger className="py-4 text-left text-[14.5px] font-medium text-neutral-800 hover:no-underline">
                   {f.q}
@@ -327,6 +205,38 @@ export function ContactView() {
           </Accordion>
         </motion.div>
       </section>
+
+      {/* Bottom CTA */}
+      <motion.div {...fadeUp} className="mt-14 flex flex-col items-center text-center">
+        <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
+          Prefer to talk first?
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <Button asChild className="h-12 rounded-full bg-neutral-900 px-7 text-sm font-semibold hover:bg-neutral-800">
+            <a href={`tel:${BUSINESS.telPrimary}`}>
+              <Phone className="mr-2 h-4 w-4" />
+              Call {BUSINESS.phonePrimary}
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="h-12 rounded-full border-[#C9A227]/40 bg-white px-7 text-sm font-semibold text-[#8F7018] hover:bg-[#C9A227]/10"
+          >
+            <a
+              href={waLink("Hi City Line Property — I'd like to discuss a property requirement.")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              WhatsApp {BUSINESS.phoneSecondary}
+            </a>
+          </Button>
+        </div>
+        <p className="mt-4 text-[12.5px] text-neutral-400">
+          {BUSINESS.hours} · {BUSINESS.officeAddress}
+        </p>
+      </motion.div>
     </div>
   );
 }

@@ -36,7 +36,7 @@ function filtersToQuery(f: ListingsFilters): string {
   const p = new URLSearchParams();
   if (f.search) p.set("q", f.search);
   if (f.status !== "ALL") p.set("status", f.status.toLowerCase());
-  if (f.type !== "ALL") p.set("type", f.type.toLowerCase());
+  if (f.type !== "ALL") p.set("type", f.type);
   if (f.beds > 0) p.set("beds", String(f.beds));
   if (f.minPrice != null) p.set("min", String(f.minPrice));
   if (f.maxPrice != null) p.set("max", String(f.maxPrice));
@@ -58,7 +58,7 @@ export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
   const status = p.get("status");
   if (status === "sale" || status === "rent") f.status = status.toUpperCase();
   const type = p.get("type");
-  if (type) f.type = type.toUpperCase();
+  if (type && /^[a-z0-9-]+$/i.test(type)) f.type = type.toLowerCase();
   const beds = p.get("beds");
   if (beds && /^\d+$/.test(beds)) f.beds = Number(beds);
   const min = p.get("min");

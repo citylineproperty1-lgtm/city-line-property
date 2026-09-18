@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PropertyCard } from "@/components/site/property-card";
 import { useAppStore, viewToHash } from "@/lib/store";
 import { formatPKR, monthlyInstallment, formatDate } from "@/lib/format";
-import { TYPE_LABELS, type Property } from "@/lib/types";
+import { categoryLabel, type Property } from "@/lib/types";
 import {
   ArrowLeft,
   ArrowRight,
@@ -147,7 +147,7 @@ export function PropertyDetailView({ id }: { id: string }) {
       value: `${property.area.toLocaleString()} sqft`,
     },
     { icon: Car, label: "Parking", value: property.parking > 0 ? `${property.parking} cars` : "—" },
-    { icon: Building2, label: "Type", value: TYPE_LABELS[property.type] ?? property.type },
+    { icon: Building2, label: "Type", value: categoryLabel(property.type) },
     { icon: CalendarDays, label: "Year built", value: String(property.yearBuilt) },
   ];
 

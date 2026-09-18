@@ -4,6 +4,7 @@ import { serializeProperty } from "@/lib/serialize";
 
 export const dynamic = "force-dynamic";
 
+/** Public listing feed — only published inventory is exposed. */
 export async function GET(req: NextRequest) {
   try {
     const sp = req.nextUrl.searchParams;
@@ -14,6 +15,7 @@ export async function GET(req: NextRequest) {
     const minPrice = Number(sp.get("minPrice") ?? 0);
     const maxPrice = Number(sp.get("maxPrice") ?? 0);
     const city = sp.get("city") ?? "";
+    const district = sp.get("district") ?? "";
     const featured = sp.get("featured") === "true";
     const sort = sp.get("sort") ?? "newest";
     const limit = Math.min(Number(sp.get("limit") ?? 60), 100);
@@ -21,7 +23,7 @@ export async function GET(req: NextRequest) {
     const agentId = sp.get("agentId") ?? "";
     const ids = sp.get("ids");
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { published: true };
 
     if (ids) {
       where.id = { in: ids.split(",").filter(Boolean) };
@@ -32,12 +34,14 @@ export async function GET(req: NextRequest) {
         { district: { contains: search } },
         { address: { contains: search } },
         { city: { contains: search } },
+        { reference: { contains: search } },
         { description: { contains: search } },
       ];
     }
     if (status === "SALE" || status === "RENT") where.status = status;
-    if (type && type !== "ALL") where.type = type;
+    if (type && type !== "ALL") where.type = type; // NOTE: SQLite has no `mode: "insensitive"` — slugs are lowercase, plain equality is correct.
     if (city && city !== "ALL") where.city = city;
+    if (district && district !== "ALL") where.district = district;
     if (!Number.isNaN(beds) && beds > 0) where.beds = { gte: beds };
     if (minPrice > 0 || maxPrice > 0) {
       where.price = {

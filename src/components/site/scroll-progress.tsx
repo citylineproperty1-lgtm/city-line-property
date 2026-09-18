@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useSpring } from "framer-motion";
 
-/** Thin emerald reading-progress bar pinned to the very top of the viewport. */
+/** Thin gold reading-progress bar pinned to the very top of the viewport. */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -15,7 +15,7 @@ export function ScrollProgress() {
     <motion.div
       aria-hidden
       style={{ scaleX }}
-      className="fixed inset-x-0 top-0 z-[70] print:hidden h-[2.5px] origin-left bg-emerald-600"
+      className="fixed inset-x-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-[#E9CE7A] via-[#C9A227] to-[#9A7B1A] print:hidden"
     />
   );
 }

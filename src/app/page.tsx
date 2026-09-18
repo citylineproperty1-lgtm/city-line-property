@@ -27,7 +27,7 @@ import {
 } from "@/lib/store";
 
 const TITLES: Record<string, string> = {
-  home: "City Line Property — Karachi's Trusted Real Estate Partner",
+  home: "City Line Property — Your Key to the City | Etihad Town, Lahore",
   properties: "Browse Properties — City Line Property",
   property: "Property Details — City Line Property",
   agent: "Agent Profile — City Line Property",
@@ -36,7 +36,7 @@ const TITLES: Record<string, string> = {
   saved: "Saved Properties — City Line Property",
   compare: "Compare Properties — City Line Property",
   insights: "Market Insights — City Line Property",
-  admin: "Team Inbox — City Line Property",
+  admin: "City Line Property",
 };
 
 function titleFor(view: View): string {
@@ -94,7 +94,7 @@ export default function Page() {
     view.name === "property" ? `property-${view.id}` : view.name;
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
       <ScrollProgress />
       <SiteHeader />
       <main className="flex-1">

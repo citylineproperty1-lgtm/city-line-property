@@ -2,39 +2,25 @@
 
 import { useState } from "react";
 import { useAppStore } from "@/lib/store";
+import { AREAS, BUSINESS, telLink } from "@/lib/business";
+import { CATEGORIES } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Building2, Mail, MapPin, Phone, Loader2, ArrowRight, ArrowUp } from "lucide-react";
-import type { View } from "@/lib/store";
-
-const LINK_GROUPS: {
-  title: string;
-  links: { label: string; view: View }[];
-}[] = [
-  {
-    title: "Explore",
-    links: [
-      { label: "Home", view: { name: "home" } },
-      { label: "All properties", view: { name: "properties" } },
-      { label: "Market insights", view: { name: "insights" } },
-      { label: "Saved homes", view: { name: "saved" } },
-      { label: "About us", view: { name: "about" } },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "Contact", view: { name: "contact" } },
-      { label: "Book a valuation", view: { name: "contact" } },
-      { label: "Compare properties", view: { name: "compare" } },
-      { label: "Team inbox", view: { name: "admin" } },
-    ],
-  },
-];
+import {
+  ArrowRight,
+  ArrowUp,
+  BadgePercent,
+  Clock,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
+import { Logo } from "@/components/site/logo";
 
 export function SiteFooter() {
-  const { navigate } = useAppStore();
+  const { navigate, setFilters } = useAppStore();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -61,74 +47,137 @@ export function SiteFooter() {
     }
   };
 
+  const goArea = (area: string) => {
+    setFilters({ search: area });
+    navigate({ name: "properties" });
+  };
+
+  const goCategory = (slug: string) => {
+    setFilters({ type: slug });
+    navigate({ name: "properties" });
+  };
+
   return (
-    <footer className="mt-auto border-t border-neutral-200/80 bg-white pb-[env(safe-area-inset-bottom)] print:hidden">
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
+    <footer className="relative mt-auto overflow-hidden bg-[#14100A] text-[#E8E2D4] print:hidden">
+      {/* Deep charcoal-gold gradient wash */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-[#2A2210] via-[#1C1609] to-[#100D06]"
+      />
+      {/* Gold hairline at the very top */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C9A227]/70 to-transparent"
+      />
+
+      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.6fr_1.25fr_1fr_1fr_1.4fr]">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-900 text-white">
-                <Building2 className="h-4 w-4" />
-              </span>
-              <span className="flex flex-col items-start leading-none">
-                <span className="text-[15px] font-semibold tracking-tight text-neutral-900">City Line</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-400">Property</span>
-              </span>
+            <Logo size="md" withWordmark tagline tone="dark" />
+            <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-[#C9A227]/35 bg-[#C9A227]/10 px-3 py-1.5 text-[11.5px] font-semibold text-[#E9CE7A]">
+              <BadgePercent className="h-3.5 w-3.5 text-[#C9A227]" aria-hidden />
+              {BUSINESS.commissionLine}
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">
-              Karachi&rsquo;s trusted partner for buying, selling and renting premium
-              homes and workspaces — with honesty written into every contract.
+            <p className="mt-2.5 text-[13px] font-medium text-[#C9A227]/90">
+              {BUSINESS.commissionNote}
             </p>
-            <ul className="mt-5 space-y-2.5 text-sm text-neutral-500">
-              <li className="flex items-center gap-2.5">
-                <MapPin className="h-4 w-4 shrink-0 text-neutral-400" />
-                14-C Khayaban-e-Ittehad, DHA Phase 6, Karachi
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-[#B7B0A0]">
+              Real estate office in Etihad Town, Lahore — direct dealing, no hidden
+              margin, no middlemen.
+            </p>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#E9CE7A]">
+              Contact
+            </h3>
+            <ul className="mt-4 space-y-3 text-sm text-[#C7C0AF]">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#C9A227]" />
+                <span>{BUSINESS.officeAddress}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-neutral-400" />
-                <a href="tel:+923001112233" className="transition-colors hover:text-neutral-900">
-                  +92 300 111 2233
+                <Phone className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <a
+                  href={telLink()}
+                  className="transition-colors hover:text-[#E9CE7A]"
+                >
+                  {BUSINESS.phonePrimary}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-neutral-400" />
-                <a href="mailto:hello@citylineproperty.pk" className="transition-colors hover:text-neutral-900">
-                  hello@citylineproperty.pk
+                <Phone className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <a
+                  href={telLink(BUSINESS.telSecondary)}
+                  className="transition-colors hover:text-[#E9CE7A]"
+                >
+                  {BUSINESS.phoneSecondary}
                 </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Mail className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <a
+                  href={`mailto:${BUSINESS.email}`}
+                  className="break-all transition-colors hover:text-[#E9CE7A]"
+                >
+                  {BUSINESS.email}
+                </a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Clock className="h-4 w-4 shrink-0 text-[#C9A227]" />
+                <span>{BUSINESS.hours}</span>
               </li>
             </ul>
           </div>
 
-          {/* Link groups */}
-          {LINK_GROUPS.map((group) => (
-            <div key={group.title}>
-              <h3 className="text-[13px] font-semibold uppercase tracking-wider text-neutral-900">
-                {group.title}
-              </h3>
-              <ul className="mt-4 space-y-2.5">
-                {group.links.map((link) => (
-                  <li key={link.label}>
-                    <button
-                      onClick={() => navigate(link.view)}
-                      className="text-sm text-neutral-500 transition-colors hover:text-neutral-900"
-                    >
-                      {link.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Areas */}
+          <div>
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#E9CE7A]">
+              Our areas
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {AREAS.map((area) => (
+                <li key={area}>
+                  <button
+                    onClick={() => goArea(area)}
+                    className="text-sm text-[#C7C0AF] transition-colors hover:text-[#E9CE7A]"
+                  >
+                    {area}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#E9CE7A]">
+              Categories
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {CATEGORIES.map((cat) => (
+                <li key={cat.slug}>
+                  <button
+                    onClick={() => goCategory(cat.slug)}
+                    className="text-sm text-[#C7C0AF] transition-colors hover:text-[#E9CE7A]"
+                  >
+                    {cat.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-neutral-900">
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#E9CE7A]">
               Property digest
             </h3>
-            <p className="mt-4 text-sm leading-relaxed text-neutral-500">
-              One email a month — new listings, price trends and honest market notes.
-              No spam, ever.
+            <p className="mt-4 text-sm leading-relaxed text-[#C7C0AF]">
+              One email a month — new listings, price trends and honest market
+              notes. No spam, ever.
             </p>
             <form onSubmit={subscribe} className="mt-4 flex gap-2">
               <Input
@@ -137,13 +186,13 @@ export function SiteFooter() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="h-10 flex-1 rounded-full border-neutral-200 bg-neutral-50 px-4 text-sm focus-visible:ring-neutral-300"
+                className="h-10 flex-1 rounded-full border-white/15 bg-white/5 px-4 text-sm text-[#E8E2D4] placeholder:text-[#8F897B] focus-visible:border-[#C9A227]/50 focus-visible:ring-[#C9A227]/30"
                 aria-label="Email address"
               />
               <Button
                 type="submit"
                 disabled={loading}
-                className="h-10 w-10 shrink-0 rounded-full bg-neutral-900 p-0 hover:bg-neutral-700"
+                className="gold-gradient h-10 w-10 shrink-0 rounded-full p-0 text-white shadow-[0_8px_22px_-8px_rgba(201,162,39,0.7)] hover:opacity-95"
                 aria-label="Subscribe"
               >
                 {loading ? (
@@ -157,20 +206,19 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-neutral-100">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-5 text-[13px] text-neutral-400 sm:flex-row sm:px-6">
+      {/* Bottom bar */}
+      <div className="relative border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-[12.5px] text-[#8F897B] sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} City Line Property. All rights reserved.</span>
-          <div className="flex items-center gap-4">
-            <span>Crafted with care in Karachi · Sindh, Pakistan</span>
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="group flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-[12px] font-medium text-neutral-500 transition-all hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-900"
-              aria-label="Back to top"
-            >
-              Back to top
-              <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5" />
-            </button>
-          </div>
+          <span>Crafted with care in Lahore · Punjab, Pakistan</span>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="group flex items-center gap-1.5 rounded-full border border-[#C9A227]/30 bg-white/5 px-3 py-1.5 text-[12px] font-medium text-[#E9CE7A] transition-all hover:border-[#C9A227]/60 hover:bg-[#C9A227]/15"
+            aria-label="Back to top"
+          >
+            Back to top
+            <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5" />
+          </button>
         </div>
       </div>
     </footer>

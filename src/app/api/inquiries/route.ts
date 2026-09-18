@@ -3,24 +3,32 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Back-compat wrapper: the contact + property-viewing forms still POST here.
+ * Payloads are stored as CRM Leads (kind VIEWING/GENERAL → source) so the
+ * admin inbox shows everything in one pipeline.
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const name = (body.name ?? "").toString().trim();
-    const email = (body.email ?? "").toString().trim();
-    const phone = (body.phone ?? "").toString().trim() || null;
+    const email = (body.email ?? "").toString().trim() || null;
+    const phone = (body.phone ?? "").toString().trim() || "Not provided";
     const message = (body.message ?? "").toString().trim();
-    const kind = (body.kind ?? "GENERAL").toString().trim();
+    const kind = (body.kind ?? "GENERAL").toString().trim().toUpperCase();
     const propertyId = (body.propertyId ?? "").toString().trim() || null;
 
     if (!name || name.length < 2) {
       return NextResponse.json({ error: "Please enter your name." }, { status: 400 });
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
     if (!message || message.length < 5) {
-      return NextResponse.json({ error: "Please write a short message (at least 5 characters)." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Please write a short message (at least 5 characters)." },
+        { status: 400 }
+      );
     }
 
     if (propertyId) {
@@ -30,40 +38,27 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const inquiry = await db.inquiry.create({
-      data: { name, email, phone, message, kind, propertyId },
+    const lead = await db.lead.create({
+      data: {
+        name,
+        email,
+        phone,
+        message,
+        propertyId,
+        source: kind === "VIEWING" ? "PROPERTY" : "CONTACT",
+      },
     });
-    return NextResponse.json({ ok: true, id: inquiry.id }, { status: 201 });
+
+    // Fire webhook, ignore failures (legacy form doesn't use waLink).
+    try {
+      await dispatchLeadWebhook(lead.id);
+    } catch {
+      /* noop */
+    }
+
+    return NextResponse.json({ ok: true, id: lead.id }, { status: 201 });
   } catch (e) {
     console.error("POST /api/inquiries", e);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
-  }
-}
-
-export async function GET() {
-  try {
-    const rows = await db.inquiry.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { property: { select: { id: true, title: true, slug: true } } },
-    });
-    return NextResponse.json({
-      count: rows.length,
-      inquiries: rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        email: r.email,
-        phone: r.phone,
-        kind: r.kind,
-        message: r.message,
-        status: r.status,
-        createdAt: r.createdAt.toISOString(),
-        property: r.property
-          ? { id: r.property.id, title: r.property.title, slug: r.property.slug }
-          : null,
-      })),
-    });
-  } catch (e) {
-    console.error("GET /api/inquiries", e);
-    return NextResponse.json({ count: 0, inquiries: [] });
   }
 }

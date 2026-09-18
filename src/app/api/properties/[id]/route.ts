@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await ctx.params;
     const row = await db.property.findFirst({
-      where: { OR: [{ id }, { slug: id }] },
+      where: { OR: [{ id }, { slug: id }], published: true },
       include: { agent: true },
     });
     if (!row) {

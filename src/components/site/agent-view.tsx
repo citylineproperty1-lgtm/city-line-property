@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PropertyCard } from "@/components/site/property-card";
 import { useAppStore } from "@/lib/store";
-import { TYPE_LABELS, type Property, type Agent } from "@/lib/types";
+import { categoryLabel, type Property, type Agent } from "@/lib/types";
 import {
   ArrowLeft,
   Phone,
@@ -257,7 +257,7 @@ export function AgentView({ id }: { id: string }) {
         <p className="mt-8 text-center text-[12.5px] text-neutral-400">
           Covering {stats?.districts ?? 1} neighbourhood
           {stats && stats.districts > 1 ? "s" : ""} ·{" "}
-          {[...new Set(listings.map((l) => TYPE_LABELS[l.type] ?? l.type))].join(", ")}
+          {[...new Set(listings.map((l) => categoryLabel(l.type)))].join(", ")}
         </p>
       )}
     </div>

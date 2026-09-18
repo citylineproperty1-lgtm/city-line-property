@@ -10,7 +10,6 @@ import {
   GitCompareArrows,
   Heart,
   Home,
-  Inbox,
   LineChart,
   Loader2,
   Mail,
@@ -162,13 +161,6 @@ export function CommandPalette() {
       },
     });
   }
-  shortcutGroup.push({
-    key: "admin",
-    label: "Team inbox",
-    sub: "Internal",
-    icon: iconBox(<Inbox className="h-4 w-4" />),
-    run: () => go({ name: "admin" }),
-  });
 
   const propertyItems: PaletteItem[] =
     searching && resultsReady

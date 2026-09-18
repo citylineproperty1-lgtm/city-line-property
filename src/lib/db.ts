@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 // Bump when the Prisma schema changes so dev servers holding a stale cached
 // client (missing new models) re-instantiate instead of serving `undefined`.
-const SCHEMA_STAMP = 'v2-viewevent'
+const SCHEMA_STAMP = 'v3-crm'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -12,9 +12,7 @@ const globalForPrisma = globalThis as unknown as {
 export const db =
   globalForPrisma.prisma && globalForPrisma.prismaStamp === SCHEMA_STAMP
     ? globalForPrisma.prisma
-    : new PrismaClient({
-        log: ['query'],
-      })
+    : new PrismaClient()
 
 globalForPrisma.prisma = db
 globalForPrisma.prismaStamp = SCHEMA_STAMP
