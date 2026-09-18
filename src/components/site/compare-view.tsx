@@ -169,7 +169,7 @@ export function CompareView() {
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
               {best?.cheapest.id === p.id && items.length > 1 && (
-                <span className="absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[10.5px] font-semibold text-white shadow-sm">
+                <span className="absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full bg-[#A8851D] px-2.5 py-1 text-[10.5px] font-semibold text-white shadow-sm">
                   <BadgeDollarSign className="h-3 w-3" /> Best price
                 </span>
               )}
@@ -201,7 +201,7 @@ export function CompareView() {
                 className={cn(
                   "inline-flex rounded-full px-2.5 py-1 text-[11.5px] font-semibold",
                   p.status === "RENT"
-                    ? "bg-emerald-50 text-emerald-700"
+                    ? "bg-[#F7EFD4] text-[#8C6D1F]"
                     : "bg-neutral-100 text-neutral-700"
                 )}
               >
@@ -297,7 +297,7 @@ export function CompareView() {
                     key={a}
                     className="flex items-start gap-1.5 text-left text-[12px] leading-snug text-neutral-600"
                   >
-                    <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600" />
+                    <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-[#A8851D]" />
                     {a}
                   </span>
                 ))}

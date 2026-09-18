@@ -243,3 +243,22 @@ Stage Summary:
 - v8 SHIPPED: production CRM + rebrand + redesign. Admin: /#/admin (admin@citylineproperty.com / CityLine@2025 — CHANGE from Settings). Leads: stored in DB, webhook auto-send configurable in Settings (CallMeBot {MESSAGE} template = no-official-API WhatsApp delivery), front-end buttons deep-link to real WhatsApp 923094499940. Supabase: supabase/schema.sql (complete: enums, 9 tables, indexes, triggers incl. view-counter, RLS, storage bucket, full seed, Edge-Function sketch) + supabase/README-SUPABASE.md + .env.local keys.
 - Known notes: team member names/bios are placeholders (edit via seed or future admin module); admin_users table not managed in-panel (single admin + password change only); upload writes local disk (Supabase storage documented for production); Prisma runtime stays SQLite in sandbox while schema.sql mirrors it 1:1 for Postgres.
 - Next ideas: agent CRUD in panel, posts/blog module, image order drag, multi-admin roles, WhatsApp Cloud API upgrade path, email notifications.
+
+---
+Task ID: r9 (cron round 9)
+Agent: main (webDevReview)
+Task: QA sweep + theme consistency + Team CRUD + CSV export + detail WhatsApp CTA
+
+Work Log:
+- QA found stale pre-v8 leftovers: insights header said "KARACHI MARKET" (emerald), agent profile showed black header band + "DHA Phase 6, Karachi" + emerald accents, command palette hinted "Clifton, DHA or PECHS", dead area-marquee.tsx still contained 12 Karachi areas (no longer imported). FIXED all: "Etihad Town · Lahore market" gold overline, gold-gradient agent band + "151-C, Etihad Town Phase 1, Lahore", palette hint now Etihad areas, area-marquee.tsx deleted.
+- CRITICAL BUG FIXED: property-detail.tsx had corrupted `const essage, setMessage] = useState(` (broken [message… destructuring — MultiEdit casualty from round 8). View detail form would not compile correctly. Restored.
+- Theme consistency sweep (emerald→gold iOS palette across legacy views): property-detail (12), insights-view (6), agent-view (3), compare-view (3), traffic-chart (1), recent-strip (1) — all emerald classes → gold tokens (#C9A227/#A8851D/#8C6D1F/#F7EFD4); insights KPI icon tiles → gold gradient; district bar colors → iOS palette; detail "For Sale" badge → gold / "For Rent" → iOS blue; compare active pill → gold; estimator result card → deep-gold gradient; agent Email CTA + black buttons → gold. Verified in browser (agent view + insights reload clean).
+- FEATURE — Admin Team tab (fixes "placeholder team" gap): /api/admin/agents GET/POST + [id] PATCH/DELETE (scrypt-free profile CRUD; DELETE 409 while listings assigned, error surfaced as toast); admin-team.tsx — member cards (accent avatar, listing count, bio), add/edit dialog (name/title/email/phone/initials/accent swatches/bio + live preview), delete confirm; wired as 6th tab in admin shell. API-tested: POST→PATCH→DELETE cycle + 409 guard (member with 6 listings blocked).
+- FEATURE — Leads CSV export: Export button in admin leads toolbar → downloads currently-filtered leads as Excel-friendly CSV (BOM + CRLF, all fields incl. property/source/waStatus) with toast.
+- FEATURE — Per-property WhatsApp enquiry: green "Enquire on WhatsApp" CTA in detail sidebar agent card, prefilled with title/reference/price via waLink to 923094499940 (verified href).
+- Verified: agent-browser reloads of insights/agent/detail + admin Team tab screenshots clean; lint exit 0; home 200; browser closed to free RAM.
+
+Stage Summary:
+- v9 shipped: full iOS-gold consistency across ALL views (no emerald/black leftovers), stale Karachi copy eliminated everywhere, Team CRUD in panel (public profiles now admin-editable end-to-end), CSV export, per-listing WhatsApp CTA.
+- Risks/notes: agents have no photo field (initials+accent only — fine for now); CSV export is client-side over the loaded (≤300) leads; detail page bundle should be hard-checked after the syntax fix (reloaded OK).
+- Next ideas: listing photo drag-reorder in drawer, posts/blog module, saved-search alerts for visitors, admin activity log, Supabase storage switch for uploads.

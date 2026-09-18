@@ -19,6 +19,7 @@ import {
   LogOut,
   Settings2,
   ShieldCheck,
+  UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
@@ -28,9 +29,10 @@ import { AdminOverview } from "./admin/admin-overview";
 import { AdminInventory } from "./admin/admin-inventory";
 import { AdminLeads } from "./admin/admin-leads";
 import { AdminCategories } from "./admin/admin-categories";
+import { AdminTeam } from "./admin/admin-team";
 import { AdminSettings } from "./admin/admin-settings";
 
-type TabKey = "overview" | "inventory" | "leads" | "categories" | "settings";
+type TabKey = "overview" | "inventory" | "leads" | "team" | "categories" | "settings";
 
 type Session =
   | { status: "checking" }
@@ -41,6 +43,7 @@ const TABS: { value: TabKey; label: string; icon: React.ComponentType<{ classNam
   { value: "overview", label: "Overview", icon: LayoutGrid },
   { value: "inventory", label: "Inventory", icon: Boxes },
   { value: "leads", label: "Leads", icon: ContactRound },
+  { value: "team", label: "Team", icon: UsersRound },
   { value: "categories", label: "Categories", icon: ShieldCheck },
   { value: "settings", label: "Settings", icon: Settings2 },
 ];
@@ -222,6 +225,7 @@ export function AdminView() {
                 {tab === "overview" && <AdminOverview api={api} />}
                 {tab === "inventory" && <AdminInventory api={api} />}
                 {tab === "leads" && <AdminLeads api={api} />}
+                {tab === "team" && <AdminTeam api={api} />}
                 {tab === "categories" && <AdminCategories api={api} />}
                 {tab === "settings" && <AdminSettings api={api} />}
               </motion.div>

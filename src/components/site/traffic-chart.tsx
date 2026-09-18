@@ -77,7 +77,7 @@ export function TrafficChart({
         <span
           className={cn(
             "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11.5px] font-semibold tabular-nums",
-            deltaUp && "bg-emerald-50 text-emerald-700",
+            deltaUp && "bg-[#F7EFD4] text-[#8C6D1F]",
             deltaDown && "bg-rose-50 text-rose-600",
             !deltaUp && !deltaDown && "bg-neutral-100 text-neutral-500"
           )}
@@ -99,8 +99,8 @@ export function TrafficChart({
         >
           <defs>
             <linearGradient id="traffic-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgb(16 185 129)" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="rgb(16 185 129)" stopOpacity="0" />
+              <stop offset="0%" stopColor="rgb(201 162 39)" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="rgb(201 162 39)" stopOpacity="0" />
             </linearGradient>
           </defs>
 
@@ -128,7 +128,7 @@ export function TrafficChart({
           <motion.path
             d={line}
             fill="none"
-            stroke="rgb(5 150 105)"
+            stroke="rgb(168 133 29)"
             strokeWidth="2.5"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
@@ -138,8 +138,8 @@ export function TrafficChart({
           />
 
           {/* end dot */}
-          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="4" fill="rgb(5 150 105)" />
-          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="8" fill="rgb(5 150 105)" opacity="0.15" />
+          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="4" fill="rgb(168 133 29)" />
+          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="8" fill="rgb(168 133 29)" opacity="0.15" />
 
           {/* hover guide */}
           {hover != null && (
@@ -152,7 +152,7 @@ export function TrafficChart({
                 stroke="rgb(10 10 10 / 0.18)"
                 strokeWidth="1"
               />
-              <circle cx={pts[hover][0]} cy={pts[hover][1]} r="4.5" fill="white" stroke="rgb(5 150 105)" strokeWidth="2.5" />
+              <circle cx={pts[hover][0]} cy={pts[hover][1]} r="4.5" fill="white" stroke="rgb(168 133 29)" strokeWidth="2.5" />
             </g>
           )}
 

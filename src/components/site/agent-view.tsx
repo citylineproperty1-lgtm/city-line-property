@@ -99,7 +99,7 @@ export function AgentView({ id }: { id: string }) {
         </p>
         <Button
           onClick={() => navigate({ name: "about" })}
-          className="mt-6 h-11 rounded-full bg-neutral-900 px-6 text-sm hover:bg-neutral-700"
+          className="mt-6 h-11 rounded-full bg-[#C9A227] px-6 text-sm hover:bg-[#A8851D]"
         >
           Meet the full team
         </Button>
@@ -124,7 +124,7 @@ export function AgentView({ id }: { id: string }) {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="mt-4 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white"
       >
-        <div className="h-28 bg-neutral-900 sm:h-32">
+        <div className="h-28 bg-gradient-to-br from-[#F3E5BB] via-[#E9CE7A] to-[#C9A227] sm:h-32">
           <div className="bg-dots h-full w-full opacity-20" />
         </div>
         <div className="relative px-6 pb-7 sm:px-10">
@@ -140,9 +140,9 @@ export function AgentView({ id }: { id: string }) {
                 <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
                   {agent.name}
                 </h1>
-                <BadgeCheck className="h-5 w-5 text-emerald-600" />
+                <BadgeCheck className="h-5 w-5 text-[#A8851D]" />
               </div>
-              <p className="mt-1 text-[14.5px] font-medium text-emerald-700">{agent.title}</p>
+              <p className="mt-1 text-[14.5px] font-medium text-[#8C6D1F]">{agent.title}</p>
             </div>
             <div className="flex gap-2">
               <a
@@ -154,7 +154,7 @@ export function AgentView({ id }: { id: string }) {
               </a>
               <a
                 href={`mailto:${agent.email}`}
-                className="flex h-10 items-center gap-2 rounded-full bg-neutral-900 px-4 text-[13px] font-medium text-white transition-colors hover:bg-neutral-700"
+                className="flex h-10 items-center gap-2 rounded-full bg-[#C9A227] px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#A8851D]"
               >
                 <Mail className="h-3.5 w-3.5" />
                 Email
@@ -178,7 +178,7 @@ export function AgentView({ id }: { id: string }) {
             </span>
             <span className="flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-neutral-400" />
-              DHA Phase 6, Karachi
+              151-C, Etihad Town Phase 1, Lahore
             </span>
           </div>
 
@@ -216,7 +216,7 @@ export function AgentView({ id }: { id: string }) {
       <section className="mt-12">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[13px] font-semibold uppercase tracking-wider text-emerald-600">
+            <p className="text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
               Portfolio
             </p>
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900">
@@ -238,7 +238,7 @@ export function AgentView({ id }: { id: string }) {
             </p>
             <Button
               onClick={() => navigate({ name: "properties" })}
-              className="mt-5 h-10 rounded-full bg-neutral-900 px-5 text-[13px] font-medium hover:bg-neutral-700"
+              className="mt-5 h-10 rounded-full bg-[#C9A227] px-5 text-[13px] font-medium hover:bg-[#A8851D]"
             >
               Browse all properties
             </Button>

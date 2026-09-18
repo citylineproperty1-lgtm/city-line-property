@@ -336,7 +336,7 @@ export function CommandPalette() {
                     No homes match “{trimmed}”
                   </p>
                   <p className="mt-1 text-[13px] text-neutral-400">
-                    Try an area like Clifton, DHA or PECHS.
+                    Try an area like Etihad Town Phase 1 or Royal Enclave.
                   </p>
                 </div>
               )}

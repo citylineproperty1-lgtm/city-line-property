@@ -58,7 +58,7 @@ const fadeUp = {
   transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
-const BAR_COLORS = ["bg-emerald-500", "bg-neutral-900", "bg-amber-400", "bg-rose-400", "bg-teal-500", "bg-neutral-300", "bg-lime-500"];
+const BAR_COLORS = ["bg-[#34C759]", "bg-[#FF9500]", "bg-[#30B0C7]", "bg-[#AF52DE]", "bg-[#FF2D55]", "bg-[#007AFF]", "bg-[#A2845E]"];
 
 export function InsightsView() {
   const { navigate } = useAppStore();
@@ -117,9 +117,9 @@ export function InsightsView() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       {/* Header */}
       <motion.div {...fadeUp} className="max-w-2xl">
-        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wider text-emerald-600">
+        <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
           <LineChart className="h-4 w-4" />
-          Karachi market
+          Etihad Town · Lahore market
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
           Market insights
@@ -164,7 +164,7 @@ export function InsightsView() {
             transition={{ ...fadeUp.transition, delay: i * 0.05 }}
             className="rounded-2xl border border-neutral-200/80 bg-white p-5"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-900 text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E9CE7A] to-[#A8851D] text-white">
               <k.icon className="h-4 w-4" />
             </span>
             <p className="mt-3 text-xl font-semibold tracking-tight text-neutral-900">
@@ -203,7 +203,7 @@ export function InsightsView() {
                   <p className="text-[13px] font-semibold tabular-nums text-neutral-900">
                     {d.saleAvg > 0 ? formatPKR(d.saleAvg) : "—"}
                     {d.rentAvg > 0 && (
-                      <span className="ml-2 text-[11.5px] font-normal text-emerald-700">
+                      <span className="ml-2 text-[11.5px] font-normal text-[#8C6D1F]">
                         rent {formatPKR(d.rentAvg, true)}
                       </span>
                     )}
@@ -215,7 +215,7 @@ export function InsightsView() {
                     whileInView={{ width: `${Math.max((d.saleAvg / maxSale) * 100, 3)}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: i * 0.07, ease: "easeOut" }}
-                    className={cn("h-full rounded-full", i === 0 ? "bg-emerald-500" : "bg-neutral-800")}
+                    className={cn("h-full rounded-full", i === 0 ? "bg-[#F7EFD4]0" : "bg-neutral-800")}
                   />
                 </div>
               </div>
@@ -274,7 +274,7 @@ export function InsightsView() {
               </div>
               <div className="h-12 w-px bg-neutral-200" />
               <div className="flex-1">
-                <p className="text-2xl font-semibold tracking-tight text-emerald-700">
+                <p className="text-2xl font-semibold tracking-tight text-[#8C6D1F]">
                   <AnimatedNumber value={data.rentCount} />
                 </p>
                 <p className="text-[12.5px] text-neutral-500">for rent</p>
@@ -343,7 +343,7 @@ export function InsightsView() {
                   )}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] font-semibold text-neutral-900 group-hover:text-emerald-700">
+                  <span className="block truncate text-[14px] font-semibold text-neutral-900 group-hover:text-[#8C6D1F]">
                     {m.title}
                   </span>
                   <span className="mt-0.5 flex items-center gap-3 text-[12px] text-neutral-400">

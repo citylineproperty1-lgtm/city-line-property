@@ -40,7 +40,7 @@ export function RecentStrip() {
     <section className="mx-auto w-full max-w-6xl px-4 pb-4 pt-20 sm:px-6" aria-label="Recently viewed properties">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wider text-emerald-600">
+          <p className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wider text-[#A8851D]">
             <History className="h-3.5 w-3.5" />
             Pick up where you left off
           </p>

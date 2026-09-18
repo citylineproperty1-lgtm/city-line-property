@@ -13,6 +13,7 @@ import {
   Building2,
   CalendarClock,
   CircleDollarSign,
+  Download,
   Inbox,
   Loader2,
   Mail,
@@ -206,6 +207,45 @@ export function AdminLeads({ api }: { api: AdminApi }) {
     window.open(`https://wa.me/${digits}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
   };
 
+  /** Export the currently filtered leads as a CSV file (Excel-friendly). */
+  const exportCsv = () => {
+    if (filtered.length === 0) {
+      toast.info("No leads to export in the current view");
+      return;
+    }
+    const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+    const header = ["Date", "Name", "Phone", "Email", "Category", "Area", "Budget (PKR)", "Property", "Source", "Status", "WhatsApp", "Message"];
+    const rows = filtered.map((l) =>
+      [
+        new Date(l.createdAt).toLocaleString("en-GB"),
+        l.name,
+        l.phone,
+        l.email ?? "",
+        l.category ?? "",
+        l.area ?? "",
+        l.budget ?? "",
+        l.property?.title ?? "",
+        l.source,
+        l.status,
+        l.waStatus,
+        l.message,
+      ]
+        .map(esc)
+        .join(",")
+    );
+    const csv = "\uFEFF" + [header.map(esc).join(","), ...rows].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cityline-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${filtered.length} lead(s) to CSV`);
+  };
+
   const pipelineOptions = [
     { value: "ALL" as Pipeline, label: "All", badge: counts.ALL },
     ...LEAD_STATUSES.map((s) => ({
@@ -228,15 +268,26 @@ export function AdminLeads({ api }: { api: AdminApi }) {
               value={pipeline}
               onChange={setPipeline}
             />
-            <div className="relative lg:w-72">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-              <Input
-                value={qInput}
-                onChange={(e) => setQInput(e.target.value)}
-                placeholder="Search name, phone, message…"
-                aria-label="Search leads"
-                className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#C9A227]/35"
-              />
+            <div className="flex items-center gap-2">
+              <div className="relative lg:w-72">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <Input
+                  value={qInput}
+                  onChange={(e) => setQInput(e.target.value)}
+                  placeholder="Search name, phone, message…"
+                  aria-label="Search leads"
+                  className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#C9A227]/35"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={exportCsv}
+                className="h-10 shrink-0 rounded-xl border-black/[0.09] px-3 text-[12.5px] font-semibold text-neutral-600 hover:bg-neutral-50"
+                aria-label="Export leads to CSV"
+              >
+                <Download className="h-4 w-4" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
             </div>
           </div>
           <p className="mt-2.5 text-[11.5px] text-neutral-400">
