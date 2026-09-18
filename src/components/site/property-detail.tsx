@@ -377,7 +377,10 @@ export function PropertyDetailView({ id }: { id: string }) {
               {property.description}
             </p>
             <p className="mt-4 text-[13px] text-neutral-400">
-              Listed {formatDate(property.createdAt)} · Reference #{property.slug}
+              Listed {formatDate(property.createdAt)} · Ref{" "}
+              <span className="font-semibold tracking-wide text-[#8C6D1F]">
+                {property.reference}
+              </span>
             </p>
           </motion.section>
 

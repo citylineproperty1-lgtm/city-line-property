@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
+  ArrowLeft,
+  ArrowRight,
   Crown,
   ImagePlus,
   Link2,
@@ -20,6 +22,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -193,6 +196,17 @@ export function AdminListingDrawer({
     const next = [...form.images];
     const [picked] = next.splice(idx, 1);
     set("images", [picked, ...next]);
+  };
+
+  /* Drag-to-reorder (plus arrow buttons for keyboard / touch precision). */
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  const reorderImage = (from: number, to: number) => {
+    if (from === to || to < 0 || to >= form.images.length) return;
+    const next = [...form.images];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    set("images", next);
   };
 
   const save = async () => {
@@ -521,14 +535,33 @@ export function AdminListingDrawer({
           {/* Images manager */}
           <div className="space-y-2.5">
             <Label className="text-[12px] text-neutral-500">
-              Photos <span className="text-neutral-400">· first image is the cover</span>
+              Photos{" "}
+              <span className="text-neutral-400">
+                · drag to reorder — first image is the cover
+              </span>
             </Label>
             {form.images.length > 0 && (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {form.images.map((src, i) => (
                   <div
                     key={`${src}-${i}`}
-                    className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-black/[0.08]"
+                    draggable
+                    onDragStart={(e) => {
+                      setDragIdx(i);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDragEnter={() => {
+                      if (dragIdx === null || dragIdx === i) return;
+                      reorderImage(dragIdx, i);
+                      setDragIdx(i);
+                    }}
+                    onDrop={(e) => e.preventDefault()}
+                    onDragEnd={() => setDragIdx(null)}
+                    className={cn(
+                      "group relative aspect-[4/3] overflow-hidden rounded-xl border border-black/[0.08] cursor-grab active:cursor-grabbing",
+                      dragIdx === i && "opacity-40 ring-2 ring-[#C9A227]"
+                    )}
                   >
                     <Image
                       src={src}
@@ -551,15 +584,39 @@ export function AdminListingDrawer({
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
-                    {i !== 0 && (
+                    <div className="absolute inset-x-1.5 bottom-1.5 flex items-center gap-1">
                       <button
                         type="button"
-                        onClick={() => setCover(i)}
-                        className="absolute inset-x-1.5 bottom-1.5 rounded-lg bg-black/55 py-1 text-[10px] font-semibold text-white backdrop-blur transition-colors hover:bg-black/75"
+                        disabled={i === 0}
+                        onClick={() => reorderImage(i, i - 1)}
+                        aria-label={`Move photo ${i + 1} earlier`}
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/75 disabled:opacity-30"
                       >
-                        Set as cover
+                        <ArrowLeft className="h-3 w-3" />
                       </button>
-                    )}
+                      {i !== 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => setCover(i)}
+                          className="min-w-0 flex-1 truncate rounded-lg bg-black/55 py-1 text-[10px] font-semibold text-white backdrop-blur transition-colors hover:bg-black/75"
+                        >
+                          Set as cover
+                        </button>
+                      ) : (
+                        <span className="min-w-0 flex-1 truncate rounded-lg bg-black/35 py-1 text-center text-[10px] font-semibold text-white/90 backdrop-blur">
+                          Cover
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        disabled={i === form.images.length - 1}
+                        onClick={() => reorderImage(i, i + 1)}
+                        aria-label={`Move photo ${i + 1} later`}
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/75 disabled:opacity-30"
+                      >
+                        <ArrowRight className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

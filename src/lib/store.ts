@@ -2,7 +2,9 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { categoryLabel } from "@/lib/types";
 
+/** City Line Property — global client store (view router + shortlist + alerts). */
 export type View =
   | { name: "home" }
   | { name: "properties" }
@@ -13,9 +15,28 @@ export type View =
   | { name: "saved" }
   | { name: "compare" }
   | { name: "insights" }
+  | { name: "digest" }
   | { name: "admin" };
 
 export type Currency = "PKR" | "USD";
+
+export interface SavedSearch {
+  id: string;
+  filters: ListingsFiltersSnapshot;
+  createdAt: number;
+  /** Property ids already seen by the visitor — drives the "new matches" badge. */
+  seenIds: string[];
+}
+
+/** The meaningful part of ListingsFilters that defines a search. */
+export interface ListingsFiltersSnapshot {
+  search: string;
+  status: string;
+  type: string;
+  beds: number;
+  minPrice: number | null;
+  maxPrice: number | null;
+}
 
 interface ListingsFilters {
   search: string;
@@ -97,6 +118,7 @@ export function hashToView(hash: string): View | null {
     case "saved":
     case "compare":
     case "insights":
+    case "digest":
     case "admin":
       return { name: head } as View;
     case "property":
@@ -121,6 +143,7 @@ interface AppState {
   favorites: string[];
   compare: string[];
   recent: string[];
+  savedSearches: SavedSearch[];
   currency: Currency;
   paletteOpen: boolean;
   navigate: (view: View) => void;
@@ -134,6 +157,9 @@ interface AppState {
   clearCompare: () => void;
   startCompare: (ids: string[]) => void;
   recordRecent: (id: string) => void;
+  saveSearch: () => boolean; // false when the same search is already saved
+  removeSearch: (id: string) => void;
+  markSearchSeen: (id: string, ids: string[]) => void;
 }
 
 const defaultFilters: ListingsFilters = {
@@ -154,6 +180,7 @@ export const useAppStore = create<AppState>()(
       favorites: [],
       compare: [],
       recent: [],
+      savedSearches: [],
       currency: "PKR",
       paletteOpen: false,
       setPalette: (open) => set({ paletteOpen: open }),
@@ -201,6 +228,43 @@ export const useAppStore = create<AppState>()(
         set((s) => ({
           recent: [id, ...s.recent.filter((r) => r !== id)].slice(0, 8),
         })),
+      saveSearch: () => {
+        const f = get().listingsFilters;
+        const snapshot: ListingsFiltersSnapshot = {
+          search: f.search,
+          status: f.status,
+          type: f.type,
+          beds: f.beds,
+          minPrice: f.minPrice,
+          maxPrice: f.maxPrice,
+        };
+        const exists = get().savedSearches.some(
+          (s) =>
+            s.filters.search === snapshot.search &&
+            s.filters.status === snapshot.status &&
+            s.filters.type === snapshot.type &&
+            s.filters.beds === snapshot.beds &&
+            s.filters.minPrice === snapshot.minPrice &&
+            s.filters.maxPrice === snapshot.maxPrice
+        );
+        if (exists) return false;
+        const entry: SavedSearch = {
+          id: `srch_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+          filters: snapshot,
+          createdAt: Date.now(),
+          seenIds: [],
+        };
+        set((s) => ({ savedSearches: [entry, ...s.savedSearches].slice(0, 8) }));
+        return true;
+      },
+      removeSearch: (id) =>
+        set((s) => ({ savedSearches: s.savedSearches.filter((x) => x.id !== id) })),
+      markSearchSeen: (id, ids) =>
+        set((s) => ({
+          savedSearches: s.savedSearches.map((x) =>
+            x.id === id ? { ...x, seenIds: ids } : x
+          ),
+        })),
     }),
     {
       name: "city-line-property",
@@ -208,8 +272,39 @@ export const useAppStore = create<AppState>()(
         favorites: s.favorites,
         compare: s.compare,
         recent: s.recent,
+        savedSearches: s.savedSearches,
         currency: s.currency,
       }),
     }
   )
 );
+
+/* ------------------------- Saved-search helpers -------------------------- */
+
+/** Human-readable label for a saved search, e.g. "Houses · For Sale · Phase 1". */
+export function describeListingsFilters(f: ListingsFiltersSnapshot): string {
+  const parts: string[] = [];
+  if (f.type !== "ALL") parts.push(categoryLabel(f.type));
+  if (f.status === "SALE") parts.push("For Sale");
+  if (f.status === "RENT") parts.push("For Rent");
+  if (f.beds > 0) parts.push(`${f.beds}+ beds`);
+  if (f.search) parts.push(`“${f.search}”`);
+  if (f.minPrice != null || f.maxPrice != null) {
+    const lo = f.minPrice != null ? `${Math.round(f.minPrice / 100000) / 10}M` : null;
+    const hi = f.maxPrice != null ? `${Math.round(f.maxPrice / 100000) / 10}M` : null;
+    parts.push(lo && hi ? `${lo}–${hi} PKR` : lo ? `from ${lo} PKR` : `up to ${hi} PKR`);
+  }
+  return parts.length ? parts.join(" · ") : "All listings";
+}
+
+/** Build the public /api/properties query for a saved search (no sort). */
+export function savedSearchQuery(f: ListingsFiltersSnapshot): string {
+  const p = new URLSearchParams();
+  if (f.search) p.set("search", f.search);
+  if (f.status !== "ALL") p.set("status", f.status);
+  if (f.type !== "ALL") p.set("type", f.type);
+  if (f.beds > 0) p.set("beds", String(f.beds));
+  if (f.minPrice != null) p.set("minPrice", String(f.minPrice));
+  if (f.maxPrice != null) p.set("maxPrice", String(f.maxPrice));
+  return p.toString();
+}

@@ -144,3 +144,21 @@ model ViewEvent {
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 }
+
+// Property Digest editorial posts (market notes, guides, area updates).
+// NOTE: runtime CRUD uses raw SQL (src/lib/posts.ts) so the long-running dev
+// server never depends on a regenerated Prisma client — see worklog Task 9.
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  excerpt   String   @default("")
+  content   String   @default("")
+  cover     String?
+  tag       String   @default("Market notes")
+  author    String   @default("City Line Property")
+  published Boolean  @default(true)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

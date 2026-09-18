@@ -63,3 +63,4 @@ scripts/gen-images.log
 tests
 download
 upload
+tool-results/

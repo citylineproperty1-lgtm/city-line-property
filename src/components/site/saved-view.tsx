@@ -5,9 +5,15 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
-import { useAppStore } from "@/lib/store";
+import {
+  useAppStore,
+  describeListingsFilters,
+  savedSearchQuery,
+  type SavedSearch,
+} from "@/lib/store";
 import type { Property } from "@/lib/types";
-import { Heart, GitCompareArrows, ArrowUpDown } from "lucide-react";
+import { formatPKR } from "@/lib/format";
+import { BellRing, GitCompareArrows, ArrowUpDown, Heart, Search, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 type SavedSort = "recent" | "price-asc" | "price-desc" | "area-desc" | "beds-desc";
@@ -20,11 +26,15 @@ const SORT_OPTIONS: { value: SavedSort; label: string }[] = [
   { value: "beds-desc", label: "Most bedrooms" },
 ];
 
+type AlertStat = { total: number; fresh: number; ids: string[]; latestPrice: number | null };
+
 export function SavedView() {
-  const { favorites, navigate, startCompare, compare } = useAppStore();
+  const { favorites, navigate, startCompare, compare, savedSearches, removeSearch, markSearchSeen } =
+    useAppStore();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SavedSort>("recent");
+  const [alertStats, setAlertStats] = useState<Record<string, AlertStat>>({});
 
   useEffect(() => {
     const load = () => {
@@ -44,6 +54,45 @@ export function SavedView() {
   }, [favorites]);
 
   const byId = new Map(properties.map((p) => [p.id, p]));
+
+  // Live match counts for each saved search (fires one lightweight request per
+  // search; counts include everything published, like the listings grid).
+  useEffect(() => {
+    let alive = true;
+    savedSearches.forEach((s) => {
+      fetch(`/api/properties?${savedSearchQuery(s.filters)}&limit=60`)
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error("failed"))))
+        .then((d) => {
+          if (!alive) return;
+          const list: Property[] = d.properties ?? [];
+          const ids = list.map((p) => p.id);
+          const seen = new Set(s.seenIds);
+          const fresh = ids.filter((id) => !seen.has(id)).length;
+          const prices = list.map((p) => p.price);
+          setAlertStats((prev) => ({
+            ...prev,
+            [s.id]: {
+              total: list.length,
+              fresh,
+              ids,
+              latestPrice: prices.length ? Math.min(...prices) : null,
+            },
+          }));
+        })
+        .catch(() => {});
+    });
+    return () => {
+      alive = false;
+    };
+  }, [savedSearches.length]);
+
+  const openSavedSearch = (s: SavedSearch) => {
+    markSearchSeen(s.id, alertStats[s.id]?.ids ?? []);
+    useAppStore.getState().resetFilters();
+    useAppStore.getState().setFilters(s.filters);
+    navigate({ name: "properties" });
+  };
+
   const sorted: Property[] =
     sort === "recent"
       ? [...favorites].reverse().flatMap((id) => {
@@ -74,6 +123,77 @@ export function SavedView() {
           </p>
         </div>
       </div>
+
+      {/* Search alerts */}
+      {savedSearches.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="mt-6 rounded-3xl border border-[#C9A227]/25 bg-[linear-gradient(135deg,rgba(233,206,122,0.14),rgba(201,162,39,0.06))] p-5 sm:p-6"
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-[0_4px_12px_rgba(201,162,39,0.35)]">
+              <BellRing className="h-4 w-4" />
+            </span>
+            <div>
+              <h2 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                Search alerts
+              </h2>
+              <p className="text-[12px] text-neutral-500">
+                We watch these searches — new matches are flagged the moment they appear.
+              </p>
+            </div>
+          </div>
+          <ul className="mt-4 space-y-2">
+            {savedSearches.map((s) => {
+              const stat = alertStats[s.id];
+              return (
+                <li
+                  key={s.id}
+                  className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-black/[0.06] bg-white/85 px-4 py-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13.5px] font-semibold text-neutral-800">
+                      {describeListingsFilters(s.filters)}
+                    </p>
+                    <p className="mt-0.5 text-[11.5px] text-neutral-500">
+                      {stat
+                        ? `${stat.total} current match${stat.total === 1 ? "" : "es"}` +
+                          (stat.latestPrice != null && stat.total > 0
+                            ? ` · from ${formatPKR(stat.latestPrice)}`
+                            : "")
+                        : "Checking matches…"}
+                    </p>
+                  </div>
+                  {stat && stat.fresh > 0 && (
+                    <span className="rounded-full bg-[#C9A227] px-2.5 py-1 text-[10.5px] font-bold text-white shadow-sm">
+                      {stat.fresh} new
+                    </span>
+                  )}
+                  <button
+                    onClick={() => openSavedSearch(s)}
+                    className="flex h-9 items-center gap-1.5 rounded-full border border-[#C9A227]/45 bg-white px-3.5 text-[12px] font-semibold text-[#8A7119] transition-colors hover:bg-[#C9A227]/10"
+                  >
+                    View matches
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      removeSearch(s.id);
+                      toast.success("Alert removed");
+                    }}
+                    aria-label="Remove alert"
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </motion.section>
+      )}
 
       {/* Compare shortcut */}
       {!loading && properties.length >= 2 && (
@@ -134,13 +254,14 @@ export function SavedView() {
             Nothing saved yet
           </h3>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
-            Tap the heart on any property to keep it here — your shortlist stays on
-            this device even after you close the browser.
+            Tap the heart on any property to keep it here — and save a search from
+            the Listings page to get alerts when new matches arrive.
           </p>
           <Button
             onClick={() => navigate({ name: "properties" })}
             className="mt-6 h-11 rounded-full bg-neutral-900 px-6 text-sm font-medium hover:bg-neutral-700"
           >
+            <Search className="h-4 w-4" />
             Explore properties
           </Button>
         </motion.div>

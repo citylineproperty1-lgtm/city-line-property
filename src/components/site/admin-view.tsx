@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Loader2,
   LogOut,
+  Newspaper,
   Settings2,
   ShieldCheck,
   UsersRound,
@@ -30,9 +31,10 @@ import { AdminInventory } from "./admin/admin-inventory";
 import { AdminLeads } from "./admin/admin-leads";
 import { AdminCategories } from "./admin/admin-categories";
 import { AdminTeam } from "./admin/admin-team";
+import { AdminDigest } from "./admin/admin-digest";
 import { AdminSettings } from "./admin/admin-settings";
 
-type TabKey = "overview" | "inventory" | "leads" | "team" | "categories" | "settings";
+type TabKey = "overview" | "inventory" | "leads" | "team" | "digest" | "categories" | "settings";
 
 type Session =
   | { status: "checking" }
@@ -44,6 +46,7 @@ const TABS: { value: TabKey; label: string; icon: React.ComponentType<{ classNam
   { value: "inventory", label: "Inventory", icon: Boxes },
   { value: "leads", label: "Leads", icon: ContactRound },
   { value: "team", label: "Team", icon: UsersRound },
+  { value: "digest", label: "Digest", icon: Newspaper },
   { value: "categories", label: "Categories", icon: ShieldCheck },
   { value: "settings", label: "Settings", icon: Settings2 },
 ];
@@ -226,6 +229,7 @@ export function AdminView() {
                 {tab === "inventory" && <AdminInventory api={api} />}
                 {tab === "leads" && <AdminLeads api={api} />}
                 {tab === "team" && <AdminTeam api={api} />}
+                {tab === "digest" && <AdminDigest api={api} />}
                 {tab === "categories" && <AdminCategories api={api} />}
                 {tab === "settings" && <AdminSettings api={api} />}
               </motion.div>

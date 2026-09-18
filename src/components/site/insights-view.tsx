@@ -215,7 +215,12 @@ export function InsightsView() {
                     whileInView={{ width: `${Math.max((d.saleAvg / maxSale) * 100, 3)}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: i * 0.07, ease: "easeOut" }}
-                    className={cn("h-full rounded-full", i === 0 ? "bg-[#F7EFD4]0" : "bg-neutral-800")}
+                    className={cn(
+                      "h-full rounded-full",
+                      i === 0
+                        ? "bg-gradient-to-r from-[#E9CE7A] to-[#C9A227]" // home base: brand gold
+                        : BAR_COLORS[i % BAR_COLORS.length]
+                    )}
                   />
                 </div>
               </div>
@@ -235,12 +240,11 @@ export function InsightsView() {
               {data.typeMix.map((t, i) => (
                 <motion.div
                   key={t.type}
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(t.count / typeTotal) * 100}%` }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.2 + i * 0.08 }}
-                  style={{ width: `${(t.count / typeTotal) * 100}%` }}
-                  className={cn("h-full origin-left", BAR_COLORS[i % BAR_COLORS.length])}
+                  transition={{ duration: 0.6, delay: 0.2 + i * 0.08, ease: "easeOut" }}
+                  className={cn("h-full", BAR_COLORS[i % BAR_COLORS.length])}
                   title={`${categoryLabel(t.type)}: ${t.count}`}
                 />
               ))}
@@ -282,12 +286,11 @@ export function InsightsView() {
             </div>
             <div className="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-neutral-100">
               <motion.div
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: data.saleCount / data.total }}
+                initial={{ width: 0 }}
+                whileInView={{ width: `${(data.saleCount / data.total) * 100}%` }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, ease: "easeOut" }}
-                style={{ width: `${(data.saleCount / data.total) * 100}%` }}
-                className="h-full origin-left bg-neutral-800"
+                className="h-full bg-gradient-to-r from-[#E9CE7A] to-[#C9A227]"
               />
             </div>
             <div className="mt-2 flex justify-between text-[11px] text-neutral-400">

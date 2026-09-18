@@ -7,7 +7,7 @@ import { useAppStore } from "@/lib/store";
 import { waLink } from "@/lib/business";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { BadgePercent, BarChart3, Heart, Home, KeyRound, Mail, Menu, Search, Users } from "lucide-react";
+import { BadgePercent, BarChart3, Heart, Home, KeyRound, Mail, Menu, Newspaper, Search, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { View } from "@/lib/store";
 import { Logo } from "@/components/site/logo";
@@ -17,6 +17,7 @@ const NAV: { label: string; view: View; icon: React.ComponentType<{ className?: 
   { label: "Home", view: { name: "home" }, icon: Home },
   { label: "Listings", view: { name: "properties" }, icon: KeyRound },
   { label: "Insights", view: { name: "insights" }, icon: BarChart3 },
+  { label: "Digest", view: { name: "digest" }, icon: Newspaper },
   { label: "About", view: { name: "about" }, icon: Users },
   { label: "Contact", view: { name: "contact" }, icon: Mail },
 ];

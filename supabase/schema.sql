@@ -10,7 +10,7 @@
 --
 -- WHAT'S INSIDE
 --   • Enums + tables (admin_users, categories, agents, properties, leads,
---     testimonials, newsletter_subscribers, view_events, settings)
+--     testimonials, newsletter_subscribers, view_events, digest_posts, settings)
 --   • Indexes, updated_at triggers, view counter trigger
 --   • Row Level Security: public can read published listings & insert leads;
 --     everything else is service_role only
@@ -155,6 +155,23 @@ create table public.view_events (
   created_at  timestamptz not null default now()
 );
 
+-- Property Digest editorial posts (market notes, guides, area updates)
+create table public.digest_posts (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  slug        text not null unique,
+  excerpt     text not null default '',
+  content     text not null default '',
+  cover       text,
+  tag         text not null default 'Market notes',
+  author      text not null default 'City Line Property',
+  published   boolean not null default true,
+  views       int not null default 0,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  constraint digest_posts_excerpt_len check (char_length(excerpt) <= 400)
+);
+
 -- Key/value settings (webhook_url, whatsapp numbers, office info…)
 create table public.settings (
   key        text primary key,
@@ -175,6 +192,8 @@ create index properties_created_idx     on public.properties (created_at desc);
 create index leads_status_idx           on public.leads (status);
 create index leads_created_idx          on public.leads (created_at desc);
 create index view_events_property_idx   on public.view_events (property_id, created_at desc);
+create index digest_posts_published_idx on public.digest_posts (published, created_at desc);
+create index digest_posts_tag_idx       on public.digest_posts (tag);
 
 -- ---------------------------------------------------------------------------
 -- 4. TRIGGERS (updated_at + view counter)
@@ -191,6 +210,8 @@ create trigger properties_updated_at before update on public.properties
 create trigger leads_updated_at before update on public.leads
   for each row execute function public.set_updated_at();
 create trigger settings_updated_at before update on public.settings
+  for each row execute function public.set_updated_at();
+create trigger digest_posts_updated_at before update on public.digest_posts
   for each row execute function public.set_updated_at();
 
 -- Auto-increment the listing view counter whenever a view event lands
@@ -219,6 +240,7 @@ alter table public.leads                  enable row level security;
 alter table public.testimonials           enable row level security;
 alter table public.newsletter_subscribers enable row level security;
 alter table public.view_events            enable row level security;
+alter table public.digest_posts           enable row level security;
 alter table public.settings               enable row level security;
 
 -- Public catalog: published listings only
@@ -229,12 +251,16 @@ create policy "public reads published properties"
 create policy "public reads categories"  on public.categories for select to anon using (true);
 create policy "public reads agents"      on public.agents     for select to anon using (true);
 create policy "public reads testimonials" on public.testimonials for select to anon using (true);
+create policy "public reads published digest posts"
+  on public.digest_posts for select to anon
+  using (published = true);
 
 -- Anyone can submit a lead or subscribe
 create policy "public inserts leads" on public.leads for insert to anon with check (true);
 create policy "public inserts subscribers" on public.newsletter_subscribers for insert to anon with check (true);
 
--- admin_users, settings, view_events: NO anon policies → service_role only.
+-- admin_users, settings, view_events, digest_posts (writes): NO anon policies
+-- → service_role only.
 -- (Leads SELECT/UPDATE/DELETE also service_role only — the CRM inbox is private.)
 
 -- ---------------------------------------------------------------------------
@@ -431,6 +457,44 @@ insert into public.leads (name, phone, email, category, area, budget, message, p
 insert into public.view_events (property_id, created_at)
 select p.id, now() - (random() * interval '13 days')
 from public.properties p, generate_series(1, 9) g;
+
+-- Launch articles for the Property Digest (public: #/digest)
+insert into public.digest_posts (title, slug, excerpt, content, cover, tag, created_at) values
+  ('Why Etihad Town Phase 1 is Lahore''s smartest buy right now',
+   'why-etihad-town-phase-1-smartest-buy',
+   'Ring Road access, finished infrastructure and prices still below DHA — Phase 1 has quietly become the best value per marla on Lahore''s west side.',
+   'Every month we walk dozens of plots in Etihad Town Phase 1 with buyers from Lahore and overseas, and the same question comes up: why here?
+
+## The numbers
+
+Average asking prices in Phase 1 sit roughly 35–45% below comparable DHA phases, while Ring Road puts Mall Road within an easy drive. Same finished-society feel, materially lower entry.
+
+Come by the office at 151-C, Etihad Town Phase 1 — the chai is on us.',
+   '/images/properties/plot-residential-1.png',
+   'Market notes',
+   now() - interval '2 days'),
+  ('1% commission, explained: what direct dealing actually saves you',
+   'one-percent-commission-explained',
+   'The traditional Lahore broker chain quietly adds 2–4% to every deal. Here is the arithmetic of why we charge 1% — and what it saves on a 2 crore plot.',
+   'Most property deals in Lahore pass through three or four hands. Each adds their margin, and nobody writes it on a receipt.
+
+## The arithmetic
+
+On a PKR 2 crore plot: a traditional chain adds PKR 400,000–800,000 in hidden margins. City Line Property charges PKR 200,000 — flat, in writing, nothing else.',
+   null,
+   'Guides',
+   now() - interval '1 day'),
+  ('Plot vs house vs apartment: where should your first 1.5 crore go?',
+   'plot-vs-house-vs-apartment-first-crore',
+   'Three buyers, three budgets, three very different outcomes. A practical walkthrough of capital growth, rental yield and holding cost in Etihad Town''s five blocks.',
+   'A family walks into our office with PKR 1.5 crore and one question: where does this work hardest?
+
+## Our rule of thumb
+
+Buying to hold 3+ years with no income needed? Plot. Need a home within a year? House. Want monthly cash flow? Apartment or studio.',
+   '/images/properties/plot-commercial-1.png',
+   'Guides',
+   now());
 
 -- ============================================================================
 -- 11. OPTIONAL — auto-forward new leads to WhatsApp via a Database Webhook

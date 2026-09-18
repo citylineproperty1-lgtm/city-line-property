@@ -179,6 +179,13 @@ export function SiteFooter() {
               One email a month — new listings, price trends and honest market
               notes. No spam, ever.
             </p>
+            <button
+              onClick={() => navigate({ name: "digest" })}
+              className="group mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#E9CE7A] transition-colors hover:text-[#F3E3B2]"
+            >
+              Read the digest
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
             <form onSubmit={subscribe} className="mt-4 flex gap-2">
               <Input
                 type="email"
