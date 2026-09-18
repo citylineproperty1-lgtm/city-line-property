@@ -73,3 +73,25 @@ Work Log:
 Stage Summary:
 - v2 shipped: compare tool, lightbox, WhatsApp float, marquee, animated counters — 6 new files, 869 insertions.
 - Next-round ideas: agent detail view, pagination or infinite scroll on listings, saved-view compare shortcut, market insights/blog section, dark mode, SEO per-view metadata, recent-viewed strip.
+
+---
+Task ID: 5
+Agent: main
+Task: Round 3 — QA, agent profiles, load-more, recently-viewed, polish
+
+Work Log:
+- QA via agent-browser first: all views render, compare add/clear OK, contact/about/footer OK, 0 console errors. Verdict: stable → features.
+- NEW — Agent profile view:
+  - API: GET /api/agents/[id] (agent + listingCount); /api/properties now supports agentId + offset params and returns total.
+  - agent-view.tsx: dark dotted header band, overlapping accent avatar, verified badge, Call/Email CTAs, bio, contact rows, 4-stat grid (active/sale/rent/avg rating), portfolio grid (PropertyCard), empty state, neighbourhood/type footer line, skeleton + not-found states.
+  - Wiring: about-view team cards are now buttons → agent view ("View profile →" hover reveal; mail/tel links stopPropagation). property-detail agent card row clickable ("View profile" pill). Footer "Our agents" → "Compare properties"; page.tsx renders AgentView.
+- NEW — Load more pagination: PAGE_SIZE=9, offset+total from API, dedupe on append, "Showing X of Y" + spinner button; header count now uses total. Verified 9→12, button auto-hides.
+- NEW — Recently viewed: store recent[] (max 8, persisted) + recordRecent on detail load; RecentStrip on home (below testimonials) — horizontal mini-cards in recency order + Clear card; hidden when empty.
+- POLISH — document.title per view via TITLES map in page.tsx; footer "Back to top" smooth-scroll pill; fixed agent-card section of detail (hover states).
+- Fixed 1 lint error (agent-view sync setState → keyed {key, agent, listings, notFound} derived-loading pattern); removed unused eslint-disable in recent-strip (recentKey memo dep).
+- Verified in browser: about→agent flow, agent stats/listings, load more, recent strip incl. clear, title changes, footer compare link + back-to-top scroll, 390px mobile agent view.
+- Lint clean; home 200; committed & pushed origin/main (110acfe).
+
+Stage Summary:
+- v3 shipped: agent profiles end-to-end, paginated browse, recently-viewed, per-view titles — 3 new files, 561 insertions.
+- Remaining ideas: map view, market insights/blog, dark mode, admin inbox for inquiries, SEO meta per view (needs route structure), saved-view compare shortcut.
