@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { TYPE_LABELS, type Property } from "@/lib/types";
-import { BedDouble, Bath, Ruler, Car, Heart, MapPin } from "lucide-react";
+import { BedDouble, Bath, Ruler, Car, Heart, MapPin, GitCompareArrows, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function PropertyCard({ property, index = 0 }: { property: Property; index?: number }) {
-  const { navigate, favorites, toggleFavorite } = useAppStore();
+  const { navigate, favorites, toggleFavorite, compare, toggleCompare } = useAppStore();
   const isFav = favorites.includes(property.id);
+  const isComparing = compare.includes(property.id);
   const isRent = property.status === "RENT";
 
   return (
@@ -62,6 +64,27 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
               isFav ? "fill-rose-500 text-rose-500" : "text-neutral-600"
             )}
           />
+        </button>
+        {/* Compare toggle */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const ok = toggleCompare(property.id);
+            if (!ok && !isComparing) {
+              toast.info("You can compare up to 4 properties");
+            }
+          }}
+          className={cn(
+            "absolute bottom-3 right-3 flex h-9 items-center gap-1.5 rounded-full px-3 text-[11.5px] font-semibold shadow-sm backdrop-blur transition-all active:scale-95",
+            isComparing
+              ? "bg-neutral-900 text-white"
+              : "bg-white/90 text-neutral-600 opacity-0 group-hover:opacity-100 hover:text-neutral-900 focus:opacity-100"
+          )}
+          aria-label={isComparing ? "Remove from compare" : "Add to compare"}
+          aria-pressed={isComparing}
+        >
+          {isComparing ? <Check className="h-3.5 w-3.5" /> : <GitCompareArrows className="h-3.5 w-3.5" />}
+          {isComparing ? "Added" : "Compare"}
         </button>
       </div>
 

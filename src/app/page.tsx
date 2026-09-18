@@ -9,6 +9,9 @@ import { PropertyDetailView } from "@/components/site/property-detail";
 import { AboutView } from "@/components/site/about-view";
 import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
+import { CompareView } from "@/components/site/compare-view";
+import { CompareBarLoader } from "@/components/site/compare-bar";
+import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { useAppStore } from "@/lib/store";
 
 export default function Page() {
@@ -35,10 +38,13 @@ export default function Page() {
             {view.name === "about" && <AboutView />}
             {view.name === "contact" && <ContactView />}
             {view.name === "saved" && <SavedView />}
+            {view.name === "compare" && <CompareView />}
           </motion.div>
         </AnimatePresence>
       </main>
       <SiteFooter />
+      <CompareBarLoader />
+      <WhatsAppButton />
     </div>
   );
 }

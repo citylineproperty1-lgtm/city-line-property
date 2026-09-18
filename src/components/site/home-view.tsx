@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
+import { AnimatedNumber } from "@/components/site/animated-number";
+import { AreaMarquee } from "@/components/site/area-marquee";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import {
@@ -239,6 +241,8 @@ export function HomeView() {
         </div>
       </section>
 
+      <AreaMarquee />
+
       {/* ---------- STATS ---------- */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6">
         <motion.div
@@ -253,7 +257,7 @@ export function HomeView() {
           ].map((s) => (
             <div key={s.label} className="bg-white px-6 py-7 text-center">
               <p className="text-3xl font-semibold tracking-tight text-neutral-900">
-                {s.value === null ? "—" : s.value}
+                <AnimatedNumber value={s.value} />
                 <span className="text-emerald-600">+</span>
               </p>
               <p className="mt-1 text-[13px] font-medium text-neutral-400">{s.label}</p>

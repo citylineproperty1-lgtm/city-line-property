@@ -9,7 +9,8 @@ export type View =
   | { name: "property"; id: string }
   | { name: "about" }
   | { name: "contact" }
-  | { name: "saved" };
+  | { name: "saved" }
+  | { name: "compare" };
 
 interface ListingsFilters {
   search: string;
@@ -21,15 +22,20 @@ interface ListingsFilters {
   sort: string; // newest | price-asc | price-desc | area-desc
 }
 
+export const MAX_COMPARE = 4;
+
 interface AppState {
   view: View;
   listingsFilters: ListingsFilters;
   favorites: string[];
+  compare: string[];
   navigate: (view: View) => void;
   setFilters: (f: Partial<ListingsFilters>) => void;
   resetFilters: () => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
+  toggleCompare: (id: string) => boolean; // returns true if added
+  clearCompare: () => void;
 }
 
 const defaultFilters: ListingsFilters = {
@@ -48,6 +54,7 @@ export const useAppStore = create<AppState>()(
       view: { name: "home" },
       listingsFilters: defaultFilters,
       favorites: [],
+      compare: [],
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
@@ -64,10 +71,21 @@ export const useAppStore = create<AppState>()(
             : [...s.favorites, id],
         })),
       isFavorite: (id) => get().favorites.includes(id),
+      toggleCompare: (id) => {
+        const { compare } = get();
+        if (compare.includes(id)) {
+          set({ compare: compare.filter((c) => c !== id) });
+          return false;
+        }
+        if (compare.length >= MAX_COMPARE) return false;
+        set({ compare: [...compare, id] });
+        return true;
+      },
+      clearCompare: () => set({ compare: [] }),
     }),
     {
       name: "city-line-property",
-      partialize: (s) => ({ favorites: s.favorites }),
+      partialize: (s) => ({ favorites: s.favorites, compare: s.compare }),
     }
   )
 );

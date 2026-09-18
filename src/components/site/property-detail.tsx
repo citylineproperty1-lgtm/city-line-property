@@ -33,17 +33,22 @@ import {
   Loader2,
   BadgeCheck,
   ChevronDown,
+  GitCompareArrows,
+  Check,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Lightbox } from "@/components/site/lightbox";
 
 export function PropertyDetailView({ id }: { id: string }) {
-  const { navigate, favorites, toggleFavorite } = useAppStore();
+  const { navigate, favorites, toggleFavorite, compare, toggleCompare } = useAppStore();
   const [property, setProperty] = useState<Property | null>(null);
   const [similar, setSimilar] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState(0);
   const [notFound, setNotFound] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     const load = () => {
@@ -103,6 +108,7 @@ export function PropertyDetailView({ id }: { id: string }) {
   }
 
   const isFav = favorites.includes(property.id);
+  const isComparing = compare.includes(property.id);
   const isRent = property.status === "RENT";
   const facts = [
     { icon: BedDouble, label: "Bedrooms", value: property.beds > 0 ? String(property.beds) : "—" },
@@ -143,8 +149,17 @@ export function PropertyDetailView({ id }: { id: string }) {
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 1024px"
-            className="object-cover"
+            className="cursor-zoom-in object-cover transition-transform duration-500 hover:scale-[1.02]"
+            onClick={() => setLightboxOpen(true)}
           />
+          <button
+            onClick={() => setLightboxOpen(true)}
+            className="absolute bottom-4 right-4 flex h-10 items-center gap-1.5 rounded-full bg-white/90 px-3.5 text-[12px] font-semibold text-neutral-700 shadow-sm backdrop-blur transition-all hover:bg-white active:scale-95"
+            aria-label="Open full-screen gallery"
+          >
+            <Maximize2 className="h-3.5 w-3.5" />
+            View full screen
+          </button>
           <span
             className={cn(
               "absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-white backdrop-blur",
@@ -162,7 +177,10 @@ export function PropertyDetailView({ id }: { id: string }) {
           {property.images.map((img, i) => (
             <button
               key={img + i}
-              onClick={() => setImgIndex(i)}
+              onClick={() => {
+                setImgIndex(i);
+                setLightboxOpen(true);
+              }}
               className={cn(
                 "relative aspect-[16/10] overflow-hidden rounded-xl border-2 bg-neutral-100 transition-all",
                 imgIndex === i
@@ -175,6 +193,14 @@ export function PropertyDetailView({ id }: { id: string }) {
             </button>
           ))}
         </div>
+        <Lightbox
+          images={property.images}
+          index={imgIndex}
+          alt={property.title}
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setImgIndex}
+        />
       </motion.div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1.65fr_1fr]">
@@ -206,6 +232,24 @@ export function PropertyDetailView({ id }: { id: string }) {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const ok = toggleCompare(property.id);
+                    if (ok) toast.success("Added to compare");
+                    else if (!isComparing) toast.info("You can compare up to 4 properties");
+                  }}
+                  className={cn(
+                    "flex h-11 items-center gap-1.5 rounded-full border px-4 text-[13px] font-medium transition-all",
+                    isComparing
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+                  )}
+                  aria-label={isComparing ? "Remove from compare" : "Add to compare"}
+                  aria-pressed={isComparing}
+                >
+                  {isComparing ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}
+                  {isComparing ? "Comparing" : "Compare"}
+                </button>
                 <button
                   onClick={() => toggleFavorite(property.id)}
                   className={cn(
