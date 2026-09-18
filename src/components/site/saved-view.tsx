@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { useAppStore } from "@/lib/store";
 import type { Property } from "@/lib/types";
-import { Heart } from "lucide-react";
+import { Heart, GitCompareArrows } from "lucide-react";
+import { toast } from "sonner";
 
 export function SavedView() {
-  const { favorites, navigate } = useAppStore();
+  const { favorites, navigate, startCompare, compare } = useAppStore();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +48,28 @@ export function SavedView() {
           </p>
         </div>
       </div>
+
+      {/* Compare shortcut */}
+      {!loading && properties.length >= 2 && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200/80 bg-neutral-50/60 px-5 py-4">
+          <p className="text-[13.5px] text-neutral-600">
+            Shortlisted {properties.length} homes? See them side by side — specs,
+            prices and amenities in one table.
+          </p>
+          <button
+            onClick={() => {
+              const fresh = properties.filter((p) => !compare.includes(p.id)).map((p) => p.id);
+              startCompare([...compare, ...fresh]);
+              toast.success("Shortlist ready to compare");
+              navigate({ name: "compare" });
+            }}
+            className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-neutral-900 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-neutral-700"
+          >
+            <GitCompareArrows className="h-4 w-4" />
+            Compare saved
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -11,7 +11,9 @@ export type View =
   | { name: "about" }
   | { name: "contact" }
   | { name: "saved" }
-  | { name: "compare" };
+  | { name: "compare" }
+  | { name: "insights" }
+  | { name: "admin" };
 
 interface ListingsFilters {
   search: string;
@@ -38,6 +40,7 @@ interface AppState {
   isFavorite: (id: string) => boolean;
   toggleCompare: (id: string) => boolean; // returns true if added
   clearCompare: () => void;
+  startCompare: (ids: string[]) => void;
   recordRecent: (id: string) => void;
 }
 
@@ -86,6 +89,7 @@ export const useAppStore = create<AppState>()(
         return true;
       },
       clearCompare: () => set({ compare: [] }),
+      startCompare: (ids) => set({ compare: ids.slice(0, MAX_COMPARE) }),
       recordRecent: (id) =>
         set((s) => ({
           recent: [id, ...s.recent.filter((r) => r !== id)].slice(0, 8),

@@ -21,3 +21,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const rows = await db.newsletter.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json({
+      count: rows.length,
+      subscribers: rows.map((r) => ({
+        id: r.id,
+        email: r.email,
+        createdAt: r.createdAt.toISOString(),
+      })),
+    });
+  } catch (e) {
+    console.error("GET /api/newsletter", e);
+    return NextResponse.json({ count: 0, subscribers: [] });
+  }
+}

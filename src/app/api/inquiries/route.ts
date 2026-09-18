@@ -42,9 +42,28 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const count = await db.inquiry.count();
-    return NextResponse.json({ count });
-  } catch {
-    return NextResponse.json({ count: 0 });
+    const rows = await db.inquiry.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { property: { select: { id: true, title: true, slug: true } } },
+    });
+    return NextResponse.json({
+      count: rows.length,
+      inquiries: rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        email: r.email,
+        phone: r.phone,
+        kind: r.kind,
+        message: r.message,
+        status: r.status,
+        createdAt: r.createdAt.toISOString(),
+        property: r.property
+          ? { id: r.property.id, title: r.property.title, slug: r.property.slug }
+          : null,
+      })),
+    });
+  } catch (e) {
+    console.error("GET /api/inquiries", e);
+    return NextResponse.json({ count: 0, inquiries: [] });
   }
 }

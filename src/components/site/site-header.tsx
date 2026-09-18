@@ -11,6 +11,7 @@ import type { View } from "@/lib/store";
 const NAV: { label: string; view: View }[] = [
   { label: "Home", view: { name: "home" } },
   { label: "Properties", view: { name: "properties" } },
+  { label: "Insights", view: { name: "insights" } },
   { label: "About", view: { name: "about" } },
   { label: "Contact", view: { name: "contact" } },
 ];
@@ -62,7 +63,7 @@ export function SiteHeader() {
         </button>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main navigation">
           {NAV.map((item) => {
             const active = view.name === item.view.name;
             return (
@@ -70,7 +71,7 @@ export function SiteHeader() {
                 key={item.label}
                 onClick={() => go(item.view)}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
                   active
                     ? "bg-neutral-100 text-neutral-900"
                     : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"

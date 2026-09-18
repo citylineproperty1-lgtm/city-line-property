@@ -12,6 +12,8 @@ import { AboutView } from "@/components/site/about-view";
 import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
 import { CompareView } from "@/components/site/compare-view";
+import { InsightsView } from "@/components/site/insights-view";
+import { AdminView } from "@/components/site/admin-view";
 import { CompareBarLoader } from "@/components/site/compare-bar";
 import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { useAppStore, type View } from "@/lib/store";
@@ -25,6 +27,8 @@ const TITLES: Record<string, string> = {
   contact: "Contact — City Line Property",
   saved: "Saved Properties — City Line Property",
   compare: "Compare Properties — City Line Property",
+  insights: "Market Insights — City Line Property",
+  admin: "Team Inbox — City Line Property",
 };
 
 function titleFor(view: View): string {
@@ -66,6 +70,8 @@ export default function Page() {
             {view.name === "contact" && <ContactView />}
             {view.name === "saved" && <SavedView />}
             {view.name === "compare" && <CompareView />}
+            {view.name === "insights" && <InsightsView />}
+            {view.name === "admin" && <AdminView />}
           </motion.div>
         </AnimatePresence>
       </main>

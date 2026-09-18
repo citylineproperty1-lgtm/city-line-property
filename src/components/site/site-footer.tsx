@@ -17,6 +17,7 @@ const LINK_GROUPS: {
     links: [
       { label: "Home", view: { name: "home" } },
       { label: "All properties", view: { name: "properties" } },
+      { label: "Market insights", view: { name: "insights" } },
       { label: "Saved homes", view: { name: "saved" } },
       { label: "About us", view: { name: "about" } },
     ],
@@ -27,6 +28,7 @@ const LINK_GROUPS: {
       { label: "Contact", view: { name: "contact" } },
       { label: "Book a valuation", view: { name: "contact" } },
       { label: "Compare properties", view: { name: "compare" } },
+      { label: "Team inbox", view: { name: "admin" } },
     ],
   },
 ];
