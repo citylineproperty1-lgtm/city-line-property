@@ -49,3 +49,27 @@ Work Log:
 Stage Summary:
 - v1 live in preview panel and mirrored on GitHub main.
 - Next-round ideas (for reviewer): property compare tool, map view, agent detail pages, blog/market insights, dark mode, admin dashboard for inquiries, WhatsApp float button, SEO metadata per view, pagination, image lightbox.
+
+---
+Task ID: 4
+Agent: main
+Task: QA round 2 + new features (compare, lightbox, WhatsApp, polish)
+
+Work Log:
+- QA via agent-browser: home/properties/detail/contact all render clean, 0 console errors, APIs 200. Verdict: stable → proceeded to features.
+- NEW — Property Compare tool:
+  - store: compare[] (max 4, persisted), toggleCompare/clearCompare, new "compare" view.
+  - compare-bar.tsx: floating bottom bar with thumbnails, remove ×, placeholders, Clear, "Compare (n)" CTA (disabled <2). Auto-hides on compare view; WhatsApp yields to it.
+  - compare-view.tsx: side-by-side cards (Best price badge, remove, view details) + spec table (status/type/location/beds/baths/area/parking/year/rating/amenities) with amber highlight + trophy for best value per row. Horizontal-scroll safe on mobile.
+  - Card compare toggle: pill on image bottom-right ("Compare" → "✓ Added"); detail page has Compare/Comparing button; toast when exceeding 4.
+- NEW — Lightbox (lightbox.tsx): full-screen gallery on detail (click main image, "View full screen" pill, or thumbnails), prev/next arrows, thumbnail strip, counter, Esc/arrow keys, scroll lock, body overflow restore.
+- NEW — WhatsApp float button: #25D366 circle bottom-right, appears after 120px scroll, expands "Chat with us" on hover, wa.me deep link with prefilled text; hidden while compare bar active.
+- POLISH — home: AreaMarquee (infinite scroll strip of 12 Karachi areas with edge fades) between hero and stats; AnimatedNumber count-up (easeOutCubic, useInView once) on stats.
+- Fixed 2 react-hooks/set-state-in-effect errors by deriving loading from {key, items} fetch-state pattern (no sync setState in effects).
+- Fixed duplicate "/mo" on rent prices in compare cards (formatPKR already appends it).
+- Verified in browser: compare add/remove/bar/table + mobile bar, lightbox open/nav/close (keyboard too), WhatsApp show/hide logic, marquee + counters, 390px mobile layout.
+- Lint clean; home+api 200; committed & pushed origin/main (c9f59d5).
+
+Stage Summary:
+- v2 shipped: compare tool, lightbox, WhatsApp float, marquee, animated counters — 6 new files, 869 insertions.
+- Next-round ideas: agent detail view, pagination or infinite scroll on listings, saved-view compare shortcut, market insights/blog section, dark mode, SEO per-view metadata, recent-viewed strip.
