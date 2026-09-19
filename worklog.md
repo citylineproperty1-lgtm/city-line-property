@@ -546,3 +546,22 @@ Stage Summary:
 - Login failure classes now covered: empty admin table (self-heal bootstrap, Task 21), transient server 5xx (server retries once + client retries once), username alias ("admin"), gateway 502 window after restarts (documented — wait a few seconds after any dev-server restart before testing).
 - CRITICAL ops note: restarting the dev server blanks the preview via :81 502 splash briefly; always re-verify http://localhost:81/ returns 200 after any restart.
 - Access unchanged: site URL + /#/admin → admin@citylineproperty.com (or "admin") / CityLine@2025 (change in Settings).
+---
+Task ID: 23
+Agent: main (deployment-side login failure — GitHub repo fix)
+Task: User reported the same login error again and said "update my github i think error is occuring from there" — i.e. the copy deployed from GitHub keeps failing while the sandbox works.
+
+Work Log:
+- Confirmed sandbox healthy (server up, login 200 via direct + gateway) → the user's failures come from the GitHub-deployed copy.
+- ROOT CAUSE: .env is gitignored → the deployment has NO DATABASE_URL, and prisma/schema.prisma uses url = env("DATABASE_URL") → PrismaClient throws "Environment variable not found" on every request → every DB-backed endpoint (incl. login) 500s on the deployed copy. Also the sandbox .env used an absolute machine path, useless elsewhere.
+- src/lib/db.ts: self-configuring fallback — when DATABASE_URL is missing, walk up from process.cwd() (≤6 levels) to find db/custom.db (works in dev at project root AND in the .next/standalone bundle where cwd is .next/standalone), set process.env.DATABASE_URL to the absolute file: path. Real env var always wins.
+- package.json build: added `cp -r db .next/standalone/` so the standalone deployment bundle carries the committed SQLite database.
+- Added .env.example (no secrets; gitignored .env* pattern required git add -f) documenting DATABASE_URL for future hosting setups.
+- Verified the fallback by simulation (no DATABASE_URL in env): resolved file:/home/z/my-project/db/custom.db → adminUser rows: 1, property rows: 16 → deployed copy will find the admin account + all listings with zero setup; temp script removed after the check.
+- Verified committed db/custom.db == local db (admin row with CityLine@2025 hash included). Sandbox re-tested after the change: home 200, login 200; lint exit 0.
+- Pushed: 1613127 (db fallback + build copy) and a7b993d (.env.example). origin/main tip = a7b993d. The two UUID-named commits (018bd30, 56a9cfe) are the platform's worklog sync bot (author dev@citylineproperty.pk, worklog.md only) — benign.
+
+Stage Summary:
+- Deployments from GitHub are now self-sufficient: no .env needed — Prisma auto-resolves the committed db/custom.db (upward search), the build bundles it into standalone, .env.example documents the variable for custom setups.
+- The deployed copy will have admin@citylineproperty.com / CityLine@2025 baked into the committed DB, plus the self-heal bootstrap as a second safety net.
+- NEXT: user must re-sync/redeploy their hosting from GitHub (pull latest main → rebuild) for the fix to take effect on the deployed copy. If the deployed platform still errors after redeploy, next suspect = prisma generate not running during their build.
