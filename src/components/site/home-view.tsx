@@ -199,6 +199,7 @@ export function HomeView() {
 
   /* ---------- data (derived-loading fetch pattern) ---------- */
   const [featured, setFeatured] = useState<Property[]>([]);
+  const [latest, setLatest] = useState<Property[]>([]);
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
   const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
@@ -209,6 +210,15 @@ export function HomeView() {
       .then((r) => r.json())
       .then((d) => setFeatured(d.properties ?? []))
       .catch(() => setFeatured([]));
+
+    fetch("/api/properties?sort=newest&limit=12")
+      .then((r) => r.json())
+      .then((d) => {
+        const all = (d.properties ?? []) as Property[];
+        // keep the two rails distinct: latest = newest non-featured listings
+        setLatest(all.filter((p) => !p.featured).slice(0, 6));
+      })
+      .catch(() => setLatest([]));
 
     fetch("/api/stats")
       .then((r) => r.json())
@@ -675,6 +685,54 @@ export function HomeView() {
                 </div>
               ))
             : featured.map((p) => (
+                <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
+                  <PropertyCard property={p} />
+                </div>
+              ))}
+        </div>
+
+        <div className="mt-5 text-center sm:hidden">
+          <Button
+            variant="outline"
+            onClick={() => navigate({ name: "properties" })}
+            className="h-11 rounded-full border-neutral-200 bg-white text-sm font-medium"
+          >
+            View all properties
+            <ArrowRight className="ml-1.5 h-4 w-4" />
+          </Button>
+        </div>
+      </section>
+
+      {/* ================= LATEST LISTINGS ================= */}
+      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Latest listings">
+        <motion.div
+          {...{ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: viewportOnce, transition: { duration: 0.5, ease: "easeOut" } }}
+          className="flex items-end justify-between gap-4"
+        >
+          <div>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Just added to the board</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+              Latest listings
+            </h2>
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => navigate({ name: "properties" })}
+            className="group hidden h-10 items-center gap-1.5 rounded-full text-sm font-medium text-neutral-600 hover:bg-[#E7F4F0] hover:text-[#0B6B5D] sm:inline-flex"
+          >
+            View all
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </motion.div>
+
+        <div className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
+          {latest.length === 0
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
+                  <PropertyCardSkeleton />
+                </div>
+              ))
+            : latest.map((p) => (
                 <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
                 </div>

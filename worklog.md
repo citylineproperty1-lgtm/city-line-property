@@ -483,3 +483,15 @@ Work Log:
 Stage Summary:
 - Office pin = owner's exact marked spot (31.447515, 74.231873); directions links, contact cards and all maps derive from OFFICE_COORD.
 - Home flow: Hero → Explore Etihad Town → Categories → Featured → Map → Why us → Process → Requirement form → Final CTA (marquee band removed).
+---
+Task ID: 19
+Agent: main (user-requested Latest Listings section)
+Task: Add a "Latest Listing" rail on the home page, positioned directly after Featured listings
+
+Work Log:
+- home-view.tsx: new `latest` state + fetch `/api/properties?sort=newest&limit=12`; latest rail = 6 newest NON-featured listings (filter !p.featured keeps Featured and Latest rails duplicate-free, with 8 eligible in current seed data).
+- New LATEST LISTINGS section between Featured listings and the Areas map: eyebrow "Just added to the board", heading "Latest listings", desktop "View all →" ghost button, mobile-only "View all properties" button, same horizontal snap-scroll rail + PropertyCardSkeleton loading pattern as Featured.
+- Verified (agent-browser): section order Featured → Latest → Map on the rendered page; latest rail shows newest rental + sale cards with PKR prices; no horizontal scroll at 390px; console clean; lint exit 0.
+
+Stage Summary:
+- Home flow: Hero → Explore Etihad Town → Categories → Featured listings → **Latest listings (new)** → Map → Why us → Process → Requirement form → Final CTA.
