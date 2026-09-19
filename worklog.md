@@ -467,3 +467,19 @@ Work Log:
 Stage Summary:
 - Home page flow is now: Hero → Commission band → Explore Etihad Town (Phase 1 + Phase 2 area cards) → Categories → Featured → Map → Why us → Process → Requirement form → Final CTA.
 - The 1% commission story is still told via the commission marquee band, Why-us card and hero copy — no revenue-savings calculator anymore.
+---
+Task ID: 18
+Agent: main (user-requested band removal + office coords + GitHub push)
+Task: (1) Remove the scrolling commission marquee band ("ONLY 1% COMMISSION ✦ DIRECT DEALING…") — user said it doesn't look good; (2) move the office map pin to the owner's exact marked spot inside the Phase 1 street grid; (3) push all latest work to GitHub
+
+Work Log:
+- home-view.tsx: deleted the COMMISSION BAND marquee section + COMMISSION_PHRASES constant; hero now flows straight into the Explore Etihad Town section.
+- Office location: user supplied a screenshot with a red mark on the Leaflet map = exact office spot. Computed real WGS-84 coords by least-squares pixel→coordinate fit against 4 OSM reference points (office pin tip + Hasanabad / Barkatpura / Rahimabad place nodes, residuals ±16px ≈ ±23m). Result: OFFICE_COORD = 31.447515, 74.231873 (inside Phase 1 grid, west of Main Raiwind Road, north of Hassanabad — matches the red mark).
+- business.ts: OFFICE_COORD updated; AREA_COORDS["Etihad Town Phase 1"] moved off the old pin to the Phase 1 grid centre (31.445412, 74.229684) so the area pin and office pin no longer overlap. officeDirectionsLink() and every RealMap consumer pick this up automatically.
+- home-view.tsx: replaced the 3 hard-coded 31.4408/74.2309 literals with the OFFICE_COORD import (single source of truth).
+- Verified (agent-browser): commission band element gone from home; map renders 6 markers with the office pin at the new grid position matching the user's red mark; Phase 1 area pin beside it; no horizontal scroll at 390px; page 200 + APIs 200 + console clean; lint exit 0.
+- Pushed everything to GitHub origin main (remote token auth).
+
+Stage Summary:
+- Office pin = owner's exact marked spot (31.447515, 74.231873); directions links, contact cards and all maps derive from OFFICE_COORD.
+- Home flow: Hero → Explore Etihad Town → Categories → Featured → Map → Why us → Process → Requirement form → Final CTA (marquee band removed).

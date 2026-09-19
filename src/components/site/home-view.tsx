@@ -17,7 +17,7 @@ import { Monogram } from "@/components/site/logo";
 import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { useAppStore } from "@/lib/store";
-import { AREAS, AREA_COORDS, BUSINESS, waLink } from "@/lib/business";
+import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
   CATEGORIES,
@@ -130,8 +130,6 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
   BedDouble,
   KeyRound,
 };
-
-const COMMISSION_PHRASES = ["ONLY 1% COMMISSION", "DIRECT DEALING", "NO HIDDEN MARGIN", "NO MIDDLEMEN"];
 
 const WHY_US = [
   {
@@ -505,32 +503,6 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* ================= COMMISSION BAND ================= */}
-      <section
-        id="commission-band"
-        aria-label="Only 1% commission — direct dealing — no hidden margin — no middlemen"
-        className="relative overflow-hidden border-y border-[#084C46] bg-[linear-gradient(90deg,#0B5B54_0%,#0F766E_28%,#0F766E_72%,#0B5B54_100%)] py-4 sm:py-5"
-      >
-        <motion.div
-          className="flex w-max"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 26, ease: "linear", repeat: Infinity }}
-        >
-          {[0, 1].map((dup) => (
-            <div key={dup} className="flex shrink-0 items-center" aria-hidden={dup === 1}>
-              {COMMISSION_PHRASES.map((p) => (
-                <span key={p} className="flex items-center">
-                  <span className="whitespace-nowrap px-6 text-2xl font-extrabold uppercase tracking-wide text-white sm:text-4xl">
-                    {p}
-                  </span>
-                  <span className="text-xl text-[#7FE0CD] sm:text-2xl">✦</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </motion.div>
-      </section>
-
       {/* ================= EXPLORE ETIHAD TOWN ================= */}
       <section
         className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24"
@@ -744,16 +716,16 @@ export function HomeView() {
               markers={[
                 ...AREAS.map((a) => ({
                   id: a,
-                  lat: AREA_COORDS[a]?.lat ?? 31.4408,
-                  lng: AREA_COORDS[a]?.lng ?? 74.2309,
+                  lat: AREA_COORDS[a]?.lat ?? OFFICE_COORD.lat,
+                  lng: AREA_COORDS[a]?.lng ?? OFFICE_COORD.lng,
                   title: a,
                   subtitle: "Tap “View details” to open the area guide",
                   kind: "area" as const,
                 })),
                 {
                   id: "office",
-                  lat: 31.4408,
-                  lng: 74.2309,
+                  lat: OFFICE_COORD.lat,
+                  lng: OFFICE_COORD.lng,
                   title: "City Line Property — Office",
                   subtitle: BUSINESS.officeAddress,
                   kind: "office" as const,
