@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import {
   Boxes,
+  CalendarClock,
   ContactRound,
   ExternalLink,
   LayoutGrid,
@@ -27,10 +28,11 @@ import { AdminLogin, type AdminUser } from "./admin/admin-login";
 import { AdminOverview } from "./admin/admin-overview";
 import { AdminInventory } from "./admin/admin-inventory";
 import { AdminLeads } from "./admin/admin-leads";
+import { AdminVisits } from "./admin/admin-visits";
 import { AdminCategories } from "./admin/admin-categories";
 import { AdminSettings } from "./admin/admin-settings";
 
-type TabKey = "overview" | "inventory" | "leads" | "categories" | "settings";
+type TabKey = "overview" | "inventory" | "leads" | "visits" | "categories" | "settings";
 
 type Session =
   | { status: "checking" }
@@ -41,6 +43,7 @@ const TABS: { value: TabKey; label: string; icon: React.ComponentType<{ classNam
   { value: "overview", label: "Overview", icon: LayoutGrid },
   { value: "inventory", label: "Inventory", icon: Boxes },
   { value: "leads", label: "Leads", icon: ContactRound },
+  { value: "visits", label: "Visits", icon: CalendarClock },
   { value: "categories", label: "Categories", icon: ShieldCheck },
   { value: "settings", label: "Settings", icon: Settings2 },
 ];
@@ -222,6 +225,7 @@ export function AdminView() {
                 {tab === "overview" && <AdminOverview api={api} onOpenLeads={() => setTab("leads")} />}
                 {tab === "inventory" && <AdminInventory api={api} />}
                 {tab === "leads" && <AdminLeads api={api} />}
+                {tab === "visits" && <AdminVisits api={api} />}
                 {tab === "categories" && <AdminCategories api={api} />}
                 {tab === "settings" && <AdminSettings api={api} />}
               </motion.div>

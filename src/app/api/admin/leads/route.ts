@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
 import { ensureFollowUpColumns } from "@/lib/lead-followup";
+import { parseActivities } from "@/lib/lead-activity";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,16 @@ export async function GET(req: NextRequest) {
       return Number.isNaN(d.getTime()) ? null : d.toISOString();
     };
 
+    // Activity timelines (JSON column) — one query, merged by id.
+    const actRows = await db.lead.findMany({
+      where: { id: { in: rows.map((r) => r.id) } },
+      select: { id: true, activities: true },
+    });
+    const activitiesById: Record<string, ReturnType<typeof parseActivities>> = {};
+    for (const row of actRows) {
+      activitiesById[row.id] = parseActivities(row.activities);
+    }
+
     return NextResponse.json({
       leads: rows.map((r) => {
         const f = followById.get(r.id);
@@ -81,6 +92,7 @@ export async function GET(req: NextRequest) {
           waError: r.waError,
           followUpAt: toIso(f?.followUpAt),
           lastContactedAt: toIso(f?.lastContactedAt),
+          activities: activitiesById[r.id] ?? [],
           createdAt: r.createdAt.toISOString(),
         };
       }),

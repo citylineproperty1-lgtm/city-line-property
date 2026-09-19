@@ -495,3 +495,20 @@ Work Log:
 
 Stage Summary:
 - Home flow: Hero → Explore Etihad Town → Categories → Featured listings → **Latest listings (new)** → Map → Why us → Process → Requirement form → Final CTA.
+---
+Task ID: 20
+Agent: main (CRM completion round: Visits scheduler + activity timeline)
+Task: User asked for (a) the password-protected admin panel, (b) how to access it, (c) a complete CRM with everything needed. Panel already existed → verified it, then added the two missing CRM essentials: site-visit scheduling (new tab) and a lead activity timeline.
+
+Work Log:
+- Verified existing panel E2E: hidden route /#/admin, cookie-session login (admin@citylineproperty.com), 5 tabs all functional.
+- Prisma: new SiteVisit model (name, phone, optional Property relation + area, scheduledAt, status PLANNED|DONE|NO_SHOW|CANCELLED, notes) + Lead.activities JSON column (default "[]"); db:push OK.
+- APIs: /api/admin/visits (GET list + counts, POST book) and /api/admin/visits/[id] (PATCH status/reschedule/notes, DELETE) behind guardAdmin.
+- Lead activity log: src/lib/lead-activity.ts (appendLeadActivity bounded to 50 entries, parseActivities); PATCH /api/admin/leads/[id] logs status transitions ("New → Contacted"), note edits, follow-up set/cleared, contacted marks and returns the updated timeline; WhatsApp resend logs "WhatsApp notification sent"; GET /api/admin/leads returns activities per lead.
+- Admin UI: new admin-visits.tsx tab (Visits) — booking form (name, phone, datetime-local, 5-area select, optional listing select, notes), Upcoming/Today/Past/All segmented filter with today badge, visit cards with date-time block, status meta chips (Planned emerald / Completed green / No-show amber / Cancelled grey), quick actions (Done / No-show / Cancel / Re-plan), WhatsApp deep link, inline visit notes with save, delete confirm. Wired into admin-view TABS (CalendarClock icon) between Leads and Categories.
+- admin-leads.tsx: LeadTimeline component (Row 6 in card) — latest 3 activities, color-coded dots per type (status emerald, followup amber, contacted cyan, whatsapp green, note grey), relative times; setStatus/saveNotes/resend merge returned activities into local state for instant refresh.
+- QA via agent-browser (all on live server after Prisma-client restart): login → 6 tabs; booked visit via form (POST 200, card + chips render); marked Done; saved visit notes (DB verified); deleted visit; changed QA lead status → Activity timeline appeared ("New → Contacted · less than a minute ago"); reverted; public /api/inquiries still works (email required — pre-existing); lint exit 0; QA data fully cleaned (visits: 0).
+
+Stage Summary:
+- CRM now covers: Overview KPIs/chart/funnel, Inventory CRUD + drawer + uploads, Leads pipeline + notes + follow-ups + WhatsApp push + CSV + NEW activity timeline, NEW Visits scheduler, Categories CRUD, Settings (webhook/phones/address/password).
+- Access for the owner: open the site → type /#/admin after the URL → sign in with admin@citylineproperty.com / CityLine@2025 (changeable in Settings → password).

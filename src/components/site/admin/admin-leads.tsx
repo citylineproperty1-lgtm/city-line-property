@@ -50,7 +50,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { Lead } from "@/lib/types";
+import type { Lead, LeadActivity } from "@/lib/types";
 import { LEAD_STATUSES } from "@/lib/types";
 import { formatPKR } from "@/lib/format";
 import {
@@ -77,6 +77,50 @@ type Pipeline = "ALL" | (typeof LEAD_STATUSES)[number];
 type DueFilter = "ALL" | "overdue" | "today" | "scheduled";
 
 const DAY_MS = 86_400_000;
+
+/** Activity-type → dot color for the lead timeline. */
+const ACTIVITY_DOT: Record<string, string> = {
+  status: "#0F766E",
+  note: "#8E8E93",
+  followup: "#F59E0B",
+  contacted: "#30B0C7",
+  whatsapp: "#34C759",
+  visit: "#AF52DE",
+};
+
+/** Compact CRM timeline — latest entries first, capped so cards stay scannable. */
+function LeadTimeline({ activities }: { activities?: LeadActivity[] }) {
+  const items = (activities ?? []).slice(-3).reverse();
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-3 border-t border-black/[0.05] pt-3">
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-neutral-400">
+        Activity
+      </p>
+      <ul className="mt-1.5 space-y-1">
+        {items.map((a, i) => (
+          <li key={`${a.at}-${i}`} className="flex items-center gap-2 text-[11.5px] leading-snug">
+            <span
+              className="h-1.5 w-1.5 shrink-0 rounded-full"
+              style={{ backgroundColor: ACTIVITY_DOT[a.type] ?? "#8E8E93" }}
+              aria-hidden
+            />
+            <span className="min-w-0 flex-1 truncate text-neutral-600" title={a.detail}>
+              {a.detail}
+            </span>
+            <time
+              className="shrink-0 text-[10.5px] tabular-nums text-neutral-400"
+              dateTime={a.at}
+              title={new Date(a.at).toLocaleString()}
+            >
+              {timeAgo(a.at)}
+            </time>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function AdminLeads({ api }: { api: AdminApi }) {
   const [state, setState] = useState<{ key: string; leads: Lead[] } | null>(null);
@@ -167,11 +211,14 @@ export function AdminLeads({ api }: { api: AdminApi }) {
   const setStatus = async (lead: Lead, status: string) => {
     setBusyId(lead.id);
     try {
-      await api(`/api/admin/leads/${lead.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
-      updateLead(lead.id, { status });
+      const d = await api<{ ok: boolean; activities?: LeadActivity[] }>(
+        `/api/admin/leads/${lead.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        }
+      );
+      updateLead(lead.id, { status, ...(d.activities ? { activities: d.activities } : {}) });
       toast.success(`${lead.name} → ${LEAD_STATUS_META[status]?.label ?? status}`);
     } catch (err) {
       if (!isAuthLoss(err)) toast.error(errorMessage(err));
@@ -185,11 +232,14 @@ export function AdminLeads({ api }: { api: AdminApi }) {
     if (notes === undefined) return;
     setBusyId(lead.id);
     try {
-      await api(`/api/admin/leads/${lead.id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ notes }),
-      });
-      updateLead(lead.id, { notes });
+      const d = await api<{ ok: boolean; activities?: LeadActivity[] }>(
+        `/api/admin/leads/${lead.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ notes }),
+        }
+      );
+      updateLead(lead.id, { notes, ...(d.activities ? { activities: d.activities } : {}) });
       setNotesDrafts((d) => {
         const next = { ...d };
         delete next[lead.id];
@@ -206,10 +256,15 @@ export function AdminLeads({ api }: { api: AdminApi }) {
   const resend = async (lead: Lead) => {
     setBusyId(lead.id);
     try {
-      const d = await api<{ ok: boolean; waStatus: string }>(`/api/admin/leads/${lead.id}/whatsapp`, {
-        method: "POST",
+      const d = await api<{ ok: boolean; waStatus: string; activities?: LeadActivity[] }>(
+        `/api/admin/leads/${lead.id}/whatsapp`,
+        { method: "POST" }
+      );
+      updateLead(lead.id, {
+        waStatus: d.waStatus,
+        waError: d.waStatus === "SENT" ? null : lead.waError,
+        ...(d.activities ? { activities: d.activities } : {}),
       });
-      updateLead(lead.id, { waStatus: d.waStatus, waError: d.waStatus === "SENT" ? null : lead.waError });
       if (d.waStatus === "SENT") toast.success("Lead pushed to WhatsApp");
       else if (d.waStatus === "SKIPPED") toast.info("No webhook configured — add one in Settings");
       else toast.error(`WhatsApp delivery failed (${d.waStatus})`);
@@ -696,6 +751,9 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                       </div>
                     )}
                   </div>
+
+                  {/* Row 6: activity timeline */}
+                  <LeadTimeline activities={lead.activities} />
                 </AdminCard>
               </motion.article>
             );

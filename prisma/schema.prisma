@@ -13,11 +13,11 @@ datasource db {
 }
 
 model Property {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   title        String
-  slug         String   @unique
+  slug         String      @unique
   // Short inventory code, e.g. CLP-101 (auto-assigned on create)
-  reference    String   @unique
+  reference    String      @unique
   description  String
   // price in PKR (per month when status = RENT)
   price        Float
@@ -37,17 +37,18 @@ model Property {
   images       String
   // JSON string array of amenity names
   amenities    String
-  featured     Boolean  @default(false)
+  featured     Boolean     @default(false)
   // Inventory availability: AVAILABLE | RESERVED | SOLD | RENTED
-  listingState String   @default("AVAILABLE")
+  listingState String      @default("AVAILABLE")
   // Draft listings are hidden from the public site
-  published    Boolean  @default(true)
+  published    Boolean     @default(true)
   yearBuilt    Int
   parking      Int
-  views        Int      @default(0)
+  views        Int         @default(0)
   leads        Lead[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  visits       SiteVisit[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 // Managed from the admin panel — icons are lucide icon names.
@@ -64,35 +65,38 @@ model Category {
 
 // Client requirement / inquiry captured from the website — the CRM inbox.
 model Lead {
-  id         String    @id @default(cuid())
-  name       String
-  phone      String
-  email      String?
+  id              String    @id @default(cuid())
+  name            String
+  phone           String
+  email           String?
   // interested category slug
-  category   String?
+  category        String?
   // interested area (one of the 5 areas)
-  area       String?
+  area            String?
   // budget in PKR
-  budget     Int?
-  message    String
-  propertyId String?
-  property   Property? @relation(fields: [propertyId], references: [id])
+  budget          Int?
+  message         String
+  propertyId      String?
+  property        Property? @relation(fields: [propertyId], references: [id])
   // WEBSITE | CONTACT | PROPERTY | REQUIREMENT
-  source     String    @default("WEBSITE")
+  source          String    @default("WEBSITE")
   // NEW | CONTACTED | SITE_VISIT | NEGOTIATION | WON | LOST
-  status     String    @default("NEW")
+  status          String    @default("NEW")
   // internal notes (admin)
-  notes      String?
+  notes           String?
   // WhatsApp webhook delivery: PENDING | SENT | FAILED | SKIPPED
-  waStatus   String    @default("PENDING")
-  waSentAt   DateTime?
-  waError    String?
+  waStatus        String    @default("PENDING")
+  waSentAt        DateTime?
+  waError         String?
   // Follow-up reminders — managed via raw SQL (self-healing columns, see
   // src/lib/lead-followup.ts). Documented here for schema parity only.
   followUpAt      DateTime?
   lastContactedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  // JSON array of CRM activity entries [{at, type, detail}] — appended on
+  // status changes, note edits, follow-ups and WhatsApp (re)sends.
+  activities      String    @default("[]")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 // Single-admin auth (password hashed with scrypt: "salt:hash" hex)
@@ -109,4 +113,23 @@ model Setting {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+// Scheduled property viewing — booked by the admin for a customer.
+model SiteVisit {
+  id          String    @id @default(cuid())
+  name        String
+  phone       String
+  // Optional listing the visit is booked against
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id])
+  // One of the 5 areas (free context when no property is chosen)
+  area        String?
+  // When the customer is expected (ISO datetime)
+  scheduledAt DateTime
+  // PLANNED | DONE | NO_SHOW | CANCELLED
+  status      String    @default("PLANNED")
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
