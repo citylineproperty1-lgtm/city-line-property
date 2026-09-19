@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -18,9 +17,8 @@ import { Monogram } from "@/components/site/logo";
 import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { useAppStore } from "@/lib/store";
-import { formatPKR } from "@/lib/format";
 import { AREAS, AREA_COORDS, BUSINESS, waLink } from "@/lib/business";
-import { areaSlug } from "@/lib/areas";
+import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
   CATEGORIES,
   type CategoryDef,
@@ -83,8 +81,6 @@ const pop: Variants = {
 
 const viewportOnce = { once: true, margin: "-80px" } as const;
 
-const BRAND_EMERALD = "#0F766E";
-
 /** Hero H1 — each word rises in with a slight rotate (keyframe feel). */
 const heroWord: Variants = {
   hidden: { opacity: 0, y: 28, rotate: 4 },
@@ -95,55 +91,6 @@ const heroWord: Variants = {
     transition: { delay: 0.18 + i * 0.09, type: "spring", bounce: 0.35, duration: 0.7 },
   }),
 };
-
-/**
- * Store-independent PKR formatter (South-Asian numbering) for the calculator.
- * Unlike formatPKR it never reads the persisted currency during SSR, so the
- * markup is hydration-safe no matter which currency the visitor saved.
- */
-function formatPkrStatic(price: number): string {
-  const abs = Math.abs(price);
-  if (abs >= 10_000_000) {
-    const cr = price / 10_000_000;
-    return `PKR ${cr.toFixed(cr >= 100 || Number.isInteger(cr) ? 0 : 1)} Crore`;
-  }
-  if (abs >= 100_000) {
-    const lac = price / 100_000;
-    return `PKR ${lac.toFixed(lac >= 100 || Number.isInteger(lac) ? 0 : 1)} Lakh`;
-  }
-  return `PKR ${new Intl.NumberFormat("en-PK").format(Math.round(price))}`;
-}
-
-/** Spring-eased money counter that eases from its previous value (no 0 reset). */
-function MoneySpring({ value }: { value: number }) {
-  const [display, setDisplay] = useState(value);
-  const displayRef = useRef(value);
-
-  useEffect(() => {
-    const from = displayRef.current;
-    const to = value;
-    if (from === to) return;
-    let raf = 0;
-    const start = performance.now();
-    const dur = 480;
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / dur, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const current = Math.round(from + (to - from) * eased);
-      displayRef.current = current;
-      setDisplay(current);
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-
-  return (
-    <span className="tabular-nums" aria-live="polite">
-      {formatPkrStatic(display)}
-    </span>
-  );
-}
 
 /** Subtle 3D tilt wrapper for the Why-us cards. */
 function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -232,20 +179,10 @@ const PROCESS_STEPS = [
   },
 ];
 
-/* Log-mapped slider: 20 Lakh → 10 Crore so common values aren't squeezed. */
-const MIN_VALUE = 2_000_000;
-const MAX_VALUE = 100_000_000;
-const sliderToValue = (v: number) =>
-  Math.round((MIN_VALUE * Math.pow(MAX_VALUE / MIN_VALUE, v / 1000)) / 100_000) * 100_000;
-const valueToSlider = (p: number) =>
-  Math.round((1000 * Math.log(p / MIN_VALUE)) / Math.log(MAX_VALUE / MIN_VALUE));
-
-const BUDGET_PRESETS = [
-  { label: "50 Lakh", price: 5_000_000 },
-  { label: "1 Crore", price: 10_000_000 },
-  { label: "2.5 Crore", price: 25_000_000 },
-  { label: "5 Crore", price: 50_000_000 },
-];
+/* The two flagship phases showcased on the home page (Phase 3/4 intentionally excluded). */
+const EXPLORE_AREAS = ["etihad-town-phase-1", "etihad-town-phase-2"]
+  .map((s) => areaBySlug(s))
+  .filter((a): a is NonNullable<typeof a> => Boolean(a));
 
 const HERO_BUDGETS = [
   { value: "0", label: "Any budget" },
@@ -267,6 +204,7 @@ export function HomeView() {
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
   const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
+  const [areaCounts, setAreaCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetch("/api/properties?featured=true&limit=6")
@@ -290,13 +228,19 @@ export function HomeView() {
     fetch("/api/properties?limit=300")
       .then((r) => r.json())
       .then((d) => {
-        const rec: Record<string, number> = {};
+        const byType: Record<string, number> = {};
+        const byArea: Record<string, number> = {};
         for (const p of (d.properties ?? []) as Property[]) {
-          rec[p.type] = (rec[p.type] ?? 0) + 1;
+          byType[p.type] = (byType[p.type] ?? 0) + 1;
+          if (p.district) byArea[p.district] = (byArea[p.district] ?? 0) + 1;
         }
-        setTypeCounts(rec);
+        setTypeCounts(byType);
+        setAreaCounts(byArea);
       })
-      .catch(() => setTypeCounts({}));
+      .catch(() => {
+        setTypeCounts({});
+        setAreaCounts({});
+      });
   }, []);
 
   /* ---------- hero search ---------- */
@@ -322,12 +266,10 @@ export function HomeView() {
     navigate({ name: "properties" });
   };
 
-  /* ---------- savings calculator ---------- */
-  const [sliderV, setSliderV] = useState(411); // ≈ 1 Crore
-  const propertyValue = sliderToValue(sliderV);
-  const typicalFee = propertyValue * 0.02;
-  const ourFee = propertyValue * 0.01;
-  const savings = propertyValue * 0.01;
+  const exploreArea = (area: string) => {
+    setFilters({ search: area, type: "ALL", status: "ALL", beds: 0, minPrice: null, maxPrice: null, sort: "newest" });
+    navigate({ name: "properties" });
+  };
 
   /* ---------- hero parallax ---------- */
   const heroRef = useRef<HTMLDivElement>(null);
@@ -589,107 +531,83 @@ export function HomeView() {
         </motion.div>
       </section>
 
-      {/* ================= SAVINGS CALCULATOR ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24" aria-label="Commission savings calculator">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={viewportOnce}
-          className="relative overflow-hidden rounded-[2rem] border border-black/[0.07] bg-white p-7 shadow-[0_40px_90px_-40px_rgba(15,23,42,0.3)] sm:p-12"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_40%_at_85%_15%,rgba(15,118,110,0.06),transparent_70%)]" />
-          <div className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+      {/* ================= EXPLORE ETIHAD TOWN ================= */}
+      <section
+        className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24"
+        aria-label="Explore Etihad Town — Phase 1 and Phase 2"
+      >
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
+          <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <motion.p variants={item} className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
-                Why pay more?
-              </motion.p>
-              <motion.h2
-                variants={item}
-                className="mt-2 text-2xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-4xl"
-              >
-                The 1% difference — see what you keep.
-              </motion.h2>
-              <motion.p variants={item} className="mt-3 max-w-md text-[14px] leading-relaxed text-neutral-500">
-                Drag the slider to your property value. A typical dealer charges 2%
-                (or quietly builds their margin into the price). We charge a flat 1% —
-                and show you everything in writing.
-              </motion.p>
-
-              <motion.div variants={item} className="mt-8">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[13px] font-semibold text-neutral-600">Property value</span>
-                  <span className="rounded-full bg-[#E7F4F0] px-3.5 py-1 text-[15px] font-bold tabular-nums text-[#0B6B5D]">
-                    {formatPkrStatic(propertyValue)}
-                  </span>
-                </div>
-                <Slider
-                  value={[sliderV]}
-                  onValueChange={(v) => setSliderV(v[0] ?? 411)}
-                  min={0}
-                  max={1000}
-                  step={1}
-                  aria-label="Property value"
-                  className="mt-4 [&_[data-slot=slider-range]]:bg-[#0F766E] [&_[data-slot=slider-track]]:border-black/[0.08] [&_[data-slot=slider-track]]:bg-neutral-200 [&_[data-slot=slider-thumb]]:border-4 [&_[data-slot=slider-thumb]]:border-[#0F766E] [&_[data-slot=slider-thumb]]:bg-white [&_[data-slot=slider-thumb]]:shadow-[0_2px_10px_rgba(15,118,110,0.35)]"
-                />
-                <div className="mt-2 flex justify-between text-[11.5px] font-semibold text-neutral-400">
-                  <span>20 Lakh</span>
-                  <span>10 Crore</span>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {BUDGET_PRESETS.map((p) => (
-                    <button
-                      key={p.label}
-                      onClick={() => setSliderV(valueToSlider(p.price))}
-                      className={`rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-all ${
-                        propertyValue === p.price
-                          ? "border-[#0F766E] bg-[#0F766E] text-white"
-                          : "border-black/10 bg-white text-neutral-600 hover:bg-[#F7F9F8]"
-                      }`}
-                      aria-pressed={propertyValue === p.price}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Where we work</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                Explore Etihad Town.
+              </h2>
             </div>
+            <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
+              Two phases, one main boulevard — and our own office in the middle of it.
+              Every file is walked and verified on foot.
+            </p>
+          </motion.div>
 
-            <motion.div
-              variants={pop}
-              className="rounded-3xl bg-white p-6 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.3)] ring-1 ring-black/[0.06] sm:p-8"
-            >
-              <p className="flex items-center justify-between text-[13.5px] text-neutral-500">
-                <span>Typical dealer fee (2%)</span>
-                <span className="font-semibold tabular-nums text-neutral-400 line-through decoration-neutral-300">
-                  {formatPkrStatic(typicalFee)}
-                </span>
-              </p>
-              <p className="mt-3 flex items-center justify-between text-[13.5px] text-neutral-700">
-                <span className="inline-flex items-center gap-1.5 font-semibold">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: BRAND_EMERALD }} />
-                  City Line fee (1%)
-                </span>
-                <span className="font-bold tabular-nums text-[#0B6B5D]">{formatPkrStatic(ourFee)}</span>
-              </p>
-              <div className="mt-5 border-t border-dashed border-neutral-200 pt-5">
-                <p className="text-[12.5px] font-semibold uppercase tracking-wider text-neutral-400">
-                  You save
-                </p>
-                <p className="mt-1 text-3xl font-extrabold tracking-tight text-[#0F766E] sm:text-4xl">
-                  <MoneySpring value={savings} />
-                </p>
-                <p className="mt-3 rounded-xl bg-[#E7F4F0] px-3.5 py-2.5 text-[12px] leading-relaxed text-[#0B6B5D]">
-                  On a {formatPkrStatic(propertyValue)} deal, that&rsquo;s real money back in your pocket —
-                  and the same honest 1% whether it&rsquo;s a plot, a house or a hall.
-                </p>
-              </div>
-              <p className="mt-4 text-[11px] leading-relaxed text-neutral-400">
-                Illustration only — your fee is always confirmed in writing before any deal,
-                and rentals are charged at an agreed flat rate.
-              </p>
-            </motion.div>
+          <div className="mt-9 grid gap-5 md:grid-cols-2">
+            {EXPLORE_AREAS.map((g) => {
+              const count = areaCounts[g.name] ?? 0;
+              return (
+                <motion.button
+                  key={g.slug}
+                  variants={pop}
+                  onClick={() => exploreArea(g.name)}
+                  className="group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 hover:shadow-[0_40px_90px_-36px_rgba(15,23,42,0.55)] sm:h-[380px]"
+                  aria-label={`Explore properties in ${g.name}`}
+                >
+                  <Image
+                    src={g.cover}
+                    alt={g.name}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                  />
+                  <div
+                    className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,32,28,0.10)_0%,rgba(5,32,28,0.42)_55%,rgba(4,26,23,0.92)_100%)]"
+                    aria-hidden
+                  />
+                  {g.office && (
+                    <span className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[11.5px] font-semibold text-[#0B6B5D] shadow-sm backdrop-blur">
+                      <MapPin className="h-3 w-3" />
+                      Our office here
+                    </span>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7">
+                    <h3 className="text-[22px] font-bold tracking-tight text-white sm:text-2xl">{g.name}</h3>
+                    <p className="mt-1 text-[13px] font-medium text-white/85">{g.goodFor.join("  •  ")}</p>
+                    <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/25 pt-4">
+                      <span className="text-[12.5px] font-semibold text-white/80">
+                        {count > 0
+                          ? `${count} live ${count === 1 ? "listing" : "listings"}`
+                          : "Files available on request"}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-white transition-transform duration-300 group-hover:translate-x-1">
+                        Explore Properties
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
+
+          <motion.p variants={item} className="mt-6 text-center text-[13px] font-medium text-neutral-500">
+            Also serving <span className="font-semibold text-[#0B6B5D]">Royal Enclave, Premier Enclave &amp; Overseas
+            Block</span> —{" "}
+            <button
+              onClick={() => navigate({ name: "areas" })}
+              className="font-semibold text-[#0B6B5D] underline decoration-[#0F766E]/30 underline-offset-4 transition-colors hover:decoration-[#0F766E]"
+            >
+              see all five areas
+            </button>
+          </motion.p>
         </motion.div>
       </section>
 

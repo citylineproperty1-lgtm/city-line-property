@@ -454,3 +454,16 @@ Stage Summary:
 - Admin login: admin@citylineproperty.com / CityLine@2025 (change from panel). WhatsApp webhook: set `webhook_url` in Admin → Settings
   (CallMeBot GET with {MESSAGE} or JSON POST) to activate automatic WhatsApp lead push.
 - Next ideas: Supabase storage upload switch, dark mode (optional), image drag-reorder parity check, per-area photo covers.
+---
+Task ID: 17
+Agent: main (user-requested section swap)
+Task: Remove the "1% difference" savings-calculator section from the home page; in its place add an "Explore Etihad Town" section with Area cards for Etihad Town Phase 1 and Phase 2 (per user's two screenshots)
+
+Work Log:
+- home-view.tsx: deleted the SAVINGS CALCULATOR section entirely (slider, 2% vs 1% comparison card, You-save panel) and all now-dead code: Slider import, formatPKR import, formatPkrStatic, MoneySpring, MIN/MAX_VALUE + sliderToValue/valueToSlider log-mapping, BUDGET_PRESETS, sliderV state block, BRAND_EMERALD const.
+- New EXPLORE ETIHAD TOWN section in the calculator's exact spot (after commission band, before categories), current white/emerald family.co language: two image-forward rounded-[1.75rem] cards built from AREA_GUIDES slugs etihad-town-phase-1/2 — cover image with hover zoom, emerald-tinted dark gradient for legibility, area name, goodFor tag line, live listing count (areaCounts computed per district from the existing /api/properties?limit=300 fetch), "Our office here" pill on Phase 1, single "Explore Properties →" CTA that filters Listings by area name (exploreArea()). Footer note: "Also serving Royal Enclave, Premier Enclave & Overseas Block — see all five areas" → Areas view. No Phase 3/4 anywhere.
+- Verified (agent-browser): calculator text gone; Phase 1 card → Listings "6 listings available" filtered to "Etihad Town Phase 1"; Phase 2 card → "3 listings available"; "see all five areas" → Area Guides view; mobile 390px stacks 1-col with zero horizontal scroll; desktop 1440 grid 2-col; console clean, bun run lint exit 0.
+
+Stage Summary:
+- Home page flow is now: Hero → Commission band → Explore Etihad Town (Phase 1 + Phase 2 area cards) → Categories → Featured → Map → Why us → Process → Requirement form → Final CTA.
+- The 1% commission story is still told via the commission marquee band, Why-us card and hero copy — no revenue-savings calculator anymore.
