@@ -529,3 +529,20 @@ Stage Summary:
 - Admin login is now self-healing and resilient: default admin auto-restores if the table is ever empty; transient DB hiccups retry once; "admin" works as a username; error messages distinguish bad credentials (401) from server trouble (500).
 - Access (unchanged): open the site → append /#/admin → sign in with admin@citylineproperty.com / CityLine@2025 (or username "admin"). Password changeable in Admin → Settings.
 - If the user sees another login error, the on-screen message now tells them whether it's wrong credentials or a server retry situation.
+---
+Task ID: 22
+Agent: main (second login-failure report + infra stabilization)
+Task: User hit "Server error — please wait a few seconds and try again." on admin login again (screenshot with username "admin" + password). Diagnose, fix, stabilize.
+
+Work Log:
+- Diagnosis: the new 500 string was shown, but dev.log contained NO failed login request at all — the request died inside the dev server during the exact window the route file was hot-recompiled (Turbopack) and the Prisma client was regenerated mid-flight (bun run db:push), i.e. the user's attempt overlapped the previous fix's deploy/restart window. Confirmed login API worked via curl on :3000 AND via Caddy :81 gateway with https-proto headers (both 200) once warm.
+- admin-login.tsx: client-side auto-retry — on any 5xx response the form silently waits 1.5s and retries once before showing an error (transient dev-server hiccups now self-heal invisibly for the owner).
+- Server restart saga: first two background starts (nohup, setsid+disown) were reaped within ~1 min (log showed clean session then silent death; RAM fine, no supervisor). `(bun run dev > /dev/null 2>&1 &)` subshell form survived across tool sessions — server stable on :3000.
+- Gateway discovery: right after a dev-server restart the :81 ingress (platform preview path) returns a 502 splash (Z.ai logo auto-refresh page) until the new upstream is properly up — stale-upstream state resolves once :3000 is stably listening; then gateway → 200 for home + login.
+- E2E re-verified (agent-browser): /#/admin with valid cookie → dashboard; Logout → fresh login form → signed in with alias "admin" / CityLine@2025 → "Welcome back, City" toast, 6 tabs, Overview KPIs (16 listings / 2 new leads), chart + pipeline + category bars; console warnings only (pre-existing LCP/position notes, no errors); lint exit 0; dev log all 200s.
+- Committed 9968aa7 + pushed to origin main.
+
+Stage Summary:
+- Login failure classes now covered: empty admin table (self-heal bootstrap, Task 21), transient server 5xx (server retries once + client retries once), username alias ("admin"), gateway 502 window after restarts (documented — wait a few seconds after any dev-server restart before testing).
+- CRITICAL ops note: restarting the dev server blanks the preview via :81 502 splash briefly; always re-verify http://localhost:81/ returns 200 after any restart.
+- Access unchanged: site URL + /#/admin → admin@citylineproperty.com (or "admin") / CityLine@2025 (change in Settings).
