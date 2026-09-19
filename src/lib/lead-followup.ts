@@ -1,13 +1,15 @@
 import { db } from "@/lib/db";
 
 /**
- * Lead follow-up reminders — self-healing columns.
+ * Lead follow-up reminders.
  *
- * Adds "followUpAt" (epoch-ms DATETIME, nullable) and "lastContactedAt" to the
- * existing Lead table via raw SQL so the long-running dev server never depends
- * on a regenerated Prisma client (same pattern as Post / ViewEvent — see
- * worklog Task 9/10). Reads/writes go through raw SQL too, since the generated
- * client doesn't know the new columns.
+ * The followUpAt / lastContactedAt columns are part of the Prisma schema now,
+ * so every read/write goes through the generated client — 100% portable
+ * across SQLite (dev / standalone) and Postgres (Supabase).
+ *
+ * ensureFollowUpColumns() remains as a belt-and-braces no-op for databases
+ * created before these columns existed: the ALTER runs once and the
+ * "column already exists" error from either dialect is swallowed.
  */
 
 let columnsReady: Promise<void> | null = null;
@@ -15,36 +17,43 @@ let columnsReady: Promise<void> | null = null;
 export function ensureFollowUpColumns(): Promise<void> {
   if (!columnsReady) {
     columnsReady = (async () => {
-      // SQLite: ADD COLUMN fails if it exists — swallow that specific error.
+      const dupErr = (e: unknown) => {
+        const msg = String((e as Error)?.message ?? e);
+        return (
+          msg.includes("duplicate column name") || // SQLite
+          msg.includes("already exists") // Postgres
+        );
+      };
       await db
-        .$executeRawUnsafe(`ALTER TABLE "Lead" ADD COLUMN "followUpAt" DATETIME`)
+        .$executeRawUnsafe(
+          `ALTER TABLE "Lead" ADD COLUMN "followUpAt" TIMESTAMP(3)`
+        )
         .catch((e: unknown) => {
-          const msg = String((e as Error)?.message ?? e);
-          if (!msg.includes("duplicate column name")) throw e;
+          if (!dupErr(e)) throw e;
         });
       await db
-        .$executeRawUnsafe(`ALTER TABLE "Lead" ADD COLUMN "lastContactedAt" DATETIME`)
+        .$executeRawUnsafe(
+          `ALTER TABLE "Lead" ADD COLUMN "lastContactedAt" TIMESTAMP(3)`
+        )
         .catch((e: unknown) => {
-          const msg = String((e as Error)?.message ?? e);
-          if (!msg.includes("duplicate column name")) throw e;
+          if (!dupErr(e)) throw e;
         });
     })();
   }
   return columnsReady;
 }
 
-/** Lead ids due (followUpAt <= endOfDayMs, not WON/LOST, not already contacted after due). */
+/** Lead ids due (followUpAt <= endOfDay, not WON/LOST). */
 export async function dueFollowUpIds(endOfDayMs: number): Promise<string[]> {
-  await ensureFollowUpColumns();
-  const rows = await db.$queryRawUnsafe<{ id: string }[]>(
-    `SELECT "id" FROM "Lead"
-     WHERE "followUpAt" IS NOT NULL
-       AND "followUpAt" <= ?
-       AND "status" NOT IN ('WON', 'LOST')
-     ORDER BY "followUpAt" ASC`,
-    endOfDayMs
-  );
-  return (rows as { id: string }[]).map((r) => r.id);
+  const rows = await db.lead.findMany({
+    where: {
+      followUpAt: { not: null, lte: new Date(endOfDayMs) },
+      status: { notIn: ["WON", "LOST"] },
+    },
+    select: { id: true },
+    orderBy: { followUpAt: "asc" },
+  });
+  return rows.map((r) => r.id);
 }
 
 export interface FollowUpItem {
@@ -61,59 +70,42 @@ export async function followUpQueue(limit = 4): Promise<{
   today: number;
   upcoming: FollowUpItem[];
 }> {
-  await ensureFollowUpColumns();
   const now = Date.now();
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
-  const endTodayMs = endOfToday.getTime();
 
-  const rows = await db.$queryRawUnsafe(
-    `SELECT "id","name","phone","followUpAt","status" FROM "Lead"
-     WHERE "followUpAt" IS NOT NULL AND "status" NOT IN ('WON','LOST')
-     ORDER BY "followUpAt" ASC LIMIT ?`,
-    limit
-  );
+  const rows = await db.lead.findMany({
+    where: {
+      followUpAt: { not: null },
+      status: { notIn: ["WON", "LOST"] },
+    },
+    select: { id: true, name: true, phone: true, followUpAt: true, status: true },
+    orderBy: { followUpAt: "asc" },
+    take: limit,
+  });
 
-  const countRows = await db.$queryRawUnsafe<{ n: number; bucket: string }[]>(
-    `SELECT
-       SUM(CASE WHEN "followUpAt" < ? THEN 1 ELSE 0 END) AS "overdue",
-       SUM(CASE WHEN "followUpAt" >= ? AND "followUpAt" <= ? THEN 1 ELSE 0 END) AS "today"
-     FROM "Lead"
-     WHERE "followUpAt" IS NOT NULL AND "status" NOT IN ('WON','LOST')`,
-    now,
-    now,
-    endTodayMs
-  );
+  // Buckets computed in JS — the whole pipeline is a handful of rows.
+  const all = await db.lead.findMany({
+    where: {
+      followUpAt: { not: null },
+      status: { notIn: ["WON", "LOST"] },
+    },
+    select: { followUpAt: true },
+  });
+  const overdue = all.filter((r) => r.followUpAt && r.followUpAt.getTime() < now).length;
+  const today = all.filter(
+    (r) => r.followUpAt && r.followUpAt.getTime() >= now && r.followUpAt.getTime() <= endOfToday.getTime()
+  ).length;
 
-  const list = (rows as unknown as { id: string; name: string; phone: string; followUpAt: number | string | Date; status: string }[]).map(
-    (r) => ({
-      id: String(r.id),
-      name: String(r.name),
-      phone: String(r.phone),
-      followUpAt: toDate(r.followUpAt),
-      status: String(r.status),
-    })
-  );
-
-  const c = (countRows as unknown as { overdue: number | null; today: number | null }[])[0] ?? {
-    overdue: 0,
-    today: 0,
-  };
   return {
-    overdue: Number(c.overdue ?? 0),
-    today: Number(c.today ?? 0),
-    upcoming: list,
+    overdue,
+    today,
+    upcoming: rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      phone: r.phone,
+      followUpAt: (r.followUpAt as Date).toISOString(),
+      status: r.status,
+    })),
   };
-}
-
-function toDate(v: unknown): string {
-  if (typeof v === "number") return new Date(v).toISOString();
-  if (v instanceof Date) return v.toISOString();
-  if (typeof v === "string") {
-    const n = Number(v);
-    if (Number.isFinite(n) && n > 1_000_000_000_000) return new Date(n).toISOString();
-    const d = new Date(v.includes("T") ? v : v.replace(" ", "T"));
-    if (!Number.isNaN(d.getTime())) return d.toISOString();
-  }
-  return new Date().toISOString();
 }

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
-import { ensureFollowUpColumns } from "@/lib/lead-followup";
 import { appendLeadActivity } from "@/lib/lead-activity";
 
 export const dynamic = "force-dynamic";
@@ -57,16 +56,18 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
       await log({ type: "note", detail: "Notes updated" });
     }
 
-    // Follow-up fields live outside the Prisma client — raw SQL.
+    // Follow-up fields are real Prisma columns now — portable client updates.
     let followUpAt: string | null | undefined;
     let lastContactedAt: string | null | undefined;
     if (body.followUpAt !== undefined) {
-      await ensureFollowUpColumns();
       const ms = body.followUpAt === null ? null : new Date(body.followUpAt).getTime();
       if (body.followUpAt !== null && (ms == null || Number.isNaN(ms))) {
         return NextResponse.json({ error: "Invalid followUpAt." }, { status: 400 });
       }
-      await db.$executeRawUnsafe(`UPDATE "Lead" SET "followUpAt" = ? WHERE "id" = ?`, ms, id);
+      await db.lead.update({
+        where: { id },
+        data: { followUpAt: ms == null ? null : new Date(ms) },
+      });
       followUpAt = ms == null ? null : new Date(ms).toISOString();
       const oldMs = existing.followUpAt ? new Date(existing.followUpAt).getTime() : null;
       if (ms !== oldMs) {
@@ -83,14 +84,12 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
       }
     }
     if (body.lastContactedAt !== undefined) {
-      await ensureFollowUpColumns();
-      const ms = body.lastContactedAt === null ? null : new Date(body.lastContactedAt).getTime();
-      await db.$executeRawUnsafe(
-        `UPDATE "Lead" SET "lastContactedAt" = ? WHERE "id" = ?`,
-        ms ?? Date.now(),
-        id
-      );
-      lastContactedAt = new Date(ms ?? Date.now()).toISOString();
+      const when = new Date(body.lastContactedAt === null ? Date.now() : body.lastContactedAt);
+      await db.lead.update({
+        where: { id },
+        data: { lastContactedAt: when },
+      });
+      lastContactedAt = when.toISOString();
       await log({ type: "contacted", detail: "Marked as contacted" });
     }
 
