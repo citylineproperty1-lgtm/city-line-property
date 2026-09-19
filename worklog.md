@@ -581,3 +581,19 @@ Stage Summary:
 - Vercel deployments now ship the SQLite database inside every API lambda and auto-copy it to /tmp on cold start — listings, search, admin login all work on the deployed copy.
 - IMPORTANT LIMITATION to tell the user: on Vercel, admin-panel writes (add/edit/delete listing, leads) persist only per lambda instance — they vanish when the function recycles, because serverless has no persistent disk. Durable admin CRUD on Vercel requires switching the data layer to Supabase Postgres (supabase/schema.sql already in repo; needs the Supabase DB password or manual SQL run — next step when user is ready).
 - Frontend no longer shows skeletons forever — API failures now surface as a clear empty-state.
+---
+Task ID: 25
+Agent: main (Vercel still failing after tracing fix — embedded db snapshot)
+Task: User reported the deployed copy now shows the new empty-state ("Listings are being refreshed right now") instead of listings — frontend fix deployed but the API still fails on Vercel.
+
+Work Log:
+- Confirmed the empty-state rendering proves 27159d1 IS live on Vercel (Vercel auto-deploys from GitHub pushes) → the API lambda still has no usable database. Most likely outputFileTracingIncludes glob keys ("/api/**/*") did not match app-router route handlers, so db/custom.db still isn't in the lambda bundle.
+- Bulletproof fix: EMBED the database in the code bundle itself — generated src/lib/db-snapshot.ts (224KB base64 of db/custom.db, verified round-trip: decodes to the exact 167,936-byte db with adminUser 1 / property 16 / featured 5). Since it's a normal import of db.ts, Next MUST include it in every serverless function — no tracing assumptions.
+- db.ts fallback chain finalized: (1) real DATABASE_URL wins → (2) db/custom.db on disk → (3) disk copy to /tmp if dir read-only → (4) NEW: decode embedded snapshot to /tmp/clp-custom.db. Local dev behavior unchanged (.env exists).
+- scripts/gen-db-snapshot.mjs committed — maintenance command `bun scripts/gen-db-snapshot.mjs` regenerates the snapshot whenever the real DB has meaningful new data (documented in file header).
+- Lint 0; sandbox home 200 + featured API 200 after the change. Committed 19b7b61 + pushed → Vercel auto-deploy triggered.
+
+Stage Summary:
+- Every deployment from GitHub now carries the full database inside the code bundle as a last-resort fallback — listings/search/login CANNOT be data-less on any host.
+- Maintenance rule: after meaningful DB changes, run `bun scripts/gen-db-snapshot.mjs` + commit so the embedded snapshot stays current for deployments.
+- Still true: Vercel admin-panel writes are ephemeral (per-lambda /tmp). Durable cross-deploy writes require Supabase Postgres — next step when the user is ready (needs Supabase DB password or manual SQL run).
