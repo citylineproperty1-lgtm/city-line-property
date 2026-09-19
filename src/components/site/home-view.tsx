@@ -200,6 +200,8 @@ export function HomeView() {
   /* ---------- data (derived-loading fetch pattern) ---------- */
   const [featured, setFeatured] = useState<Property[]>([]);
   const [latest, setLatest] = useState<Property[]>([]);
+  const [featuredLoaded, setFeaturedLoaded] = useState(false);
+  const [latestLoaded, setLatestLoaded] = useState(false);
   const [stats, setStats] = useState<PlatformStats | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
   const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
@@ -209,7 +211,8 @@ export function HomeView() {
     fetch("/api/properties?featured=true&limit=6")
       .then((r) => r.json())
       .then((d) => setFeatured(d.properties ?? []))
-      .catch(() => setFeatured([]));
+      .catch(() => setFeatured([]))
+      .finally(() => setFeaturedLoaded(true));
 
     fetch("/api/properties?sort=newest&limit=12")
       .then((r) => r.json())
@@ -218,7 +221,8 @@ export function HomeView() {
         // keep the two rails distinct: latest = newest non-featured listings
         setLatest(all.filter((p) => !p.featured).slice(0, 6));
       })
-      .catch(() => setLatest([]));
+      .catch(() => setLatest([]))
+      .finally(() => setLatestLoaded(true));
 
     fetch("/api/stats")
       .then((r) => r.json())
@@ -678,13 +682,19 @@ export function HomeView() {
         </motion.div>
 
         <div className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
-          {featured.length === 0
+          {!featuredLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
                   <PropertyCardSkeleton />
                 </div>
               ))
-            : featured.map((p) => (
+            : featured.length === 0
+              ? (
+                <div className="flex w-full items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/60 px-6 py-10 text-center text-sm text-neutral-500">
+                  Listings are being refreshed right now — please check back in a moment.
+                </div>
+              )
+              : featured.map((p) => (
                 <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
                 </div>
@@ -726,13 +736,15 @@ export function HomeView() {
         </motion.div>
 
         <div className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
-          {latest.length === 0
+          {!latestLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
                   <PropertyCardSkeleton />
                 </div>
               ))
-            : latest.map((p) => (
+            : latest.length === 0
+              ? null
+              : latest.map((p) => (
                 <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
                 </div>
