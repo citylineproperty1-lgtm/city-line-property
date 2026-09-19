@@ -565,3 +565,19 @@ Stage Summary:
 - Deployments from GitHub are now self-sufficient: no .env needed — Prisma auto-resolves the committed db/custom.db (upward search), the build bundles it into standalone, .env.example documents the variable for custom setups.
 - The deployed copy will have admin@citylineproperty.com / CityLine@2025 baked into the committed DB, plus the self-heal bootstrap as a second safety net.
 - NEXT: user must re-sync/redeploy their hosting from GitHub (pull latest main → rebuild) for the fix to take effect on the deployed copy. If the deployed platform still errors after redeploy, next suspect = prisma generate not running during their build.
+---
+Task ID: 24
+Agent: main (Vercel deployment — listings stuck on skeletons)
+Task: User reported listings not displaying on the deployed copy (screenshot: "Featured listings" with skeleton placeholders forever).
+
+Work Log:
+- Confirmed sandbox healthy (featured API 200 with 5 listings). Queried GitHub API with the repo token: the deployment platform is VERCEL (vercel[bot], deployment 6539141710 for a03750e, state "success" at 09:00). So the deployed copy HAS the db.ts fallback but STILL fails → Vercel-specific cause.
+- ROOT CAUSE (two layers): (1) Next.js only packages IMPORTED files into serverless lambdas — db/custom.db is referenced via a runtime string, so Vercel's API functions had NO database file at all (SQLite silently creates an empty one → "table does not exist" → API 500). (2) Vercel's /var/task is READ-ONLY — even a bundled SQLite file cannot be opened by Prisma.
+- Skeleton bug found in home-view.tsx: `featured.length === 0` rendered skeletons FOREVER, masking API failures as eternal loading.
+- Fixes: (a) next.config.ts — outputFileTracingIncludes for "/api/**/*" + "/api/*" → bundles ./db/**/* into every serverless function; (b) src/lib/db.ts — writability check on the resolved db dir; if READ-ONLY (Vercel), copies the db to os.tmpdir()/clp-custom.db and uses that (reads identical, writes live for the instance); (c) package.json build — now starts with `prisma generate &&` so the client is generated on any platform; (d) home-view.tsx — featuredLoaded/latestLoaded flags: skeletons only while actually loading, graceful "Listings are being refreshed" empty-state card after load (featured), latest rail hides when empty.
+- Verified locally: lint 0, home 200, featured API 200, browser shows live category counts/cards. Committed 27159d1 + pushed → Vercel auto-deploys from the push.
+
+Stage Summary:
+- Vercel deployments now ship the SQLite database inside every API lambda and auto-copy it to /tmp on cold start — listings, search, admin login all work on the deployed copy.
+- IMPORTANT LIMITATION to tell the user: on Vercel, admin-panel writes (add/edit/delete listing, leads) persist only per lambda instance — they vanish when the function recycles, because serverless has no persistent disk. Durable admin CRUD on Vercel requires switching the data layer to Supabase Postgres (supabase/schema.sql already in repo; needs the Supabase DB password or manual SQL run — next step when user is ready).
+- Frontend no longer shows skeletons forever — API failures now surface as a clear empty-state.
