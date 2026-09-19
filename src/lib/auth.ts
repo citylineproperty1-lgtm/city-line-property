@@ -115,3 +115,26 @@ export async function authenticate(
   if (!verifyPassword(password, user.passwordHash)) return null;
   return { id: user.id, email: user.email, name: user.name };
 }
+
+/** Default owner credentials — used to bootstrap / self-heal the admin account. */
+export const DEFAULT_ADMIN_EMAIL = "admin@citylineproperty.com";
+export const DEFAULT_ADMIN_PASSWORD = "CityLine@2025";
+const DEFAULT_ADMIN_NAME = "City Line Admin";
+
+/**
+ * Self-healing bootstrap: if the AdminUser table is empty (fresh/reset DB,
+ * schema re-push, etc.) recreate the default admin so the owner is never
+ * locked out. Returns the created admin, or null when an admin already exists.
+ */
+export async function ensureDefaultAdmin(): Promise<SessionAdmin | null> {
+  const count = await db.adminUser.count();
+  if (count > 0) return null;
+  const user = await db.adminUser.create({
+    data: {
+      email: DEFAULT_ADMIN_EMAIL,
+      name: DEFAULT_ADMIN_NAME,
+      passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
+    },
+  });
+  return { id: user.id, email: user.email, name: user.name };
+}
