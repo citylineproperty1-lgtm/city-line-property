@@ -27,17 +27,26 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loginCall = async (email: string, password: string) =>
+    fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
     setError(null);
     setBusy(true);
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
+      let res = await loginCall(email.trim(), password);
+      // A 500 in dev can be a transient hot-reload/DB hiccup — silently retry
+      // once after a short pause before showing the user any error.
+      if (res.status >= 500) {
+        await new Promise((r) => setTimeout(r, 1500));
+        res = await loginCall(email.trim(), password);
+      }
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         admin?: AdminUser;
