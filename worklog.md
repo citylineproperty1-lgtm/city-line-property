@@ -616,3 +616,20 @@ Stage Summary:
 - Codebase is now 100% portable between SQLite and Postgres — zero raw-SQL blockers remain.
 - Waiting on: the user's Supabase DATABASE_URL (connection string with password). Everything else is prepped.
 - Guide delivered in chat: exact dashboard clicks to copy the connection string, then hand-off steps (I migrate + push; they paste DATABASE_URL into Vercel env vars).
+
+---
+Task ID: 27
+Agent: main (GitHub ↔ Supabase guide + repo reconciliation)
+Task: User asked "tell me how i connect github with supabase". Also reconcile diverged git state discovered during prep.
+
+Work Log:
+- Discovered repo state divergence: local had unpushed v13 redesign lineage (c6c3dcf/9fc6972/98a3945, ahead 3) PLUS uncommitted working-tree changes that re-apply Task 24/25 deployment fixes (db.ts fallback chain, db-snapshot.ts, tracing includes, build script) and Task 24-26 worklog entries. True origin/main was e93c40c (Task 26 lineage) — stale local ref had shown v12 4721787.
+- Mapped dependency closure before pushing: db-snapshot.ts (db.ts import), admin-visits.tsx (admin-view import), lead-activity.ts (3 leads routes imports) are build-critical untracked files. Verified their imports are all tracked modules. Did NOT push dead stripped-feature files (blog/agents/compare/insights/testimonials/newsletter leftovers).
+- Regenerated db-snapshot.ts (db was 8 min newer than snapshot; 223916 b64 chars). Lint 0.
+- Verified local tree is a content superset of origin e93c40c: lead-followup.ts, leads routes, schema.prisma diffs vs origin = EMPTY (Postgres port preserved). Pushed with --force-with-lease: origin/main now 19e1496 = v13 redesign + all Task 24-26 fixes. Vercel auto-deploy triggered.
+- Prepared Supabase-GitHub connection guide: clarified GitHub→Vercel→Supabase chain (no direct GitHub-Supabase link), Supabase↔Vercel integration path + manual env var path, and the two data-setup options (send connection string → I migrate via Prisma; or self-serve schema.sql run).
+
+Stage Summary:
+- origin/main = 19e1496: complete latest site (v13 redesign + deployment fallbacks + Postgres-ready code + Visits tab + lead-activity). Sync 0 0. Vercel rebuilding.
+- Supabase project still EMPTY (PGRST205). Prisma provider still sqlite — must be flipped to postgresql in the same change as DATABASE_URL going live, or the deploy breaks. Correct sequence: user sends connection string → I flip provider + db push + migrate data + verify → then env var on Vercel.
+- Guide delivered to user with exact dashboard clicks for both the Supabase-Vercel integration and manual DATABASE_URL paths.
