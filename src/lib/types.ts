@@ -131,6 +131,29 @@ export interface Lead {
   followUpAt?: string | null;
   /** Last time the team actually reached this lead (ISO). */
   lastContactedAt?: string | null;
+  /** CRM activity timeline (latest last) — status changes, notes, WhatsApp, visits. */
+  activities?: LeadActivity[];
+  createdAt: string;
+}
+
+/** One entry in a lead's CRM activity timeline. */
+export interface LeadActivity {
+  at: string;
+  type: "status" | "note" | "followup" | "contacted" | "whatsapp" | "visit" | string;
+  detail: string;
+}
+
+/** Scheduled property viewing, managed from the admin Visits tab. */
+export interface SiteVisit {
+  id: string;
+  name: string;
+  phone: string;
+  propertyId: string | null;
+  property?: { id: string; title: string } | null;
+  area: string | null;
+  scheduledAt: string;
+  status: "PLANNED" | "DONE" | "NO_SHOW" | "CANCELLED" | string;
+  notes: string | null;
   createdAt: string;
 }
 

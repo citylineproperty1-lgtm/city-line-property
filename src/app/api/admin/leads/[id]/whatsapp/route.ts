@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
 import { dispatchLeadWebhook } from "@/lib/whatsapp";
+import { appendLeadActivity } from "@/lib/lead-activity";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,13 @@ export async function POST(_req: NextRequest, ctx: { params: Promise<{ id: strin
     const exists = await db.lead.findUnique({ where: { id } });
     if (!exists) return NextResponse.json({ error: "Lead not found." }, { status: 404 });
     const result = await dispatchLeadWebhook(id);
+    await appendLeadActivity(id, {
+      type: "whatsapp",
+      detail:
+        result === "SENT"
+          ? "WhatsApp notification sent"
+          : `WhatsApp dispatch result: ${result}`,
+    });
     return NextResponse.json({ ok: result === "SENT", waStatus: result });
   } catch (e) {
     console.error("POST /api/admin/leads/[id]/whatsapp", e);
