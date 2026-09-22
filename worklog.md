@@ -654,3 +654,24 @@ Stage Summary:
 - Supabase Postgres is LIVE and is now the source of truth for the local dev copy: tables + full data migrated and E2E verified (public site + admin login + panel).
 - Waiting on: user pastes DATABASE_URL into Vercel env vars → then I push the held flip commit → auto-deploy completes the cutover with zero downtime (old SQLite build keeps serving until the flip deploy lands).
 - After cutover: admin writes persist across deploys permanently. Legacy SQLite fallback chain + embedded snapshot retire (files deleted in flip commit; migrate-to-postgres.ts kept for reference).
+
+---
+Task ID: 29
+Agent: main (Vercel build-failure root cause + fix + live cutover verification)
+Task: User reported all Vercel deployments showing "Error" even after saving DATABASE_URL env var. Diagnose the real root cause, fix, verify the Supabase cutover end-to-end on the live site.
+
+Work Log:
+- Pulled the full deployment timeline from GitHub API: eb5304d = last success; 28b027e + 211cd0f (sync-bot commits) = "pending" (canceled); EVERY completed build after the sync-bot dump failed (241a97e, a585f27, 9029ba2, 6c6faa0 — all ~27-31s).
+- Diffed last-green vs first-fail: the ONLY delta was sync-bot commit 28b027e (4,520 insertions of stripped-feature leftovers: agents/posts/digest/insights/compare/blog routes + components + lib/posts.ts) that Task 27 had deliberately kept OUT of git.
+- Also discovered: sync-bot commit 211cd0f committed .env WITH Supabase credentials to the repo (was tracked since scaffold; gitignore never applied to tracked files).
+- Ruled out: prisma generate without env vars (tested — exits 0, so missing DIRECT_URL on Vercel is harmless), missing modules in src (tsc: none), edge-runtime exports (none), build-time DB execution (all routes force-dynamic).
+- FIX (1264f25): git rm 22 dead leftovers (verified via grep nothing in the live import graph references them); git rm --cached .env (untrack; local copy kept; gitignore already covers .env*); repaired live bugs found along the way — /api/inquiries missing dispatchLeadWebhook import (ReferenceError on every property/contact form submit), /api/inquiries/[id] PATCH rewritten from removed Inquiry model onto Lead (CLOSED→WON), admin-visits Date/number comparisons fixed (Postgres returns Date objects).
+- Verified: lint 0; dev home 200 + featured API + inquiries 400-validation + admin login all OK against Supabase. Pushed → Vercel auto-build → **1264f25 = SUCCESS** ("Deployment has completed").
+- LIVE verification on https://citylineproperty.vercel.app: home 200, 16 properties, 7 categories, real listings rendered (Commercial Hall PKR 285,000/mo Phase 1 etc.), admin login {"ok":true}. SUPABASE CUTOVER COMPLETE.
+
+Stage Summary:
+- Vercel deploy pipeline is GREEN again: root cause was the sync-bot's dead-code dump, NOT the user's env var (which was correct all along).
+- ⚠️ CRON/SYNC AGENTS: never commit sandbox leftovers wholesale. The sandbox may contain deliberately-untracked experiment files; commit explicit paths only (worklog). Dead leftovers cost ~2h of red builds.
+- Supabase Postgres is now the live source of truth: admin-panel writes PERSIST permanently across deployments (no more ephemeral lambda storage).
+- Security note: Supabase DB password sits in git history (28b027e..6c6faa0, private repo). .env is now untracked. Optional future hardening: rotate the DB password in Supabase + update .env + Vercel env var in one coordinated change.
+- OPS RULES for the user: (1) never reset the Supabase DB password without coordinated update, (2) never delete/pause the Supabase project, (3) every git push auto-deploys — no manual Redeploy needed.
