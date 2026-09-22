@@ -633,3 +633,24 @@ Stage Summary:
 - origin/main = 19e1496: complete latest site (v13 redesign + deployment fallbacks + Postgres-ready code + Visits tab + lead-activity). Sync 0 0. Vercel rebuilding.
 - Supabase project still EMPTY (PGRST205). Prisma provider still sqlite — must be flipped to postgresql in the same change as DATABASE_URL going live, or the deploy breaks. Correct sequence: user sends connection string → I flip provider + db push + migrate data + verify → then env var on Vercel.
 - Guide delivered to user with exact dashboard clicks for both the Supabase-Vercel integration and manual DATABASE_URL paths.
+
+---
+Task ID: 28
+Agent: main (Supabase live — tables created, data migrated, E2E verified)
+Task: User set Supabase DB password (iH0vQFSkuxiNd0ts). Build connection, create tables, migrate all data, verify E2E, coordinate Vercel cutover.
+
+Work Log:
+- Region probe (raw TCP DNS was inconclusive — all pooler regions resolve; used PrismaClient datasourceUrl override + SELECT 1 with real password across 19 regions): project lives in aws-0-ap-southeast-1.pooler.supabase.com. Sandbox CAN reach pooler TCP ✓. Direct db.<ref>.supabase.co is IPv6-only from sandbox (unreachable — use session pooler instead).
+- prisma/schema.prisma: provider sqlite→postgresql + directUrl=env("DIRECT_URL") (session pooler 5432 for db push; DATABASE_URL = transaction pooler 6543 + pgbouncer=true&connection_limit=1 for runtime). prisma generate OK (client v6.19.2).
+- Wrote .env (gitignored) with both URLs. GOTCHA: persistent shell had stale exported DATABASE_URL=file:... overriding .env — must `unset DATABASE_URL DIRECT_URL` before bun/prisma runs and INSIDE the dev-server subshell.
+- `prisma db push` via DIRECT_URL: all 6 tables created in Supabase (2.26s).
+- scripts/migrate-to-postgres.ts: bun:sqlite read → Prisma postgres write, FK-safe order (Category→Property→Lead→SiteVisit→AdminUser→Setting), preserves ids/epochs, orphans nulled, booleans/ints normalized. RESULT MIGRATION_OK: Category 7, Property 16 (featured 5), Lead 4, SiteVisit 0, AdminUser 1 (admin@citylineproperty.com), Setting 6 — source/destination counts identical.
+- Dev server restarted `(unset DATABASE_URL DIRECT_URL; bun run dev > /dev/null 2>&1 &)` — now serves FROM SUPABASE. Verified: home 200, featured API returns real listings, total properties 16, POST /api/admin/login {"ok":true}.
+- Browser E2E: home renders live category counts ("Residential Plots — 4 listings"); /#/admin fresh load shows login; filled admin@citylineproperty.com / CityLine@2025 → Sign in → panel loads ("Welcome back, City Line Admin", Overview/Inventory/Leads tabs). All data served by Supabase.
+- HELD BACK (deliberately NOT committed/pushed): schema.prisma flip + upcoming db.ts cleanup. Deployed Vercel build must NOT flip until DATABASE_URL exists in Vercel env vars. ⚠️ CRON AGENTS: NEVER `git add -A` — commit only specific files (worklog). schema.prisma modification is INTENTIONAL local state pending user's Vercel env var.
+- Final cutover sequence when user confirms env var added: commit schema.prisma + db.ts simplification (remove SQLite fallback chain + snapshot import; bump SCHEMA_STAMP) + delete db-snapshot.ts & scripts/gen-db-snapshot.mjs + migrate script → push → Vercel auto-build picks up env var → live on Supabase, zero manual redeploy needed.
+
+Stage Summary:
+- Supabase Postgres is LIVE and is now the source of truth for the local dev copy: tables + full data migrated and E2E verified (public site + admin login + panel).
+- Waiting on: user pastes DATABASE_URL into Vercel env vars → then I push the held flip commit → auto-deploy completes the cutover with zero downtime (old SQLite build keeps serving until the flip deploy lands).
+- After cutover: admin writes persist across deploys permanently. Legacy SQLite fallback chain + embedded snapshot retire (files deleted in flip commit; migrate-to-postgres.ts kept for reference).
