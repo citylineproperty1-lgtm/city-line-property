@@ -118,11 +118,11 @@ export function AdminVisits({ api }: { api: AdminApi }) {
       const t = new Date(v.scheduledAt).getTime();
       switch (filter) {
         case "UPCOMING":
-          return v.status === "PLANNED" && t >= now;
+          return v.status === "PLANNED" && t >= now.getTime();
         case "TODAY":
           return t >= new Date(now).setHours(0, 0, 0, 0) && t <= endOfToday.getTime();
         case "PAST":
-          return t < now;
+          return t < now.getTime();
         default:
           return true;
       }

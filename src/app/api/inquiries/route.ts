@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { dispatchLeadWebhook } from "@/lib/whatsapp";
 
 export const dynamic = "force-dynamic";
 

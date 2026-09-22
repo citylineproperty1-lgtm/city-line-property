@@ -5,6 +5,11 @@ export const dynamic = "force-dynamic";
 
 const VALID_STATUSES = ["NEW", "CONTACTED", "CLOSED"];
 
+/**
+ * Legacy inquiry status update — inquiries are stored as CRM Leads
+ * (source CONTACT | PROPERTY), so the PATCH is mapped onto the Lead row.
+ * "CLOSED" maps to the CRM pipeline's WON state.
+ */
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -21,17 +26,17 @@ export async function PATCH(
       );
     }
 
-    const existing = await db.inquiry.findUnique({ where: { id } });
-    if (!existing) {
+    const existing = await db.lead.findUnique({ where: { id } });
+    if (!existing || (existing.source !== "CONTACT" && existing.source !== "PROPERTY")) {
       return NextResponse.json({ error: "Inquiry not found." }, { status: 404 });
     }
 
-    const updated = await db.inquiry.update({
+    await db.lead.update({
       where: { id },
-      data: { status },
+      data: { status: status === "CLOSED" ? "WON" : status },
     });
 
-    return NextResponse.json({ ok: true, inquiry: { id: updated.id, status: updated.status } });
+    return NextResponse.json({ ok: true, inquiry: { id, status } });
   } catch (e) {
     console.error("PATCH /api/inquiries/[id]", e);
     return NextResponse.json({ error: "Failed to update inquiry." }, { status: 500 });
