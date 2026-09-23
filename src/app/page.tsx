@@ -23,16 +23,40 @@ import {
 } from "@/lib/store";
 
 const TITLES: Record<string, string> = {
-  home: "City Line Property — Your Key to the City | Etihad Town, Lahore",
-  properties: "Browse Properties — City Line Property",
+  home: "City Line Property — Real Estate in Etihad Town, Lahore | 1% Commission",
+  properties: "Plots, Houses & Apartments for Sale & Rent in Etihad Town, Lahore — City Line Property",
   property: "Property Details — City Line Property",
-  about: "About Us — City Line Property",
-  contact: "Contact — City Line Property",
+  about: "About City Line Property — 1% Commission Real Estate Agency, Lahore",
+  contact: "Contact City Line Property — Etihad Town Phase 1, Lahore | 0309 4499940",
   saved: "Saved Properties — City Line Property",
-  areas: "Area Guides — City Line Property",
-  area: "Area Guide — City Line Property",
-  admin: "City Line Property",
+  areas: "Area Guides — Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave, Overseas Block | City Line Property",
+  area: "Area Guide — Etihad Town, Lahore | City Line Property",
+  admin: "City Line Property — Admin",
 };
+
+// Per-view meta description + robots updates (picked up by crawlers that
+// render JavaScript, e.g. Googlebot).
+const DESCRIPTIONS: Record<string, string> = {
+  home: "City Line Property — real estate agency in Etihad Town Phase 1, Lahore. Buy, sell & rent plots, houses & apartments with only 1% commission. Call 0309 4499940.",
+  properties: "Browse verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block, Lahore.",
+  property: "Property details — price, area, features & contact for this listing by City Line Property, Etihad Town, Lahore. Only 1% commission.",
+  about: "About City Line Property — a trusted property agency at 151-C Etihad Town Phase 1, Lahore, working on a fair 1% commission model with direct dealing.",
+  contact: "Contact City Line Property — 151-C Etihad Town Phase 1, Lahore. Call 0309 4499940 or 0321 8422109, or message us on WhatsApp.",
+  saved: "Your saved properties at City Line Property — Etihad Town, Lahore.",
+  areas: "Area guides for Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave and Overseas Block, Lahore — prices, amenities & investment outlook.",
+  area: "Area guide — property market, amenities & listings for this Etihad Town, Lahore neighbourhood. City Line Property, 1% commission.",
+  admin: "City Line Property admin panel.",
+};
+
+function setMeta(name: string, content: string) {
+  let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+  if (!el) {
+    el = document.createElement("meta");
+    el.setAttribute("name", name);
+    document.head.appendChild(el);
+  }
+  el.setAttribute("content", content);
+}
 
 function titleFor(view: View): string {
   switch (view.name) {
@@ -48,6 +72,8 @@ export default function Page() {
 
   useEffect(() => {
     document.title = titleFor(view);
+    setMeta("description", DESCRIPTIONS[view.name] ?? DESCRIPTIONS.home);
+    setMeta("robots", view.name === "admin" ? "noindex, nofollow" : "index, follow");
   }, [view]);
 
   // Deep links + browser back/forward: hydrate view from URL hash once,

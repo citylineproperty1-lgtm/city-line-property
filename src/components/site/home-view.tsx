@@ -317,10 +317,11 @@ export function HomeView() {
                 Real Estate Office · Etihad Town, Lahore
               </motion.span>
 
-              <h1
-                className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-6xl"
-                aria-label="Your Key to the City."
-              >
+              <h1 className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-6xl">
+                <span className="sr-only">
+                  City Line Property — real estate agency in Etihad Town, Lahore. Buy, sell and
+                  rent property with only 1% commission.
+                </span>
                 {["Your", "Key", "to", "the", "City."].map((w, i) => (
                   <motion.span
                     key={i}
