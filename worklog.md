@@ -675,3 +675,22 @@ Stage Summary:
 - Supabase Postgres is now the live source of truth: admin-panel writes PERSIST permanently across deployments (no more ephemeral lambda storage).
 - Security note: Supabase DB password sits in git history (28b027e..6c6faa0, private repo). .env is now untracked. Optional future hardening: rotate the DB password in Supabase + update .env + Vercel env var in one coordinated change.
 - OPS RULES for the user: (1) never reset the Supabase DB password without coordinated update, (2) never delete/pause the Supabase project, (3) every git push auto-deploys — no manual Redeploy needed.
+
+---
+Task ID: 30
+Agent: main (full SEO — frontend + backend/technical)
+Task: User asked for complete SEO ("do all seo front end and back end") so the site ranks top for "city line property" searches.
+
+Work Log:
+- Frontend SEO: layout metadata overhauled (metadataBase https://citylineproperty.vercel.app, keyword-rich title/description, canonical, OG en_PK + 1200x630 brand card, twitter summary_large_image, robots max-image-preview:large, logo icons, manifest, theme-color #0F766E); per-view keyword titles + meta description updates in page.tsx; admin view gets noindex,nofollow; home hero h1 got keyword-rich sr-only text (visible animated words untouched).
+- Crawlable content: new server component SeoContent (inside client SeoGate) renders below the SPA footer on "/": agency intro + NAP + 1% commission, 5 area links (#/properties?q=<area> — API search covers district contains), 7 category links (#/properties?type=<slug>), 5 featured listings (#/property/<id>) — all fetched live from Supabase; SeoGate removes it from the DOM on non-home hash views (crawlers still receive it in initial HTML).
+- Technical SEO: public/robots.txt rewritten (allow /, disallow /api/, sitemap directive); src/app/sitemap.ts (canonical /, daily, priority 1); src/app/manifest.ts (PWA manifest, brand icons, teal theme); src/app/opengraph-image.tsx (next/og dynamic brand card — white/teal, no yellow); SeoJsonLd server component renders JSON-LD @graph from Supabase: RealEstateAgent (151-C Etihad Town Phase 1 address, geo, both phones, areaServed 5 areas, opening hours, wa.me sameAs) + WebSite + ItemList of 5 featured listings (Product/Offer, PKR, InStock/SoldOut, images).
+- Build safety: root layout `export const dynamic = "force-dynamic"` — db-backed SEO renders per request; builds NEVER touch the database (protects the Vercel build from Task 29-class failures).
+- INCIDENT during work: dev server returned 500 "URL must start with postgresql://" — the platform file-sync had REVERTED .env to the old SQLite content (file:/...). Restored the Supabase URLs; also found the stale old dev process still bound to :3000 serving the broken env — killed it (pkill next dev) and started clean via (unset DATABASE_URL DIRECT_URL; bun run dev >/dev/null 2>&1 &). ⚠️ If DB errors ever mention `file:` protocol again: check .env FIRST (sync bot may revert it), then kill stale next-dev processes.
+- Verified: lint 0; local curl checks (robots/sitemap/manifest/og-image 200; JSON-LD graph RealEstateAgent+WebSite+ItemList(5); 14 category + 10 area + 5 featured links; h1 sr-only; canonical); agent-browser E2E (home SEO block visible + styled, #/admin hides block, admin noindex meta, title updates per view, zero console errors). Pushed c4247c3 → Vercel build SUCCESS → live verified: robots.txt, sitemap.xml, og-image (52KB png), homepage title/canonical/JSON-LD/SEO content all present in production HTML.
+- Remaining for the user (off-page, cannot be coded): Google Search Console (verify + submit sitemap), Google Business Profile listing, Facebook/Instagram page links, directory citations (Zameen/OLX/graana), Google reviews.
+
+Stage Summary:
+- All on-page + technical SEO is LIVE in production: title/description/canonical/OG/twitter/robots/sitemap/manifest/OG-image/JSON-LD/crawlable content/noindex admin.
+- Next-phase SEO option (bigger win, bigger refactor): real URLs for listings (/property/<slug> + /properties pages with SSR) instead of hash fragments — propose when user is ready.
+- The 15-min webDevReview cron exists (job 405793). Ops: .env must always hold the two Supabase pooler URLs; if the sync bot reverts it, restore from this worklog's Task 28/29 notes.
