@@ -12,7 +12,7 @@ import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
 import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
 import { AdminView } from "@/components/site/admin-view";
-import { WhatsAppButton } from "@/components/site/whatsapp-button";
+import { ContactBubble } from "@/components/site/contact-bubble";
 import { ScrollProgress } from "@/components/site/scroll-progress";
 import {
   useAppStore,
@@ -140,7 +140,7 @@ export default function Page() {
         </AnimatePresence>
       </main>
       <SiteFooter />
-      <WhatsAppButton />
+      <ContactBubble />
     </div>
   );
 }

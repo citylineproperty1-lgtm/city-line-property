@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         budget: Number.isFinite(budget) && budget > 0 ? budget : null,
         message,
         propertyId,
-        source: ["WEBSITE", "CONTACT", "PROPERTY", "REQUIREMENT", "WHATSAPP", "PRICE_LIST"].includes(source)
+        source: ["WEBSITE", "CONTACT", "PROPERTY", "REQUIREMENT", "WHATSAPP", "PRICE_LIST", "DETAIL_UNLOCK"].includes(source)
           ? source
           : "WEBSITE",
         waStatus: "PENDING",

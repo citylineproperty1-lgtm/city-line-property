@@ -262,6 +262,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   PROPERTY: "Listing",
   REQUIREMENT: "Requirement",
   PRICE_LIST: "Price list",
+  DETAIL_UNLOCK: "Detail unlock",
 };
 
 /** Colored status pill (lead pipeline). */

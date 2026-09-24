@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { BUSINESS, waLink } from "@/lib/business";
 import { Lightbox } from "@/components/site/lightbox";
+import { DetailUnlockGate } from "@/components/site/detail-unlock";
 
 /** Clipboard write with a legacy fallback; returns false if both fail. */
 async function copyLink(text: string): Promise<boolean> {
@@ -281,6 +282,8 @@ export function PropertyDetailView({ id }: { id: string }) {
         />
       </motion.div>
 
+      {/* Option A soft gate — asks name+phone once to unlock details (see detail-unlock.tsx) */}
+      <DetailUnlockGate property={property}>
       <div className="mt-10 grid gap-10 lg:grid-cols-[1.65fr_1fr]">
         {/* LEFT */}
         <div>
@@ -446,6 +449,7 @@ export function PropertyDetailView({ id }: { id: string }) {
           <MortgageCalculator price={property.price} isRent={isRent} />
         </motion.aside>
       </div>
+      </DetailUnlockGate>
 
       {/* Similar */}
       {similar.length > 0 && (
