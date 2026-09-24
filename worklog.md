@@ -798,3 +798,21 @@ Stage Summary:
 - Site now captures leads at the highest-intent moment (viewing a listing) without blocking browse flow, plus a polite session-persistent contact popup — both feed the admin Leads CRM.
 - In-memory fallback (memDeclines) covers private-mode browsers where localStorage is unavailable.
 - Next candidates: Tier-2 testimonials/closed deals (needs user material), citylineproperty.pk DNS when purchased, GSC Request Indexing retry (cron 410469).
+
+---
+Task ID: 37
+Agent: main (admin overview 500 — diagnosed & fixed)
+Task: User reported admin Overview tab showing "Failed to load overview" with all-zero KPIs (screenshot).
+
+Work Log:
+- Reproduced with a locally-minted admin session cookie (same HMAC fallback secret): prod /api/admin/overview → 500 while unauth 401 stayed correct; /api/admin/leads was 200 (DB + auth fine).
+- Local dev.log exposed failure #1: raw SQL `FROM Lead` (unquoted) → Postgres 42P01 "relation does not exist" (Prisma's table is quoted "Lead"; SQLite was case-insensitive so it worked pre-migration). Fixed by replacing $queryRaw with db.lead.findMany({where: createdAt.gte}).
+- Prod still 500'd after that fix (deploy confirmed live via changed chunk hashes) → added `detail` field to the 500 body (admin-only endpoint) → real error: "Timed out fetching a new connection from the connection pool (connection limit: 1)". Root cause #2: the route fired ~20 parallel Prisma queries through the pgbouncer pool (connection_limit=1) and blew the 10s pool timeout on cold Vercel functions.
+- Rewrote overview route: ONE parallel batch of 4 queries (property rows, lead rows, categories, recent leads) + all KPI/aggregation in JS (dataset is tiny for a single office). Kept followUpQueue sequential. detail field retained for future debugging.
+- Verified: local 200 with correct KPIs → deployed 479b0b6 + e3e992c + 167d789 → PROD 200 with full payload (16 properties, featured 5, leads 5).
+- Bonus discovery: a SECOND real lead arrived — "Gillani" (033242657743), source DETAIL_UNLOCK, interested in "Commercial Hall — 8,000 sqft on Main Boulevard" — the new unlock gate captured it hours after launch. No test leads created; nothing to clean.
+
+Stage Summary:
+- Admin Overview works in production again (167d789). Diag pattern that worked: mint local cookie (same fallback secret) → reproduce 500 → read local stack → surface `detail` in 500 body → read prod error → fix root cause.
+- LESSON for future admin/api routes on serverless: never fire large parallel Prisma query batches through the pooled pgbouncer connection; batch into few queries + JS aggregation.
+- 2 real leads today (Aleem 0306 5097729 via price list; Gillani 0332 4265743 via detail unlock) — user should call Gillani ASAP (big commercial enquiry).
