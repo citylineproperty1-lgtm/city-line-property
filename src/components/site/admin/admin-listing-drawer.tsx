@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatPKR, pkrInWords } from "@/lib/format";
 import {
   Sheet,
   SheetContent,
@@ -331,6 +332,29 @@ export function AdminListingDrawer({
                   placeholder="12500000"
                   className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#0F766E]/35"
                 />
+                {(() => {
+                  const n = Number(form.price);
+                  if (!form.price || !Number.isFinite(n) || n <= 0) {
+                    return (
+                      <p className="text-[11px] text-neutral-400">
+                        Type the price — we show it in words so you can double-check.
+                      </p>
+                    );
+                  }
+                  return (
+                    <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11.5px] leading-snug">
+                      <span className="font-semibold tabular-nums text-neutral-700">
+                        = {formatPKR(n)}
+                      </span>
+                      <span className="rounded-full bg-[#E7F4F0] px-2 py-0.5 font-semibold text-[#0B6B5D]">
+                        {pkrInWords(n)}
+                      </span>
+                      {form.status === "RENT" && (
+                        <span className="text-neutral-400">per month</span>
+                      )}
+                    </p>
+                  );
+                })()}
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[12px] text-neutral-500">Deal type *</Label>

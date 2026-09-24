@@ -32,6 +32,28 @@ export function compactPKR(price: number): string {
   return new Intl.NumberFormat("en-PK").format(Math.round(price));
 }
 
+/**
+ * Price spoken in English (Pakistani convention) — e.g. 36500000 ->
+ * "3 Crore 65 Lakh", 3650000 -> "36 Lakh 50 Thousand", 95000 -> "95 Thousand".
+ * Used as a live "what am I actually typing?" hint in the admin price field.
+ */
+export function pkrInWords(price: number): string {
+  const n = Math.round(Math.abs(price));
+  if (!Number.isFinite(n) || n === 0) return "Zero";
+  const parts: string[] = [];
+  const crore = Math.floor(n / 10_000_000);
+  const lakh = Math.floor((n % 10_000_000) / 100_000);
+  const thousand = Math.floor((n % 100_000) / 1000);
+  const hundred = Math.floor((n % 1000) / 100);
+  const rest = n % 100;
+  if (crore) parts.push(`${crore} Crore`);
+  if (lakh) parts.push(`${lakh} Lakh`);
+  if (thousand) parts.push(`${thousand} Thousand`);
+  if (hundred) parts.push(`${hundred} Hundred`);
+  if (rest) parts.push(String(rest));
+  return parts.join(" ");
+}
+
 function trimZero(v: string): string {
   return v.endsWith(".0") ? v.slice(0, -2) : v;
 }
