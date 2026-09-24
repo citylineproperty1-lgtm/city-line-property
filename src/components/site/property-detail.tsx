@@ -166,7 +166,7 @@ export function PropertyDetailView({ id }: { id: string }) {
       label: "Area",
       value: `${property.area.toLocaleString()} sqft`,
     },
-    { icon: Car, label: "Parking", value: property.parking > 0 ? `${property.parking} cars` : "—" },
+    { icon: Car, label: "Parking", value: property.parking || "—" },
     { icon: Building2, label: "Type", value: categoryLabel(property.type) },
     { icon: CalendarDays, label: "Year built", value: String(property.yearBuilt) },
     ...(property.status === "SALE" && property.area > 0

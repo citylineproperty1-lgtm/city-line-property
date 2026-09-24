@@ -41,7 +41,8 @@ export interface Property {
   listingState: ListingState;
   published: boolean;
   yearBuilt: number;
-  parking: number;
+  // Free text, e.g. "Available" — written by the admin, not a car count
+  parking: string;
   views: number;
   createdAt: string;
 }

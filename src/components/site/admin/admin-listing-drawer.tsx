@@ -12,6 +12,7 @@ import Image from "next/image";
 import {
   ArrowLeft,
   ArrowRight,
+  Check,
   Crown,
   ImagePlus,
   Link2,
@@ -83,6 +84,30 @@ interface ListingForm {
   images: string[];
 }
 
+/**
+ * One-tap common amenities (Zameen-style) — tapping a chip adds it to the
+ * listing automatically; tapping again removes it. Custom amenities can
+ * still be typed in the input below.
+ */
+const AMENITY_PRESETS = [
+  "Solar System",
+  "Electricity Backup",
+  "Servant Quarter",
+  "Security Staff",
+  "Maintenance Staff",
+  "Furnished",
+  "Elevator",
+  "Gas",
+  "Water Supply",
+  "Waste Disposal",
+  "CCTV Cameras",
+  "Boundary Wall",
+  "Park Facing",
+  "Mosque Nearby",
+  "Market Nearby",
+  "Facilities for Disabled",
+];
+
 function formFrom(p: Property | null): ListingForm {
   return {
     title: p?.title ?? "",
@@ -92,7 +117,7 @@ function formFrom(p: Property | null): ListingForm {
     type: p?.type ?? "",
     beds: p ? String(p.beds) : "0",
     baths: p ? String(p.baths) : "0",
-    parking: p ? String(p.parking) : "0",
+    parking: p?.parking ?? "",
     yearBuilt: p ? String(p.yearBuilt) : String(new Date().getFullYear()),
     area: p ? String(p.area) : "",
     address: p?.address ?? "",
@@ -140,6 +165,17 @@ export function AdminListingDrawer({
     }
     set("amenities", [...form.amenities, name]);
     setAmenityDraft("");
+  };
+
+  /** Quick-pick toggle: tap to add to the listing, tap again to remove. */
+  const toggleAmenity = (name: string) => {
+    const exists = form.amenities.some((a) => a.toLowerCase() === name.toLowerCase());
+    set(
+      "amenities",
+      exists
+        ? form.amenities.filter((a) => a.toLowerCase() !== name.toLowerCase())
+        : [...form.amenities, name]
+    );
   };
 
   const addImageUrl = () => {
@@ -201,7 +237,7 @@ export function AdminListingDrawer({
       type: form.type,
       beds: Number(form.beds) || 0,
       baths: Number(form.baths) || 0,
-      parking: Number(form.parking) || 0,
+      parking: form.parking.trim(),
       yearBuilt: Number(form.yearBuilt) || new Date().getFullYear(),
       area: Number(form.area) || 0,
       address: form.address.trim(),
@@ -427,7 +463,21 @@ export function AdminListingDrawer({
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {numInput("beds", { id: "f-beds", label: "Bedrooms" })}
               {numInput("baths", { id: "f-baths", label: "Bathrooms" })}
-              {numInput("parking", { id: "f-parking", label: "Parking" })}
+              <div className="space-y-1.5">
+                <Label htmlFor="f-parking" className="text-[12px] text-neutral-500">
+                  Parking
+                </Label>
+                <Input
+                  id="f-parking"
+                  value={form.parking}
+                  onChange={(e) => set("parking", e.target.value)}
+                  placeholder="e.g. Available"
+                  className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                />
+                <p className="text-[11px] text-neutral-400">
+                  Just write “Available” — no numbers needed.
+                </p>
+              </div>
               {numInput("yearBuilt", { id: "f-year", label: "Year built", min: 1950 })}
               {numInput("area", { id: "f-area", label: "Area (sqft)" })}
             </div>
@@ -474,7 +524,12 @@ export function AdminListingDrawer({
 
           {/* Amenities */}
           <div className="space-y-2">
-            <Label className="text-[12px] text-neutral-500">Amenities</Label>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <Label className="text-[12px] text-neutral-500">Amenities</Label>
+              <span className="text-[11px] text-neutral-400">
+                Tap a common one — it&apos;s added to the post automatically
+              </span>
+            </div>
             <div className="flex gap-2">
               <Input
                 value={amenityDraft}
@@ -496,6 +551,31 @@ export function AdminListingDrawer({
               >
                 <Plus className="h-4 w-4" /> Add
               </Button>
+            </div>
+            {/* Quick picks — selected chips mirror the tags below */}
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {AMENITY_PRESETS.map((preset) => {
+                const active = form.amenities.some(
+                  (a) => a.toLowerCase() === preset.toLowerCase()
+                );
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => toggleAmenity(preset)}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11.5px] font-medium transition-colors",
+                      active
+                        ? "border-[#0F766E] bg-[#0F766E] text-white shadow-[0_4px_10px_-4px_rgba(15,118,110,0.55)]"
+                        : "border-black/[0.08] bg-white text-neutral-600 hover:border-[#0F766E]/40 hover:bg-[#F7FBFA] hover:text-[#0B6B5D]"
+                    )}
+                  >
+                    {active && <Check className="h-3 w-3" />}
+                    {preset}
+                  </button>
+                );
+              })}
             </div>
             {form.amenities.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">

@@ -58,7 +58,8 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
       data.listingState = state;
     }
     if (body.yearBuilt !== undefined) data.yearBuilt = Number(body.yearBuilt) | 0;
-    if (body.parking !== undefined) data.parking = Math.max(0, Number(body.parking) | 0);
+    // Free text, e.g. "Available" (admin writes it manually)
+    if (body.parking !== undefined) data.parking = String(body.parking).trim().slice(0, 80);
 
     const row = await db.property.update({ where: { id }, data });
     return NextResponse.json({ property: serializeProperty(row) });

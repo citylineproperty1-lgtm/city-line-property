@@ -102,7 +102,8 @@ export async function POST(req: NextRequest) {
           ? (body.listingState as string).toString()
           : "AVAILABLE",
         yearBuilt: Number(body.yearBuilt ?? 2024) | 0,
-        parking: Math.max(0, Number(body.parking ?? 0) | 0),
+        // Free text, e.g. "Available" (admin writes it manually)
+        parking: String(body.parking ?? "").trim().slice(0, 80),
       },
     });
     return NextResponse.json({ property: serializeProperty(row) }, { status: 201 });

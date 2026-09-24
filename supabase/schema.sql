@@ -57,7 +57,8 @@ create table public.properties (
   listing_state text not null default 'AVAILABLE' check (listing_state in ('AVAILABLE','RESERVED','SOLD','RENTED')),
   published     boolean not null default true, -- drafts are hidden from the site
   year_built    int  not null default 2024,
-  parking       int  not null default 0,
+  -- Free text written by the admin, e.g. "Available" — not a car count
+  parking       text not null default '',
   views         int  not null default 0,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()

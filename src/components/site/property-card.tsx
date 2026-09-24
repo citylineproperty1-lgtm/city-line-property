@@ -160,7 +160,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
             <Ruler className="h-4 w-4 text-neutral-400" />
             {property.area.toLocaleString()} sqft
           </span>
-          {property.parking > 0 && (
+          {property.parking && (
             <span className="ml-auto hidden items-center gap-1.5 sm:flex" title="Parking">
               <Car className="h-4 w-4 text-neutral-400" />
               {property.parking}

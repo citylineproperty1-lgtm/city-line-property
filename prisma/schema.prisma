@@ -46,7 +46,8 @@ model Property {
   // Draft listings are hidden from the public site
   published    Boolean     @default(true)
   yearBuilt    Int
-  parking      Int
+  // Free text written by the admin, e.g. "Available" — not a car count
+  parking      String      @default("")
   views        Int         @default(0)
   leads        Lead[]
   visits       SiteVisit[]
