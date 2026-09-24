@@ -58,10 +58,12 @@ export async function GET() {
         take: 6,
         include: { property: { select: { title: true } } },
       }),
-      // 14-day lead trend (raw SQL — dev-server-safe pattern)
-      db.$queryRaw<{ createdAt: string | Date }[]>`
-        SELECT "createdAt" FROM Lead WHERE "createdAt" >= ${since.getTime()}
-      `,
+      // 14-day lead trend — portable Prisma query (raw SQL broke on
+      // Postgres: unquoted `Lead` folds to lowercase and 42P01s).
+      db.lead.findMany({
+        where: { createdAt: { gte: since } },
+        select: { createdAt: true },
+      }),
     ]);
 
     const categories = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
