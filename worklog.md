@@ -779,3 +779,22 @@ Work Log:
 Stage Summary:
 - Lead pipeline PROVEN with first real submission: form → DB (source PRICE_LIST) → visible in admin Leads tab. User advised to reply fast with the Etihad Town price list.
 - CRM contains 3 demo leads from the original build — user may delete them from Admin → Leads whenever they want a clean inbox.
+
+---
+Task ID: 36
+Agent: main (Option A detail-unlock gate + contact bubble)
+Task: User chose Option A ("unlock full details" soft gate) and asked for a small "contact us for any information" popup (approved after assessment). Advisory first: recommended AGAINST a hard login wall (SEO death, bounce, scam perception, fake data) — user accepted Option A.
+
+Work Log:
+- Built src/components/site/detail-unlock.tsx (DetailUnlockGate): wraps the listing detail two-column content. Auto-opens a name+phone modal 0.7s after opening a listing (no password); content blurs (CSS-only, DOM intact = SEO-safe) while modal is open. Submit → POST /api/leads {source: DETAIL_UNLOCK, propertyId, message with title+ref} → localStorage clp_unlock → never asked again. Decline path: unblur + sticky "Unlock full details" pill (bottom-left, z-30); declines persisted (clp_gate_declines), auto-ask stops after 2 declines; pill remains forever as the non-blocking ask.
+- Built src/components/site/contact-bubble.tsx (ContactBubble), replacing the old scroll-gated WhatsApp-only bubble (whatsapp-button.tsx now exports just WhatsAppIcon): bubble appears 1.2s after load on ALL pages (no scroll needed — bounce-safe); auto-expands "Need any information?" card ONCE per session at 9s (sessionStorage clp_contact_card_auto) with Call (tel:+923094499940) + WhatsApp buttons + hours; X collapses to bubble; manual toggle anytime.
+- Anti-clash logic (both directions): contact card's 9s timer skips if gate modal already in DOM; gate dispatches window event "clp:gate-open" → contact card closes + stands down for the session. Verified: exactly one dialog at any time.
+- API/admin: added DETAIL_UNLOCK to allowed lead sources (/api/leads) + SOURCE_LABELS ("Detail unlock").
+- E2E local (agent-browser): gate opens → decline → pill → reopen via pill → submit → toast "Details unlocked" + lead in DB (property-linked, message includes title+ref) → second listing never re-asks → decline-twice limit works (3rd visit: pill only, no modal) → mobile 390px: pill bottom-left / bubble bottom-right, no overlap → unlocked detail renders title/price/facts/sidebar fully.
+- Cleanup: deleted the E2E test lead (Gate Test Lead); CRM = 4 (1 real: Aleem + 3 demo).
+- Deployed: dc8dd2e + clash-fix b95bac8 → Vercel SUCCESS → production verified with fresh browser session: gate modal opens solo, contact card yielded, blur correct, gallery crisp.
+
+Stage Summary:
+- Site now captures leads at the highest-intent moment (viewing a listing) without blocking browse flow, plus a polite session-persistent contact popup — both feed the admin Leads CRM.
+- In-memory fallback (memDeclines) covers private-mode browsers where localStorage is unavailable.
+- Next candidates: Tier-2 testimonials/closed deals (needs user material), citylineproperty.pk DNS when purchased, GSC Request Indexing retry (cron 410469).
