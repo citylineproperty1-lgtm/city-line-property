@@ -16,6 +16,7 @@ import { AnimatedNumber } from "@/components/site/animated-number";
 import { Monogram } from "@/components/site/logo";
 import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
+import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
 import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
 import { areaSlug, areaBySlug } from "@/lib/areas";
@@ -518,6 +519,51 @@ export function HomeView() {
         </div>
       </section>
 
+      {/* ================= TRUST STATS BAND ================= */}
+      <section
+        className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6"
+        aria-label="City Line Property in numbers"
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-black/[0.07] bg-black/[0.06] shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] md:grid-cols-4"
+        >
+          {[
+            {
+              label: "Live listings",
+              value: <AnimatedNumber value={stats?.properties ?? null} className="tabular-nums" />,
+              sub: "Verified · published daily",
+            },
+            {
+              label: "Societies covered",
+              value: <AnimatedNumber value={AREAS.length} className="tabular-nums" />,
+              sub: "Only where we work on foot",
+            },
+            {
+              label: "Commission",
+              value: <span className="brand-gradient bg-clip-text text-transparent">1%</span>,
+              sub: "Flat — confirmed in writing",
+            },
+            {
+              label: "Hidden charges",
+              value: <span className="tabular-nums">0</span>,
+              sub: "No margin, no middlemen",
+            },
+          ].map((s) => (
+            <div key={s.label} className="bg-white px-5 py-6 text-center sm:px-6 sm:py-7">
+              <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-neutral-400">{s.label}</p>
+              <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-neutral-900 sm:text-[30px]">
+                {s.value}
+              </p>
+              <p className="mt-2 text-[11.5px] font-medium leading-snug text-neutral-400">{s.sub}</p>
+            </div>
+          ))}
+        </motion.div>
+      </section>
+
       {/* ================= EXPLORE ETIHAD TOWN ================= */}
       <section
         className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24"
@@ -763,6 +809,9 @@ export function HomeView() {
           </Button>
         </div>
       </section>
+
+      {/* ================= LEAD MAGNET — PRICE LIST ================= */}
+      <PriceListLead />
 
       {/* ================= AREAS (real interactive map) ================= */}
       <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Explore the areas on the map">

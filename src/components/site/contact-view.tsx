@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { RequirementForm } from "@/components/site/requirement-form";
-import { BUSINESS, AREAS, waLink } from "@/lib/business";
+import { BUSINESS, AREAS, OFFICE_COORD, waLink } from "@/lib/business";
 import {
   MapPin,
   Phone,
@@ -98,6 +98,14 @@ export function ContactView() {
             <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
               {BUSINESS.officeAddress}
             </p>
+            {/* Embedded Google Map — physical proof of the office location */}
+            <iframe
+              title="City Line Property office on Google Maps — 151-C Etihad Town Phase 1, Lahore"
+              src={`https://www.google.com/maps?q=${OFFICE_COORD.lat},${OFFICE_COORD.lng}&z=16&hl=en&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="mt-4 h-52 w-full rounded-xl border border-[#0F766E]/15 bg-neutral-100"
+            />
             <div className="mt-3 ml-[52px] flex flex-wrap gap-3">
               <a
                 href="https://maps.google.com/?q=Etihad+Town+Phase+1+Lahore"
@@ -106,7 +114,7 @@ export function ContactView() {
                 className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#0B6B5D] transition-colors hover:text-[#0F766E]"
               >
                 <Navigation className="h-3.5 w-3.5" />
-                Open in Maps →
+                Get directions →
               </a>
             </div>
           </div>

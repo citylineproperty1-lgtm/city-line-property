@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
-import { BUSINESS, AREAS } from "@/lib/business";
+import { BUSINESS, AREAS, OFFICE_COORD } from "@/lib/business";
 import {
   ShieldCheck,
   Eye,
@@ -168,6 +168,14 @@ export function AboutView() {
                 </a>
               </Button>
             </div>
+            {/* Embedded Google Map — find us on the main boulevard */}
+            <iframe
+              title="Map to City Line Property office — 151-C Etihad Town Phase 1, Lahore"
+              src={`https://www.google.com/maps?q=${OFFICE_COORD.lat},${OFFICE_COORD.lng}&z=16&hl=en&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="mt-6 h-60 w-full rounded-2xl border border-[#0F766E]/15 bg-white shadow-sm"
+            />
           </div>
           <div className="flex flex-col justify-center gap-3 rounded-2xl border border-black/[0.06] bg-[#F7F9F8] p-5 text-[13.5px]">
             {[

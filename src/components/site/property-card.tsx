@@ -8,6 +8,8 @@ import { CATEGORIES, categoryLabel, type Property } from "@/lib/types";
 import { BedDouble, Bath, Ruler, Car, Heart, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { waLink } from "@/lib/business";
+import { WhatsAppIcon } from "@/components/site/whatsapp-button";
 
 /** Small tinted chip for the property's category. */
 export function CategoryChip({ type, className }: { type: string; className?: string }) {
@@ -108,6 +110,19 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
             />
           </span>
         </button>
+        {/* WhatsApp enquiry — pre-filled with this exact property */}
+        <a
+          href={waLink(
+            `Hi City Line Property! Is "${property.title}" (${property.reference}) still available? Please share details.`
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow-md backdrop-blur transition-transform hover:scale-110 active:scale-95"
+          aria-label={`Ask about ${property.title} on WhatsApp`}
+        >
+          <WhatsAppIcon className="h-4 w-4 text-[#22C55E]" />
+        </a>
       </div>
 
       {/* Body */}

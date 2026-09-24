@@ -261,6 +261,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   CONTACT: "Contact form",
   PROPERTY: "Listing",
   REQUIREMENT: "Requirement",
+  PRICE_LIST: "Price list",
 };
 
 /** Colored status pill (lead pipeline). */

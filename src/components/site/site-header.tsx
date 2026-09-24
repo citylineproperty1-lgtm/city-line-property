@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAppStore } from "@/lib/store";
-import { waLink } from "@/lib/business";
+import { waLink, telLink, BUSINESS } from "@/lib/business";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { BadgePercent, Heart, Home, KeyRound, Mail, MapPin, Menu, Users } from "lucide-react";
+import { BadgePercent, Heart, Home, KeyRound, Mail, MapPin, Menu, Phone, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { View } from "@/lib/store";
 import { Logo } from "@/components/site/logo";
@@ -95,6 +95,15 @@ export function SiteHeader() {
 
         {/* Right cluster */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Click-to-call — one tap to the office (mobile only; desktop has full nav) */}
+          <a
+            href={telLink()}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0F766E] text-white shadow-[0_6px_18px_-6px_rgba(15,118,110,0.55)] transition-transform hover:scale-105 active:scale-95 md:hidden"
+            aria-label={`Call City Line Property — ${BUSINESS.phonePrimary}`}
+          >
+            <Phone className="h-4 w-4" />
+          </a>
+
           {/* Saved */}
           <button
             onClick={() => go({ name: "saved" })}
@@ -215,14 +224,21 @@ export function SiteHeader() {
                   </button>
                 </nav>
 
-                {/* CTA + WhatsApp row */}
-                <div className="grid grid-cols-[1fr_auto] gap-2">
+                {/* CTA + call + WhatsApp row */}
+                <div className="grid grid-cols-[1fr_auto_auto] gap-2">
                   <Button
                     onClick={() => go({ name: "contact" })}
                     className="brand-gradient h-11 rounded-full text-[14px] font-semibold text-white shadow-[0_10px_26px_-10px_rgba(15,118,110,0.75)] hover:opacity-95"
                   >
                     Post Requirement
                   </Button>
+                  <a
+                    href={telLink()}
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0F766E] text-white shadow-[0_8px_20px_-8px_rgba(15,118,110,0.65)]"
+                    aria-label={`Call ${BUSINESS.phonePrimary}`}
+                  >
+                    <Phone className="h-5 w-5" />
+                  </a>
                   <a
                     href={waLink(WA_GREETING)}
                     target="_blank"
@@ -233,6 +249,9 @@ export function SiteHeader() {
                     <WhatsAppIcon className="h-5 w-5" />
                   </a>
                 </div>
+                <p className="text-center text-[11.5px] font-medium text-neutral-400">
+                  Call or WhatsApp — {BUSINESS.phonePrimary} · {BUSINESS.phoneSecondary}
+                </p>
               </div>
             </SheetContent>
           </Sheet>
