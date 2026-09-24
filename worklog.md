@@ -727,3 +727,20 @@ Work Log:
 Stage Summary:
 - Off-page SEO status: verified property + submitted sitemap; only optional "Request Indexing" retry pending (user, tomorrow).
 - Cron jobs: 15-min webDevReview (job 410357, fixed_rate 900s) + one-time GSC reminder (job 410469).
+
+---
+Task ID: 33
+Agent: main (homepage hero image swap to real office photo)
+Task: User asked to replace the homepage hero picture (palm-trees society render) with their real office storefront photo ("Cityline Property" glowing signboard, night shot).
+
+Work Log:
+- Uploads didn't land in /home/z/my-project/upload (recurring gateway issue) — downloaded the image directly from the IM CDN URL in the user message. File was actually PNG 1536x1024 @ 2.4MB despite .jpeg name.
+- Converted to optimized progressive JPEG (PIL q85) -> public/images/hero-office.jpg, 344KB (7x smaller).
+- home-view.tsx hero Image: src /images/hero-lahore.png -> /images/hero-office.jpg; alt text now "City Line Property head office at night — 151-C Etihad Town Phase 1, Lahore" (SEO + accessibility).
+- Kept hero-lahore.png for the Etihad Town area card cover (src/lib/areas.ts) — society render is appropriate there; office photo stays only in the hero.
+- Verified: local curl 200, lint clean, agent-browser screenshot shows office photo in hero with "Only 1% commission" chip + "Our Office 151-C" card overlay matching perfectly.
+- Committed explicit paths (764fc50) -> pushed -> Vercel auto-build SUCCESS -> live curl: /images/hero-office.jpg 200 + homepage HTML references it.
+
+Stage Summary:
+- Homepage hero now shows the real City Line Property office storefront in production (764fc50).
+- hero-lahore.png retained solely for the Etihad Town area card.
