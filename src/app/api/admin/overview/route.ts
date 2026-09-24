@@ -122,7 +122,10 @@ export async function GET() {
     });
   } catch (e) {
     console.error("GET /api/admin/overview", e);
-    return NextResponse.json({ error: "Failed to load overview" }, { status: 500 });
+    // Route handler errors are logged; the message is surfaced only to the
+    // authenticated admin client (this endpoint 401s everyone else).
+    const detail = e instanceof Error ? e.message.slice(0, 300) : "Unknown error";
+    return NextResponse.json({ error: "Failed to load overview", detail }, { status: 500 });
   }
 }
 
