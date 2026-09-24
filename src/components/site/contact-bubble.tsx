@@ -59,6 +59,21 @@ export function ContactBubble() {
     return () => clearTimeout(t);
   }, [mounted]);
 
+  // If the listing unlock gate opens, close this card and stand down
+  // for the session — never show two dialogs at once.
+  useEffect(() => {
+    const onGateOpen = () => {
+      setCardOpen(false);
+      try {
+        sessionStorage.setItem(AUTO_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener("clp:gate-open", onGateOpen);
+    return () => window.removeEventListener("clp:gate-open", onGateOpen);
+  }, []);
+
   const dismiss = () => {
     setCardOpen(false);
     try {

@@ -96,7 +96,12 @@ export function DetailUnlockGate({
     setStage("gate");
     // Auto-open the modal on the first couple of listing views only.
     if (readDeclines() < 2) {
-      const t = setTimeout(() => setOpen(true), 700);
+      const t = setTimeout(() => {
+        // Tell other widgets (e.g. the contact bubble) to stand down —
+        // two dialogs at once is clutter.
+        window.dispatchEvent(new CustomEvent("clp:gate-open"));
+        setOpen(true);
+      }, 700);
       return () => clearTimeout(t);
     }
   }, []);
