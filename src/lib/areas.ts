@@ -40,7 +40,7 @@ export const AREA_GUIDES: AreaGuide[] = [
       "Fastest resale velocity of the five areas",
     ],
     goodFor: ["End-users", "Commercial investment", "Quick resale"],
-    cover: "/images/hero-lahore.png",
+    cover: "/images/areas/etihad-town-phase-1.jpg",
     map: { x: 430, y: 252 },
     office: true,
   },
