@@ -764,3 +764,18 @@ Work Log:
 Stage Summary:
 - Site now has 5 live conversion paths: price-list lead magnet (CRM + WhatsApp), one-tap call (mobile header + sheet), per-listing WhatsApp enquiry, office map proof (contact+about), and an always-live trust stats band.
 - Tier-2 (testimonials, closed deals, reviews) still pending user input: 4-6 client quotes, 2-3 closed deals, real listing photos.
+
+---
+Task ID: 35
+Agent: main (first live lead + CRM hygiene)
+Task: User reported "1 request is submitted" — verify the new price-list lead magnet captured its first real lead end-to-end.
+
+Work Log:
+- Queried Supabase Lead table: NEW lead "Aleem" (03065097729), source PRICE_LIST, message "Please send me the latest Etihad Town price list.", createdAt 2026-09-24T07:41:05Z (12:41 PKT). First organic lead through the Tier-1 magnet (deployed cc2d302).
+- Production health re-check: home 200; /api/stats = 16 properties / 5 leads; /api/leads correctly 401 without admin auth.
+- CRM hygiene: deleted leftover QA artifact "QA Round 13" (Sep-18 browser-test lead marked "please ignore"). CRM now 4 leads: 1 real (Aleem) + 3 seeded demo entries (identical seed timestamps 2026-09-18T16:15:39Z — Ahmed Raza, Sana Khalid, Usman Ghani).
+- Stale-shell-env trap recurred while querying (DATABASE_URL pointed to old SQLite): fixed via `unset DATABASE_URL DIRECT_URL` before bun run; also regenerated prisma client after bun cache hiccup.
+
+Stage Summary:
+- Lead pipeline PROVEN with first real submission: form → DB (source PRICE_LIST) → visible in admin Leads tab. User advised to reply fast with the Etihad Town price list.
+- CRM contains 3 demo leads from the original build — user may delete them from Admin → Leads whenever they want a clean inbox.
