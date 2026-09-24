@@ -712,3 +712,18 @@ Stage Summary:
 - Google Search Console HTML-file verification is ready in production: https://citylineproperty.vercel.app/googled05288ec0718046a.html returns 200 with the exact expected content.
 - User next steps (off-page): click VERIFY in Search Console → then submit sitemap https://citylineproperty.vercel.app/sitemap.xml → request indexing for the homepage.
 - Do not remove public/googled05288ec0718046a.html — verification stays valid only while the file is served.
+
+---
+Task ID: 32
+Agent: main (GSC progress tracking + reminder)
+Task: User completed GSC verification + sitemap submission; "Request Indexing" hit Google daily quota ("Quota Exceeded"). User plans to retry tomorrow.
+
+Work Log:
+- GSC status: ownership VERIFIED (verification file live, Task 31), sitemap https://citylineproperty.vercel.app/sitemap.xml SUBMITTED successfully.
+- Request Indexing failed with Google's "Quota Exceeded" (daily limit, ~10-12 requests/property/day) — harmless, sitemap already triggers automatic crawling; nothing to fix on-site.
+- Scheduled one_time reminder cron (job 410469) for Sep 25, 2026 10:00 PKT (epoch 1790312400000, tz Asia/Karachi) to prompt the user to retry REQUEST INDEXING.
+- No code changes this round; site untouched and healthy.
+
+Stage Summary:
+- Off-page SEO status: verified property + submitted sitemap; only optional "Request Indexing" retry pending (user, tomorrow).
+- Cron jobs: 15-min webDevReview (job 410357, fixed_rate 900s) + one-time GSC reminder (job 410469).
