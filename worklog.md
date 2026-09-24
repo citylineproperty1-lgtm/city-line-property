@@ -832,3 +832,25 @@ Work Log:
 Stage Summary:
 - Admin can now verify prices at a glance while typing — no more mis-keyed crore/lakh mistakes.
 - Note: formatPKR's 1-decimal short label ("3.6 Crore") is approximate by design; the words pill is exact. If user wants, cards can switch to 2 decimals later.
+
+---
+Task ID: 39
+Agent: main (parking free-text + amenity quick-pick chips)
+Task: User: "in parking we do not say 1, 2 or 3 — we only write there available, that is written manually by admin; and in amenities, add these options that I select — it will be added automatically in post" (with Zameen-style amenity screenshots).
+
+Work Log:
+- Schema: prisma/schema.prisma Property.parking Int -> String @default("") (free text, e.g. "Available" — not a car count).
+- DB migration on Supabase (scripts/parking-text-migrate.ts, run with unset env): information_schema check -> ALTER COLUMN TYPE TEXT USING (CASE WHEN parking>0 THEN 'Available' ELSE '' END) -> SET DEFAULT '' -> SET NOT NULL. All 16 live rows migrated correctly (7 became "Available", 9 empty). `prisma db push` reported already in sync; client regenerated.
+- Admin drawer: parking numInput replaced by text Input (placeholder "e.g. Available", hint "Just write 'Available' — no numbers needed."); formFrom default "" instead of "0"; payload sends trimmed string.
+- Admin drawer amenities: 16 one-tap preset chips (Solar System, Electricity Backup, Servant Quarter, Security Staff, Maintenance Staff, Furnished, Elevator, Gas, Water Supply, Waste Disposal, CCTV Cameras, Boundary Wall, Park Facing, Mosque Nearby, Market Nearby, Facilities for Disabled). toggleAmenity() case-insensitive add/remove; active chip = teal filled with Check icon; selected tags mirror below; manual type+Add input kept. Helper line: "Tap a common one — it's added to the post automatically".
+- APIs: POST/PATCH /api/admin/properties now store parking as String(...).trim().slice(0,80).
+- Public: property-card shows parking text when truthy (was >0 check); detail facts show property.parking || "—".
+- supabase/schema.sql DDL line updated for parity (doc artifact only).
+- E2E (agent-browser, minted cookie, local): drawer Parking = textbox (no spinner); typed "Available"; tapped Solar System/Security Staff/Furnished chips -> tags appeared; chip toggle-off/on (4->3->4 tags); typed custom "Rooftop Terrace" + Add; created CLP-117 (Houses, 36500000 -> price words preview "3 Crore 65 Lakh" still works); public detail rendered Parking "Available" + all 4 amenities; deleted CLP-117 via admin API — 16 listings remain, no garbage.
+- Env trap hit again on dev restart: stale shell DATABASE_URL broke Prisma ("URL must start with postgresql://") -> clean restart with (unset DATABASE_URL DIRECT_URL; nohup bun run dev) fixed.
+- Deployed 4bfe3e4 -> Vercel.
+
+Stage Summary:
+- Parking is now admin-written free text end-to-end (schema, APIs, form, public display); legacy numeric values display as "Available" on all live listings.
+- Amenity quick-picks make listing creation tap-first (Zameen-style) while keeping custom entries; selection lands on the public post automatically.
+- Legacy seed scripts (seed.ts/seed-lahore.ts) still carry numeric parking but are compile-exempt (typescript.ignoreBuildErrors) and not re-run in prod; convert at create time if ever re-seeded.
