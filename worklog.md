@@ -816,3 +816,19 @@ Stage Summary:
 - Admin Overview works in production again (167d789). Diag pattern that worked: mint local cookie (same fallback secret) → reproduce 500 → read local stack → surface `detail` in 500 body → read prod error → fix root cause.
 - LESSON for future admin/api routes on serverless: never fire large parallel Prisma query batches through the pooled pgbouncer connection; batch into few queries + JS aggregation.
 - 2 real leads today (Aleem 0306 5097729 via price list; Gillani 0332 4265743 via detail unlock) — user should call Gillani ASAP (big commercial enquiry).
+
+---
+Task ID: 38
+Agent: main (price-in-words helper for admin listing drawer)
+Task: User reported typing raw price digits (36500000) in the admin Add-listing form with no idea how big the number is; asked for the price to also be shown "in English" while typing.
+
+Work Log:
+- Added pkrInWords() to src/lib/format.ts — Pakistani-English breakdown (Crore/Lakh/Thousand/Hundred), e.g. 36500000 → "3 Crore 65 Lakh", 950000 → "9 Lakh 50 Thousand", 85000 → "85 Thousand".
+- admin-listing-drawer.tsx price field: live preview line under the input — "= PKR 3.6 Crore" + green pill with exact words; appends "per month" when deal type is For Rent; shows a gentle hint line when the field is empty.
+- E2E (agent-browser, minted admin cookie): opened Inventory → Add listing → typed 36500000 → preview rendered "PKR 3.6 Crore · 3 Crore 65 Lakh"; typed 950000 → "PKR 9.5 Lakh · 9 Lakh 50 Thousand". Cancelled drawer — no test listing created.
+- Requirement form's budget is a labeled dropdown (no raw digits) — no change needed there.
+- Deployed e30f745 → Vercel SUCCESS → prod 200.
+
+Stage Summary:
+- Admin can now verify prices at a glance while typing — no more mis-keyed crore/lakh mistakes.
+- Note: formatPKR's 1-decimal short label ("3.6 Crore") is approximate by design; the words pill is exact. If user wants, cards can switch to 2 decimals later.
