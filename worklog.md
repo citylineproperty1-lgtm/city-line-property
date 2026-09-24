@@ -744,3 +744,23 @@ Work Log:
 Stage Summary:
 - Homepage hero now shows the real City Line Property office storefront in production (764fc50).
 - hero-lahore.png retained solely for the Etihad Town area card.
+
+---
+Task ID: 34
+Agent: main (Tier-1 conversion suite — lead magnet, click-to-call, per-listing WhatsApp, maps, stats band)
+Task: User approved "do it" for the 5 Tier-1 conversion features to make the site a lead machine.
+
+Work Log:
+- ALSO FIXED mid-audit: sandbox .env had been REVERTED by the sync bot to the old SQLite path (properties API 500 "URL must start with postgresql://"). Restored the two Supabase pooler URLs, killed stale next-dev, restarted — 16 listings back. PRODUCTION WAS NEVER AFFECTED (Vercel env vars are separate). Same incident signature as Task 30's note — check .env FIRST when DB errors mention file:.
+- 1) PriceListLead (new src/components/site/price-list-lead.tsx): brand-gradient band after Latest Listings on home — "Get today's Etihad Town price list — straight on WhatsApp" + name/phone form → POST /api/leads {source: PRICE_LIST} → toast + auto-opens returned waLink (same brief to visitor's WhatsApp). Added PRICE_LIST to allowed sources in /api/leads + SOURCE_LABELS["PRICE_LIST"]="Price list" in admin-shared.
+- 2) Click-to-call: teal Phone button (tel:+923094499940) in header right cluster, mobile-only (md:hidden); mobile bottom-sheet CTA row now [Post Requirement | Call | WhatsApp] + phones caption line.
+- 3) Per-listing WhatsApp: circular green button bottom-right of every PropertyCard image (stopPropagation so card navigation still works); message pre-filled with title + reference ("Is \"...\" (CLP-113) still available?"). Property-detail already had full WhatsApp enquiry — unchanged.
+- 4) Google Maps embeds: iframe (q=OFFICE_COORD, z=16, output=embed — no API key) in contact "Visit the office" card + about office card; lazy-loaded, titled for a11y; "Open in Maps" → "Get directions →".
+- 5) Trust stats band under hero: 4-cell white band with hairline dividers — Live listings (AnimatedNumber on live /api/stats count), Societies covered (5, animated), Commission (brand-gradient "1%"), Hidden charges (0) + trust sublabels.
+- E2E (agent-browser): form fill+submit → API 201 + lead saved + REAL WhatsApp opened with complete lead message (Name/Phone/Source: PRICE_LIST) — verified in headless (wa.me resolved the owner's profile). 13 WhatsApp anchors on home; per-card href includes title+ref. Mobile 390px: call button visible in header; contact page map iframe present. Stats band renders 16/5/1%/0.
+- Cleanup: deleted the 2 local test leads + 1 production smoke lead (created mid-deploy, fell back to source WEBSITE) — CRM back to the 4 real leads. Lint 0.
+- Deployed: cc2d302 → Vercel SUCCESS → live verified (lead magnet renders on production, live /api/leads accepts leads and returns waLink).
+
+Stage Summary:
+- Site now has 5 live conversion paths: price-list lead magnet (CRM + WhatsApp), one-tap call (mobile header + sheet), per-listing WhatsApp enquiry, office map proof (contact+about), and an always-live trust stats band.
+- Tier-2 (testimonials, closed deals, reviews) still pending user input: 4-6 client quotes, 2-3 closed deals, real listing photos.
