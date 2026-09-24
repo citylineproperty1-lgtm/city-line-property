@@ -459,8 +459,8 @@ export function HomeView() {
                     transition={{ duration: 3.2, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Image
-                      src="/images/hero-lahore.png"
-                      alt="Main boulevard of a modern housing society in Lahore on a bright morning"
+                      src="/images/hero-office.jpg"
+                      alt="City Line Property head office at night — 151-C Etihad Town Phase 1, Lahore"
                       fill
                       priority
                       sizes="(max-width: 1024px) 100vw, 520px"
