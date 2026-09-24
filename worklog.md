@@ -694,3 +694,21 @@ Stage Summary:
 - All on-page + technical SEO is LIVE in production: title/description/canonical/OG/twitter/robots/sitemap/manifest/OG-image/JSON-LD/crawlable content/noindex admin.
 - Next-phase SEO option (bigger win, bigger refactor): real URLs for listings (/property/<slug> + /properties pages with SSR) instead of hash fragments — propose when user is ready.
 - The 15-min webDevReview cron exists (job 405793). Ops: .env must always hold the two Supabase pooler URLs; if the sync bot reverts it, restore from this worklog's Task 28/29 notes.
+
+---
+Task ID: 31
+Agent: main (Google Search Console verification file)
+Task: User reached Google Search Console "Verify ownership" for https://citylineproperty.vercel.app/ (HTML-file method, file googled05288ec0718046a.html). Deliver the verification file to the site root and get it deployed.
+
+Work Log:
+- Confirmed Task 30 SEO stack still live in production (home/robots/sitemap 200, title + JSON-LD present).
+- Checked local git state: 6 SEO files showed mode-only diffs (100644→100755, sync-bot artifact, zero content change) — deliberately NOT committed.
+- Created public/googled05288ec0718046a.html with exact content Google expects: "google-site-verification: googled05288ec0718046a.html".
+- Local check: dev server restarted (unset DATABASE_URL DIRECT_URL; bun run dev) → /googled05288ec0718046a.html 200 with correct body.
+- Committed ONLY the verification file (explicit path, per Task 29 ops rule) → e65730d → pushed → Vercel auto-build SUCCESS.
+- Polled live: 404→404→404→200 within ~1 min. LIVE content verified byte-exact; site health re-confirmed (home/robots/sitemap all 200).
+
+Stage Summary:
+- Google Search Console HTML-file verification is ready in production: https://citylineproperty.vercel.app/googled05288ec0718046a.html returns 200 with the exact expected content.
+- User next steps (off-page): click VERIFY in Search Console → then submit sitemap https://citylineproperty.vercel.app/sitemap.xml → request indexing for the homepage.
+- Do not remove public/googled05288ec0718046a.html — verification stays valid only while the file is served.
