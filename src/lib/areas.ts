@@ -59,7 +59,7 @@ export const AREA_GUIDES: AreaGuide[] = [
       "Strong upside as development completes",
     ],
     goodFor: ["Early investors", "New construction", "Budget plots"],
-    cover: "/images/properties/apartment-ext-1.png",
+    cover: "/images/areas/etihad-town-phase-2.jpg",
     map: { x: 728, y: 226 },
   },
   {

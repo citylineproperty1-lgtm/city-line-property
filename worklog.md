@@ -870,3 +870,20 @@ Work Log:
 Stage Summary:
 - GitHub + production were ALWAYS complete; only the sandbox local copy had regressed. Repair done and verified end-to-end.
 - New recurring hazard for future sessions: the platform sync can now ALSO revert source files + node_modules Prisma client (not just .env). Symptoms: P2023 on parking, missing new files, UUID-message commits. Fix recipe: git fetch + reset --hard origin/main, rewrite .env, prisma generate, clean restart.
+
+---
+Task ID: 41
+Agent: Z.ai Code (main session)
+Task: Replace Etihad Town Phase 2 area card cover with the real society gate photo (user: "Replace the first image with second image" + Etihad town phase 2.jpeg / current Phase 2 card screenshot)
+
+Work Log:
+- Attachment "Etihad town phase 2.jpeg" not synced to upload/ (known trap) → downloaded from message z-cdn CDN URL via curl to public/images/areas/etihad-town-phase-2.jpg (1448x1086 JPEG, 434KB, visually verified = Phase 2 gate with signage)
+- src/lib/areas.ts: Phase 2 entry cover "/images/properties/apartment-ext-1.png" → "/images/areas/etihad-town-phase-2.jpg" (single source of truth drives homepage card, areas grid card, guide hero)
+- agent-browser E2E local verification: homepage Phase 2 card ✓, Areas grid Phase 2 card ✓, Phase 2 guide hero ✓ — real gate photo in all three render points; Phase 1 + Phase 2 gate photos now side by side
+- bun run lint clean
+- Committed with explicit paths (src/lib/areas.ts, public/images/areas/etihad-town-phase-2.jpg, worklog.md) and pushed along with prior worklog commit 68324b0 (cron agent had left local ahead 1)
+
+Stage Summary:
+- Both flagship Etihad phases now use authentic society gate photography in all area-card/guide render points; generic apartment-ext-1.png no longer referenced by areas.ts (still used by property listings, kept in public/)
+- No schema/API changes; purely static asset + one-line data change, zero DB impact
+- Production deploy happens via Vercel on push (citylineproperty.vercel.app)
