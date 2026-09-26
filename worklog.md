@@ -936,3 +936,21 @@ Stage Summary:
 - FIXED latent production bug: admin image uploads (listing photos) were broken (route missing) — now restored with serverless-safe DB storage
 - To publish the real maps: Admin → Settings → Society block maps → Upload for Phase 1, Phase 2, Premier Enclave (user has the official layout maps)
 - 4 MB upload limit (was advertised 5 MB) — matches Vercel serverless body constraints
+
+---
+Task ID: 44
+Agent: Z.ai Code (main session)
+Task: User asked "in which allow to upload jpeg map file" — where to upload the JPEG maps after Task 43 built the feature. Verify the full pipeline end-to-end (local + production) and document the exact upload path for the owner.
+
+Work Log:
+- State audit: Task 43 code was already committed (e3922a9 "Society block maps per area + restore DB-backed media upload") and pushed — origin/main in perfect sync (0/0 divergence); dev server healthy
+- Production deploy verified via curl: GET /api/settings returns areaMaps:{} field, POST /api/admin/upload returns 401 unauthenticated (route live + guarded), homepage 200
+- PRODUCTION E2E upload test with locally minted admin cookie (clp_admin, local/prod secret互通): POST real JPEG (kitchen-1.jpg, 133KB) to https://citylineproperty.vercel.app/api/admin/upload → 200 {path:"/api/media/cmuij9esx0000l704eequibtj"}; public GET of that media URL → 200 image/jpeg 133830 bytes. Test row deleted from Supabase MediaFile afterwards (count back to 0, no orphan) — public site never showed test data (setting untouched)
+- Browser E2E local (agent-browser, minted cookie): Admin → Settings tab → "Society block maps" card renders with 5 per-area rows (thumbnail, status, Upload/Replace) ✓; public guide page #/areas/etihad-town-phase-1 → "Society map" section renders "Etihad Town Phase 1 block map" heading + "Open in Google Maps" pill + live OSM fallback map ✓ (screenshot /tmp/area-map-section.png)
+- Gotcha re-confirmed: area guide deep links are #/areas/<slug> (PLURAL) — #/area/<slug> parses to null → home view; also agent-browser hash navigation needs open+reload or click-through
+- No code changes needed — feature was complete; this task was verification + owner guidance
+
+Stage Summary:
+- JPEG map upload is LIVE in production and verified end-to-end: owner uploads at Admin panel (/#/admin) → Settings → "Society block maps" → Upload per area (JPG/PNG/WebP/AVIF, ≤4 MB) → map instantly appears on that area's guide page with full-screen Lightbox; until then each guide shows a live OpenStreetMap fallback + "Open in Google Maps"
+- Waiting on the owner's three map files (Phase 1, Phase 2, Premier Enclave) — either self-upload via admin, or send in chat and the agent uploads via the same API
+- Prod upload path proven with real bytes through Vercel + Supabase Postgres (base64 MediaFile), cleanup done
