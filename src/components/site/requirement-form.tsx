@@ -133,7 +133,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         </h3>
         <p className="mt-2 max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
           Thanks {name.split(" ")[0] || "there"}! Your brief is with the City Line team.
-          Expect a call within working hours (Mon–Sat, 9 AM – 7 PM).
+          Expect a call within working hours (Mon–Sun, 10 AM – 8 PM).
         </p>
         <Button
           onClick={() => window.open(waLinkOut, "_blank", "noopener")}

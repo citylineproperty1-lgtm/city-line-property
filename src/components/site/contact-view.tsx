@@ -180,7 +180,7 @@ export function ContactView() {
             <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
               {BUSINESS.hours}
               <br />
-              <span className="text-neutral-400">Sunday — viewings by appointment</span>
+              <span className="text-neutral-400">Open all 7 days of the week</span>
             </p>
           </div>
         </motion.div>

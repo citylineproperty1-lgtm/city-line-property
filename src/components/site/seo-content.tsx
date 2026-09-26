@@ -136,7 +136,7 @@ export async function SeoContent() {
 
         <p className="mt-8 border-t border-neutral-200 pt-6 text-xs leading-relaxed text-neutral-500">
           City Line Property · 151-C Etihad Town Phase 1, Lahore, Punjab, Pakistan · Phone 0309
-          4499940 · 0321 8422109 · WhatsApp +92 309 4499940 · Open daily 9:00–20:00
+          4499940 · 0321 8422109 · WhatsApp +92 309 4499940 · Open daily 10:00–20:00
         </p>
       </div>
     </section>

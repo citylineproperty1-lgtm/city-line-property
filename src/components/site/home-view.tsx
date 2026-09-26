@@ -151,7 +151,7 @@ const WHY_US = [
   {
     icon: MapPin,
     title: "Office in Phase 1",
-    text: "151-C, Etihad Town Phase 1 — walk in any day, Mon–Sat 9 to 7. A real office, with real people.",
+    text: "151-C, Etihad Town Phase 1 — walk in any day, Mon–Sun 10 to 8. A real office, with real people.",
   },
 ];
 

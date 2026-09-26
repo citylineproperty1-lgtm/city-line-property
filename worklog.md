@@ -887,3 +887,27 @@ Stage Summary:
 - Both flagship Etihad phases now use authentic society gate photography in all area-card/guide render points; generic apartment-ext-1.png no longer referenced by areas.ts (still used by property listings, kept in public/)
 - No schema/API changes; purely static asset + one-line data change, zero DB impact
 - Production deploy happens via Vercel on push (citylineproperty.vercel.app)
+
+---
+Task ID: 42
+Agent: Z.ai Code (main session)
+Task: Office hours changed to 10 AM – 8 PM, Monday to Sunday (user: "The office time is 10 to 8 from monday to sunday" + screenshot of old "Mon–Sat · 9:00 AM – 7:00 PM / Sunday — viewings by appointment" card)
+
+Work Log:
+- Grepped all hour mentions across src — found 8 files (business.ts source of truth + 7 hardcoded strings) plus a DB override row
+- src/lib/business.ts: hours → "Mon–Sun · 10:00 AM – 8:00 PM" (drives contact card, footer strip, contact bubble, property-detail working-hours note, about-view Hours row, /api/settings fallback)
+- contact-view.tsx: muted second line "Sunday — viewings by appointment" → "Open all 7 days of the week" (Sunday is now a full day)
+- seo-content.tsx: SEO footer line "Open daily 9:00–20:00" → "10:00–20:00"
+- seo-jsonld.tsx: LocalBusiness openingHoursSpecification opens "09:00" → "10:00" (closes "20:00" = 8 PM already correct; dayOfWeek already includes all 7 days)
+- requirement-form.tsx: success note "(Mon–Sat, 9 AM – 7 PM)" → "(Mon–Sun, 10 AM – 8 PM)"
+- about-view.tsx: "Walk in Mon–Sat, 9 AM to 7 PM" → "Mon–Sun, 10 AM to 8 PM"
+- home-view.tsx: why-us card "walk in any day, Mon–Sat 9 to 7" → "Mon–Sun 10 to 8"
+- admin-settings.tsx: office_hours field placeholder → "Mon–Sun · 10:00 AM – 8:00 PM"
+- DB: Setting.office_hours updated in Supabase ("Mon–Sat · 9:00 AM – 7:00 PM" → "Mon–Sun · 10:00 AM – 8:00 PM") — this row overrides the constant via /api/settings, would have kept showing old hours otherwise
+- bun run lint clean; final grep confirms zero stale hour strings in src
+- agent-browser verified: contact Office-hours card ✓, footer strip ✓, contact bubble ✓, /api/settings returns new hours ✓
+
+Stage Summary:
+- Business hours are now Mon–Sun 10:00 AM – 8:00 PM everywhere: UI (7 render points), SEO copy, JSON-LD structured data, DB override row, admin placeholder
+- JSON-LD stays schema-valid; no schema/API changes; zero code paths still reference 9-to-7 or Mon–Sat
+- Reminder for future: hours text also lives in DB Setting.office_hours — if changed again via admin settings UI it overrides the business.ts constant

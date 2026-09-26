@@ -93,7 +93,7 @@ export async function SeoJsonLd() {
             "Saturday",
             "Sunday",
           ],
-          opens: "09:00",
+          opens: "10:00",
           closes: "20:00",
         },
       ],

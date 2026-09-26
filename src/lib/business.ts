@@ -15,7 +15,7 @@ export const BUSINESS = {
   phonePrimary: "0309 4499940",
   phoneSecondary: "0321 8422109",
   email: "citylineproperty1@gmail.com",
-  hours: "Mon–Sat · 9:00 AM – 7:00 PM",
+  hours: "Mon–Sun · 10:00 AM – 8:00 PM",
   // International format for wa.me / tel: links
   whatsappNumber: "923094499940",
   whatsappNumber2: "923218422109",

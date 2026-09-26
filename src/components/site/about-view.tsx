@@ -143,7 +143,7 @@ export function AboutView() {
               {BUSINESS.officeAddress}
             </h2>
             <p className="mt-3 max-w-md text-[14px] leading-relaxed text-neutral-500">
-              Walk in Mon–Sat, 9 AM to 7 PM — bring your requirement over a cup of chai.
+              Walk in Mon–Sun, 10 AM to 8 PM — bring your requirement over a cup of chai.
               We&rsquo;re on the main boulevard of Phase 1, two minutes from the main gate.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">

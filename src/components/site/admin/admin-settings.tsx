@@ -266,7 +266,7 @@ const CONTACT_FIELDS: { key: keyof Settings; label: string; placeholder: string;
   { key: "whatsapp_number_2", label: "WhatsApp number (secondary)", placeholder: "923218422109", mono: true },
   { key: "office_address", label: "Office address", placeholder: "151-C, Etihad Town Phase 1, Lahore", wide: true },
   { key: "business_email", label: "Business email", placeholder: "citylineproperty1@gmail.com", wide: true },
-  { key: "office_hours", label: "Office hours", placeholder: "Mon–Sat · 9:00 AM – 7:00 PM", wide: true },
+  { key: "office_hours", label: "Office hours", placeholder: "Mon–Sun · 10:00 AM – 8:00 PM", wide: true },
 ];
 
 function ContactCard({
