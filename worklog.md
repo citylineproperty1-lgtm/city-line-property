@@ -854,3 +854,19 @@ Stage Summary:
 - Parking is now admin-written free text end-to-end (schema, APIs, form, public display); legacy numeric values display as "Available" on all live listings.
 - Amenity quick-picks make listing creation tap-first (Zameen-style) while keeping custom entries; selection lands on the public post automatically.
 - Legacy seed scripts (seed.ts/seed-lahore.ts) still carry numeric parking but are compile-exempt (typescript.ignoreBuildErrors) and not re-run in prod; convert at create time if ever re-seeded.
+
+---
+Task ID: 41
+Agent: main (git audit + local sandbox revert repair)
+Task: User asked whether all latest changes were pushed to GitHub. Audit found: YES on remote, but the platform file-sync had rolled the LOCAL working tree back to the Task-30 era (old source files, SQLite .env, stale generated Prisma client, missing public/images/areas).
+
+Work Log:
+- Audit: origin/main = b9ebbd1 with all real work (167d789 overview fix, e30f745 price words, 4bfe3e4 parking+amenities, b9ebbd1 area photo). Local HEAD had diverged onto an old platform sync commit (c348d1d, UUID message, ahead 1 / behind 21).
+- Confirmed local disk had actually reverted: AMENITY_PRESETS gone, areas.ts cover reverted, public/images/areas/ missing, .env back to SQLite file: URL (known trap), node_modules Prisma client stale.
+- Repair: git fetch + `git reset --hard origin/main` (nothing unique in the stray commit — it only touched dev.pid + 6 mode-only SEO files) -> local disk = GitHub state exactly.
+- Rewrote .env with the two Supabase pooler URLs; `bunx prisma generate` (client was stale -> had caused P2023 "Inconsistent column data" on parking); clean dev restart with (unset DATABASE_URL DIRECT_URL).
+- Verified local: parking returns "Available" strings, area image 200, homepage 200. Production re-verified: homepage 200, parking strings, area image 200.
+
+Stage Summary:
+- GitHub + production were ALWAYS complete; only the sandbox local copy had regressed. Repair done and verified end-to-end.
+- New recurring hazard for future sessions: the platform sync can now ALSO revert source files + node_modules Prisma client (not just .env). Symptoms: P2023 on parking, missing new files, UUID-message commits. Fix recipe: git fetch + reset --hard origin/main, rewrite .env, prisma generate, clean restart.
