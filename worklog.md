@@ -911,3 +911,28 @@ Stage Summary:
 - Business hours are now Mon–Sun 10:00 AM – 8:00 PM everywhere: UI (7 render points), SEO copy, JSON-LD structured data, DB override row, admin placeholder
 - JSON-LD stays schema-valid; no schema/API changes; zero code paths still reference 9-to-7 or Mon–Sat
 - Reminder for future: hours text also lives in DB Setting.office_hours — if changed again via admin settings UI it overrides the business.ts constant
+
+---
+Task ID: 43
+Agent: Z.ai Code (main session)
+Task: Add society maps to the website — Phase 1 map, Phase 2 map, Premier Enclave block map (user: "map add etihad town phase 1 map and etihad town phase 2 map, and premier enclave block map")
+
+Work Log:
+- Explore agent mapped the area-guide/upload architecture; discovered the admin upload route (/api/admin/upload) was MISSING while admin-listing-drawer.tsx + admin-digest.tsx still call it — listing photo uploads were 404ing in production (latent bug)
+- prisma/schema.prisma: new MediaFile model (filename/mime/size/data base64/createdAt); bun run db:push OK. DB-backed storage chosen deliberately: production runs on Vercel where public/ writes are ephemeral, so files survive serverless deploys
+- New POST /api/admin/upload: guardAdmin, multipart, JPG/PNG/WebP/AVIF only, ≤4 MB (Vercel body limit headroom), stores bytes base64 in Postgres, returns { path: "/api/media/<id>" }
+- New GET /api/media/[id]: public serve route, immutable Cache-Control (max-age 1y) since content never changes per id
+- src/app/api/admin/settings/route.ts: ALLOWED whitelist extended with area_map_<slug> for all 5 slugs (built from AREA_GUIDES)
+- src/app/api/settings/route.ts (public): now returns areaMaps: {slug → path}, empty values filtered
+- areas-view.tsx AreaDetailView: new "Society map" section between story grid and live listings. If a map is uploaded: object-contain figure (aspect 4/3 → 16/9), "View full screen" pill, figcaption + "Ask for the latest block prices" WhatsApp CTA, Lightbox full-screen viewer. If not: RealMap (Leaflet/OSM) centered on AREA_COORDS[area.name] zoom 15 with area pin, "Open in Google Maps" pill + "Request the block map" CTA. Listings + settings fetched in one Promise.all round trip
+- admin-settings.tsx: new Society block maps card (between Contact info and Password): per-area row (thumbnail preview, name, live/no-map status, Upload/Replace, Remove), uploads via /api/admin/upload then PUT setting; import AREA_GUIDES
+- admin-listing-drawer.tsx: upload hint updated 5 MB → 4 MB, wording now "stored securely on our server"
+- E2E verified: 11/11 API checks via forged admin-cookie script (upload 200 + 401-unauth, settings PUT, public areaMaps exposure, media serve bytes/mime/headers, clear + cleanup) — test script removed after run; browser E2E: Phase 1 fallback live map ✓, seeded stand-in map renders in figure ✓, Lightbox full-screen ✓, admin Society block maps card shows live/no-map rows + Replace/Remove ✓, mobile 375px layout ✓
+- Dev restart mid-test (stale Prisma client without MediaFile → db.mediaFile undefined); clean (unset DATABASE_URL DIRECT_URL) restart fixed
+- Test data fully removed: setting + media row deleted, areaMaps {} confirmed, browser cookie cleared
+
+Stage Summary:
+- Every area guide now has a Society map section out of the box: admin-uploaded official block map with full-screen zoom, or an honest live OSM location map fallback
+- FIXED latent production bug: admin image uploads (listing photos) were broken (route missing) — now restored with serverless-safe DB storage
+- To publish the real maps: Admin → Settings → Society block maps → Upload for Phase 1, Phase 2, Premier Enclave (user has the official layout maps)
+- 4 MB upload limit (was advertised 5 MB) — matches Vercel serverless body constraints

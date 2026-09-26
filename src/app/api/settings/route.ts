@@ -15,6 +15,14 @@ export async function GET() {
     });
     const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
     const webhook = await db.setting.findUnique({ where: { key: "webhook_url" } });
+    // Society block maps uploaded from the admin panel — slug → serve path.
+    const mapRows = await db.setting.findMany({
+      where: { key: { startsWith: "area_map_" } },
+    });
+    const areaMaps: Record<string, string> = {};
+    for (const row of mapRows) {
+      if (row.value) areaMaps[row.key.slice("area_map_".length)] = row.value;
+    }
     return NextResponse.json({
       settings: {
         whatsappNumber: map.whatsapp_number || BUSINESS.whatsappNumber,
@@ -24,6 +32,7 @@ export async function GET() {
         hours: map.office_hours || BUSINESS.hours,
         webhookConfigured: Boolean(webhook?.value),
       },
+      areaMaps,
     });
   } catch (e) {
     console.error("GET /api/settings", e);
@@ -36,6 +45,7 @@ export async function GET() {
         hours: BUSINESS.hours,
         webhookConfigured: false,
       },
+      areaMaps: {},
     });
   }
 }

@@ -743,7 +743,7 @@ export function AdminListingDrawer({
               </Button>
             </div>
             <p className="text-[11px] text-neutral-400">
-              JPG · PNG · WebP · AVIF, up to 5 MB. Uploaded files are stored in /uploads.
+              JPG · PNG · WebP · AVIF, up to 4 MB. Uploaded files are stored securely on our server.
             </p>
           </div>
         </div>

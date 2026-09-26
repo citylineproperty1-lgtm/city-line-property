@@ -62,5 +62,6 @@ scripts/shot-*.png
 scripts/gen-images.log
 tests
 download
-upload
+# uploaded files (attachments sync) — must NOT match src/app/api/admin/upload
+/upload/
 tool-results/

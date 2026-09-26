@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
 import { setSetting, getSetting } from "@/lib/whatsapp";
+import { AREA_GUIDES } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
+
+/** Society block map image per area, stored as a Setting (path or data URL). */
+const AREA_MAP_KEYS = AREA_GUIDES.map((g) => `area_map_${g.slug}`);
 
 const ALLOWED = [
   "webhook_url",
@@ -12,6 +16,7 @@ const ALLOWED = [
   "office_address",
   "business_email",
   "office_hours",
+  ...AREA_MAP_KEYS,
 ];
 
 /** Panel settings (webhook URL, WhatsApp numbers, office info). */

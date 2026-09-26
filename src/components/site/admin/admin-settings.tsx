@@ -6,9 +6,10 @@
  * /api/admin/settings/test, POST /api/admin/password.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import Image from "next/image";
 import {
   BadgeCheck,
   BellRing,
@@ -19,14 +20,18 @@ import {
   Info,
   KeyRound,
   Loader2,
+  Map,
   Save,
   Send,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AREA_GUIDES } from "@/lib/areas";
 import {
   AdminApi,
   AdminCard,
@@ -101,6 +106,7 @@ export function AdminSettings({ api }: { api: AdminApi }) {
       )}
       <WebhookCard api={api} settings={settings} onSaved={() => setReload((r) => r + 1)} />
       <ContactCard api={api} settings={settings} onSaved={() => setReload((r) => r + 1)} />
+      <AreaMapsCard api={api} />
       <PasswordCard api={api} />
     </div>
   );
@@ -344,6 +350,172 @@ function ContactCard({
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save contact info
           </Button>
+        </div>
+      </AdminCard>
+    </motion.section>
+  );
+}
+
+/* ------------------------------ Area maps card ----------------------------- */
+
+const AREA_SLOTS = AREA_GUIDES.map((g) => ({
+  slug: g.slug,
+  name: g.name,
+  key: `area_map_${g.slug}`,
+}));
+
+function AreaMapsCard({ api }: { api: AdminApi }) {
+  const [paths, setPaths] = useState<Record<string, string> | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    api<{ settings: Record<string, string> }>("/api/admin/settings")
+      .then((d) => setPaths(d.settings ?? {}))
+      .catch((err) => {
+        if (!isAuthLoss(err)) setLoadError(errorMessage(err));
+      });
+  }, [api]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const uploadFor = async (slot: (typeof AREA_SLOTS)[number], file: File) => {
+    setBusyKey(slot.key);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const up = await api<{ path: string }>("/api/admin/upload", {
+        method: "POST",
+        body: fd,
+      });
+      await api("/api/admin/settings", {
+        method: "PUT",
+        body: JSON.stringify({ [slot.key]: up.path }),
+      });
+      toast.success(`${slot.name} map saved`);
+      load();
+    } catch (err) {
+      if (!isAuthLoss(err)) toast.error(errorMessage(err));
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  const removeFor = async (slot: (typeof AREA_SLOTS)[number]) => {
+    setBusyKey(slot.key);
+    try {
+      await api("/api/admin/settings", {
+        method: "PUT",
+        body: JSON.stringify({ [slot.key]: "" }),
+      });
+      toast.success(`${slot.name} map removed`);
+      load();
+    } catch (err) {
+      if (!isAuthLoss(err)) toast.error(errorMessage(err));
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
+  return (
+    <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.09 }}>
+      <AdminCard>
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
+            <Map className="h-4.5 w-4.5" />
+          </span>
+          <div>
+            <h3 className="text-[15px] font-semibold text-neutral-900">
+              Society block maps
+            </h3>
+            <p className="mt-0.5 text-[12px] text-neutral-400">
+              Upload the official layout map for each area — it shows on that
+              area&rsquo;s guide page. JPG · PNG · WebP · AVIF, up to 4 MB.
+            </p>
+          </div>
+        </div>
+
+        {loadError && (
+          <p className="mt-3 rounded-2xl border border-[#E5484D]/25 bg-[#E5484D]/[0.06] px-4 py-3 text-[13px] text-[#D5303B]">
+            {loadError}
+          </p>
+        )}
+
+        <div className="mt-4 space-y-3">
+          {AREA_SLOTS.map((slot) => {
+            const path = paths?.[slot.key] || "";
+            const busy = busyKey === slot.key;
+            return (
+              <div
+                key={slot.key}
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-black/[0.07] bg-white p-3"
+              >
+                <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-black/[0.06] bg-[#F7F9F8]">
+                  {path ? (
+                    <Image
+                      src={path}
+                      alt={`${slot.name} block map`}
+                      fill
+                      sizes="96px"
+                      className="object-contain"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-neutral-300">
+                      <Map className="h-5 w-5" />
+                    </span>
+                  )}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13.5px] font-semibold text-neutral-900">
+                    {slot.name}
+                  </p>
+                  <p className="mt-0.5 text-[11.5px] text-neutral-400">
+                    {path
+                      ? "Official map is live on the area page"
+                      : "No map yet — visitors see the live location map"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label
+                    className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-xl px-4 text-[12.5px] font-semibold ${BRAND_OUTLINE} ${
+                      busy ? "pointer-events-none opacity-60" : ""
+                    }`}
+                  >
+                    {busy ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Upload className="h-3.5 w-3.5" />
+                    )}
+                    {path ? "Replace" : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) void uploadFor(slot, f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {path && (
+                    <Button
+                      onClick={() => void removeFor(slot)}
+                      disabled={busy}
+                      size="sm"
+                      variant="ghost"
+                      className="h-9 rounded-xl px-3 text-[12.5px] font-semibold text-[#D5303B] hover:bg-[#E5484D]/[0.08] hover:text-[#D5303B]"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </AdminCard>
     </motion.section>

@@ -17,7 +17,9 @@ import {
   CheckCircle2,
   Building2,
   Loader2,
+  Map,
   MapPin,
+  Maximize2,
   Star,
   TrendingUp,
 } from "lucide-react";
@@ -27,8 +29,10 @@ import { formatPKR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Property } from "@/lib/types";
 import { AREA_GUIDES, areaBySlug, type AreaGuide } from "@/lib/areas";
-import { AREA_SHORT, BUSINESS, waLink } from "@/lib/business";
+import { AREA_COORDS, AREA_SHORT, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
 import { PropertyCard } from "@/components/site/property-card";
+import RealMap, { type MapMarker } from "@/components/site/real-map";
+import { Lightbox } from "@/components/site/lightbox";
 
 interface DistrictStat {
   district: string;
@@ -258,15 +262,22 @@ export function AreaDetailView({ slug }: { slug: string }) {
   const area = areaBySlug(slug);
   const stats = useDistrictStats();
   const [listings, setListings] = useState<{ key: string; items: Property[] } | null>(null);
+  const [areaMaps, setAreaMaps] = useState<Record<string, string> | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
 
   useEffect(() => {
     if (!area) return;
     let alive = true;
     const key = area.name;
-    fetch(`/api/properties?district=${encodeURIComponent(area.name)}&limit=6`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (alive) setListings({ key, items: d.properties ?? [] });
+    // Listings + the uploaded society maps arrive together (one round trip).
+    Promise.all([
+      fetch(`/api/properties?district=${encodeURIComponent(area.name)}&limit=6`).then((r) => r.json()),
+      fetch("/api/settings").then((r) => r.json()).catch(() => ({ areaMaps: {} })),
+    ])
+      .then(([props, settings]) => {
+        if (!alive) return;
+        setListings({ key, items: props.properties ?? [] });
+        setAreaMaps(settings.areaMaps ?? {});
       })
       .catch(() => {
         if (alive) setListings({ key, items: [] });
@@ -297,6 +308,12 @@ export function AreaDetailView({ slug }: { slug: string }) {
   const stat = statFor(stats, area.name);
   const loading = !listings || listings.key !== area.name;
   const others = AREA_GUIDES.filter((a) => a.slug !== area.slug);
+  // Society block map: admin-uploaded layout if present, live map otherwise.
+  const mapImage = areaMaps?.[area.slug] ?? null;
+  const areaCoord = AREA_COORDS[area.name] ?? OFFICE_COORD;
+  const areaMarkers: MapMarker[] = [
+    { id: `area-${area.slug}`, lat: areaCoord.lat, lng: areaCoord.lng, title: area.name, kind: "area" },
+  ];
 
   const browseArea = () => {
     // district-focused search: keep the area in the toolbar search box for context
@@ -443,6 +460,103 @@ export function AreaDetailView({ slug }: { slug: string }) {
         </motion.section>
       </div>
 
+      {/* Society block map */}
+      <section className="mt-14" aria-label="Society map">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+              <Map className="h-4 w-4" />
+              Society map
+            </p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+              {area.name} block map
+            </h2>
+          </div>
+          {mapImage ? (
+            <button
+              onClick={() => setMapOpen(true)}
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+            >
+              View full screen
+              <Maximize2 className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
+            </button>
+          ) : (
+            <a
+              href={`https://www.google.com/maps?q=${areaCoord.lat},${areaCoord.lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+            >
+              Open in Google Maps
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+          )}
+        </div>
+
+        {mapImage ? (
+          <motion.figure
+            {...fadeUp}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            className="mt-6 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
+          >
+            <button
+              type="button"
+              onClick={() => setMapOpen(true)}
+              aria-label={`Open the ${area.name} block map full screen`}
+              className="block w-full cursor-zoom-in bg-[#F7F9F8]"
+            >
+              <span className="relative block aspect-[4/3] w-full sm:aspect-[16/9]">
+                <Image
+                  src={mapImage}
+                  alt={`${area.name} society block map`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 1120px"
+                  className="object-contain"
+                />
+              </span>
+            </button>
+            <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 px-5 py-3.5">
+              <span className="text-[12.5px] leading-relaxed text-neutral-500">
+                Official society layout — tap the map to zoom in.
+              </span>
+              <a
+                href={waLink(`Hi City Line Property! Please share the latest ${area.name} block map with prices.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+              >
+                Ask for the latest block prices
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            </figcaption>
+          </motion.figure>
+        ) : (
+          <motion.div
+            {...fadeUp}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            className="mt-6 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
+          >
+            <div className="h-[400px] sm:h-[460px]">
+              <RealMap markers={areaMarkers} center={areaCoord} zoom={15} className="h-full w-full" />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 px-5 py-3.5">
+              <span className="text-[12.5px] leading-relaxed text-neutral-500">
+                Live location view — detailed block map available at our office.
+              </span>
+              <a
+                href={waLink(`Hi City Line Property! Please share the ${area.name} block map with prices.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+              >
+                Request the block map
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </section>
+
       {/* Live listings */}
       <section className="mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -525,6 +639,18 @@ export function AreaDetailView({ slug }: { slug: string }) {
           })}
         </div>
       </section>
+
+      {/* Full-screen block map viewer */}
+      {mapImage && (
+        <Lightbox
+          images={[mapImage]}
+          index={0}
+          alt={`${area.name} society block map`}
+          open={mapOpen}
+          onClose={() => setMapOpen(false)}
+          onIndexChange={() => {}}
+        />
+      )}
     </div>
   );
 }

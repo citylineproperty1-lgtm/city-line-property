@@ -119,6 +119,18 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+// Uploaded media (area block maps, listing photos) — bytes live in Postgres as
+// base64 and are served from /api/media/<id>, so files survive serverless
+// deploys (writing to public/ is ephemeral on Vercel).
+model MediaFile {
+  id        String   @id @default(cuid())
+  filename  String
+  mime      String
+  size      Int
+  data      String
+  createdAt DateTime @default(now())
+}
+
 // Scheduled property viewing — booked by the admin for a customer.
 model SiteVisit {
   id          String    @id @default(cuid())
