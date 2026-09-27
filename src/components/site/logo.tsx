@@ -9,12 +9,11 @@ const DIMS: Record<LogoSize, { px: number; word: string; tag: string }> = {
   lg: { px: 56, word: "text-xl", tag: "text-[10px] tracking-[0.3em]" },
 };
 
-/** Minimal white "city line" skyline glyph used inside the emerald mark.
- *  Left stepped building + center antenna tower + right pitched-roof house
- *  (the "property") sitting above the brand baseline, with a soft sun accent.
- *  Below px 40 the windows/door drop out so the mark stays crisp at favicon size. */
+/** White "city line" glyph inside the emerald mark: a home whose interior
+ *  reveals a rising city skyline — "the city lives here". One design at all
+ *  sizes (verified legible 32px → 512px); the negative-space skyline IS the
+ *  brand story: City Line inside Property. */
 export function Monogram({ px }: { px: number }) {
-  const detail = px >= 40;
   return (
     <span
       aria-hidden
@@ -26,47 +25,12 @@ export function Monogram({ px }: { px: number }) {
       )}
     >
       <svg viewBox="0 0 48 48" fill="none" className="h-[70%] w-[70%]">
-        {/* sun accent */}
-        <circle cx="37.5" cy="10.5" r="3" fill="white" fillOpacity="0.55" />
-        {/* antenna on the tall tower */}
-        <rect x="23" y="7" width="2" height="6" rx="1" fill="white" fillOpacity="0.95" />
-        {/* left building — stepped roof */}
-        <path
-          fill="white"
-          fillOpacity="0.92"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d={
-            detail
-              ? "M7 38V21h3v-5h3v5h3v17zM10 24.5h3v3.4h-3z"
-              : "M7 38V21h3v-5h3v5h3v17z"
-          }
-        />
-        {/* center tower — the tallest structure, window grid at detail size */}
         <path
           fill="white"
           fillRule="evenodd"
           clipRule="evenodd"
-          d={
-            detail
-              ? "M19.5 38V12h9v26zM21.4 15.8h2.4v3.2h-2.4zM24.6 15.8h2.4v3.2h-2.4zM21.4 21.4h2.4v3.2h-2.4zM24.6 21.4h2.4v3.2h-2.4z"
-              : "M19.5 38V12h9v26z"
-          }
+          d="M12.5 40V22.5L24 12l11.5 10.5V40zM16 40v-6.2h4V29h4.4v4.8h2.4v-7.6h4.4v5.4h2.8V40z"
         />
-        {/* right house — pitched roof + door reads as "property" */}
-        <path
-          fill="white"
-          fillOpacity="0.94"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d={
-            detail
-              ? "M32 38V26.5L36.5 21l4.5 5.5V38zM35.2 31.5h2.6V38h-2.6z"
-              : "M32 38V26.5L36.5 21l4.5 5.5V38z"
-          }
-        />
-        {/* baseline — the "line" in City Line */}
-        <rect x="6.5" y="40.4" width="35" height="2.6" rx="1.3" fill="white" fillOpacity="0.9" />
       </svg>
     </span>
   );

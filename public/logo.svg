@@ -9,17 +9,6 @@
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#clpTile)"/>
   <g transform="translate(9.6 9.6) scale(0.9333)">
-    <!-- sun accent -->
-    <circle cx="37.5" cy="10.5" r="3" fill="#ffffff" fill-opacity="0.55"/>
-    <!-- antenna -->
-    <rect x="23" y="7" width="2" height="6" rx="1" fill="#ffffff" fill-opacity="0.95"/>
-    <!-- left building, stepped roof -->
-    <path fill="#ffffff" fill-opacity="0.92" d="M7 38V21h3v-5h3v5h3v17zM10 24.5h3v3.4h-3z"/>
-    <!-- center tower with windows -->
-    <path fill="#ffffff" fill-rule="evenodd" d="M19.5 38V12h9v26zM21.4 15.8h2.4v3.2h-2.4zM24.6 15.8h2.4v3.2h-2.4zM21.4 21.4h2.4v3.2h-2.4zM24.6 21.4h2.4v3.2h-2.4z"/>
-    <!-- right house, pitched roof + door -->
-    <path fill="#ffffff" fill-opacity="0.94" fill-rule="evenodd" d="M32 38V26.5L36.5 21l4.5 5.5V38zM35.2 31.5h2.6V38h-2.6z"/>
-    <!-- baseline -->
-    <rect x="6.5" y="40.4" width="35" height="2.6" rx="1.3" fill="#ffffff" fill-opacity="0.9"/>
+    <path fill="#ffffff" fill-rule="evenodd" d="M12.5 40V22.5L24 12l11.5 10.5V40zM16 40v-6.2h4V29h4.4v4.8h2.4v-7.6h4.4v5.4h2.8V40z"/>
   </g>
 </svg>

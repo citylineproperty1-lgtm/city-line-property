@@ -1069,3 +1069,18 @@ Work Log:
 Stage Summary:
 - Brand mark now looks like a real-estate city skyline (was generic bars) and the wordmark reads "CITY LINE PROPERTY" with correct spacing; favicon/apple-touch-icon match the new mark
 - Single source of truth unchanged: all lockups flow from logo.tsx; static favicon assets regenerated to match
+---
+Task ID: 49
+Agent: Z.ai Code (main session)
+Task: User still disliked the skyline monogram ("this logo is not looking good... add attractive one").
+
+Work Log:
+- Built a 4-variant comparison lab (.logo-lab/compare.html + round2.html, screenshot-verified at 32/44/64/96px) — candidate designs: A house+ghost towers (towers invisible small → rejected), B house+keyhole "Your Key to the City" (nice but reads generic security), C house-with-city-cutout (distinctive), D sun-over-skyline ring badge (reads as medal → rejected)
+- WINNER — house whose interior reveals a rising city skyline (negative space): literally embodies "City Line inside Property"; refined teeth rhythm in round 2 (C3: low-high-low skyline) — legible and attractive 32px → 512px, no size-conditional variants needed anymore
+- logo.tsx Monogram: single evenodd path (house M12.5 40V22.5L24 12l11.5 10.5V40z + skyline cutout), removed the detail/media-query complexity from Task 48; wordmark "CITY LINE PROPERTY" unchanged (approved)
+- Favicon assets regenerated to match: public/logo.svg rewritten, logo.png 512 (26353b) + logo-192.png (4987b) via sharp; .logo-lab removed
+- Verified: lint exit 0; browser screenshots desktop header/footer + mobile 375 — mark crisp everywhere; hero OUR OFFICE chip (44px) shows the skyline-in-home clearly; 512px PNG visually inspected
+
+Stage Summary:
+- Final brand mark: emerald gradient tile + white home with city skyline carved inside — simple, bold, memorable, and unique to City Line Property; consistent across header, footer, splash, office chip, favicon and apple-touch-icon
+- Lab-driven design process (render variants → screenshot → pick) recorded as the pattern for future brand/visual decisions
