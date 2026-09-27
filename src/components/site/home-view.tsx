@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
@@ -674,26 +673,37 @@ export function HomeView() {
                 <motion.button
                   key={c.slug}
                   variants={pop}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => browseType(c.slug)}
-                  className="gradient-border lift group flex flex-col items-start rounded-2xl p-5 text-left"
+                  className="cat-card sheen group flex flex-col items-start rounded-2xl p-5 text-left"
+                  style={
+                    {
+                      "--cat": c.color,
+                      "--cat-tint": `${c.color}12`,
+                      "--cat-tint-strong": `${c.color}1F`,
+                      "--cat-soft": `${c.color}33`,
+                      "--cat-glow": `${c.color}4D`,
+                    } as CSSProperties
+                  }
                   aria-label={`Browse ${c.name} — ${count} listings`}
                 >
                   <span
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
-                      count > 0
-                        ? "brand-gradient text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]"
-                        : "bg-[#E7F4F0] text-[#0F766E]"
-                    )}
+                    className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-[0_6px_16px_-4px_var(--cat-glow)] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-6"
+                    style={{ backgroundColor: c.color }}
                   >
-                    <Icon className="h-[18px] w-[18px]" />
+                    <Icon className="h-5 w-5" />
                   </span>
                   <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-neutral-900">
                     {c.name}
                   </span>
-                  <span className="mt-0.5 text-[12px] font-medium text-neutral-500">
+                  <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-medium text-neutral-500">
                     {count > 0 ? `${count} live ${count === 1 ? "listing" : "listings"}` : "Ask us for files"}
+                    <ArrowRight
+                      className="h-3 w-3 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                      style={{ color: c.color }}
+                      aria-hidden
+                    />
                   </span>
                 </motion.button>
               );
@@ -702,12 +712,13 @@ export function HomeView() {
             {/* filler tile → contact */}
             <motion.button
               variants={pop}
-              whileHover={{ y: -4 }}
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => navigate({ name: "contact" })}
-              className="lift group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-5 text-left"
+              className="sheen group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-5 text-left shadow-[0_10px_28px_-14px_rgba(15,118,110,0.55)] transition-shadow duration-300 hover:shadow-[0_22px_44px_-14px_rgba(15,118,110,0.65)]"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/25 text-white">
-                <Phone className="h-[18px] w-[18px]" />
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/25 text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6">
+                <Phone className="h-5 w-5" />
               </span>
               <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-white">
                 Not sure? Talk to us

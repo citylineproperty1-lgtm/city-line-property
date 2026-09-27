@@ -1036,3 +1036,20 @@ Stage Summary:
 - Site now carries a coherent premium design system: aurora mesh gradients + 4-tier glassmorphism + animated gradient text + sheen/lift micro-interactions, all on the existing emerald brand — professional look on every page, mobile-safe, reduced-motion accessible
 - Utilities are reusable tokens in globals.css for all future pages (agents should prefer them over hand-rolled overlays)
 - No copy/links/aria/data changes — pure presentation layer; 9 source files + globals.css
+---
+Task ID: 47
+Agent: Z.ai Code (main session)
+Task: User reviewed the Task-46 categories section ("Seven ways we can help you!") and asked to turn its color combination back to the previous one, then add animation and effect.
+
+Work Log:
+- Diffed home-view categories section against pre-Task-46 (9f63a6c): Task 46-b had replaced the per-category palette (tinted card wash ${color}12, border ${color}33, solid colored circular icon) with all-teal gradient-border cards + brand-gradient tiles — that uniform teal was what the user disliked
+- Restored the previous color combination from CategoryDef.color (green #34C759, orange #FF9500, brown #A2845E, cyan #30B0C7, purple #AF52DE, pink #FF2D55, blue #007AFF): tinted card background + tinted border + h-11 w-11 rounded-full solid-color icon with white glyph (colors flow from /api/categories DB rows, fallback CATEGORIES)
+- NEW animation/effect layer on top (better than the old plain transition): framer whileHover y:-5 + whileTap scale .97 (framer owns transform per the 46-a architecture note); .cat-card CSS utility in globals.css driven by inline --cat vars → hover deepens tint (12→1F), border snaps to full category color, and a per-category colored glow shadow (18px 40px -14px color/30%); icon tile gets springy scale-110 + -rotate-6 tilt (cubic-bezier overshoot); sheen light sweep on hover; category-colored ArrowRight fades/slides in next to the count on hover; filler "Talk to us" card keeps emerald gradient + gets whileHover/whileTap, sheen, emerald glow bloom, phone icon rotate-6 tilt
+- Reduced-motion kill-switch in globals.css covers the new transitions; icon glow shadow verified to sit well inside card bounds (no clipping by sheen overflow-hidden)
+- INCIDENT — Turbopack stale CSS cache: served bundle lacked .cat-card while TSX changes applied; touch + dev restart did NOT fix (hash-stable chunk served from .next dev cache); fixed by rm -rf .next + clean restart. New ops rule: if a fresh CSS utility is missing from the served bundle, nuke .next before suspecting the code
+- Verified: bun run lint exit 0; computed styles — resting bg rgba(52,199,89,.07)/border .2, hover border rgb(48,176,199) + cyan glow + translateY(-5) on Apartments card; screenshots desktop 1280 (rest + hover) + mobile 375 all show the multicolor palette; click-through → #/properties?type=residential-plots works; dev.log 0 errors
+
+Stage Summary:
+- Categories section = previous beloved color combination (per-category identity colors) + a new layer of micro-interactions (lift, colored glow, icon tilt, sheen, arrow reveal) — user request satisfied on both counts
+- .cat-card joins the reusable design-system utilities (globals.css): works for ANY card that wants identity-color theming via 5 inline CSS vars
+- Ops lesson recorded: Turbopack dev cache can serve stale CSS through restarts — rm -rf .next is the fix

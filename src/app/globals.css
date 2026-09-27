@@ -378,6 +378,27 @@
   background-image: linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.35) 20%, rgba(45, 212, 191, 0.45) 50%, rgba(15, 118, 110, 0.35) 80%, transparent);
 }
 
+/* Category card — per-category color wash driven by inline --cat vars
+   (restored palette: each category keeps its own brand color).
+   Vars set inline per card: --cat (full color), --cat-tint / --cat-tint-strong
+   (background wash), --cat-soft (resting border), --cat-glow (hover shadow).
+   Transform is owned by framer-motion (whileHover), so only paint props transition. */
+.cat-card {
+  background-color: var(--cat-tint);
+  border: 1px solid var(--cat-soft);
+  transition:
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s,
+    background-color 0.35s;
+}
+.cat-card:hover {
+  background-color: var(--cat-tint-strong);
+  border-color: var(--cat);
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.04),
+    0 18px 40px -14px var(--cat-glow);
+}
+
 /* Accessibility: honor prefers-reduced-motion (ui-ux-pro-max CRITICAL rule) —
    collapse all CSS animation/transition to near-instant, keep scroll instant. */
 @media (prefers-reduced-motion: reduce) {
