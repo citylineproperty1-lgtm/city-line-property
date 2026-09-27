@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 import { BUSINESS } from "@/lib/business";
 
@@ -9,29 +10,36 @@ const DIMS: Record<LogoSize, { px: number; word: string; tag: string }> = {
   lg: { px: 56, word: "text-xl", tag: "text-[10px] tracking-[0.3em]" },
 };
 
-/** White "city line" glyph inside the emerald mark: a home whose interior
- *  reveals a rising city skyline — "the city lives here". One design at all
- *  sizes (verified legible 32px → 512px); the negative-space skyline IS the
- *  brand story: City Line inside Property. */
+/** Brand mark — animated aurora-glass tile with a white home whose interior
+ *  reveals a rising GOLDEN city: "the golden city lives here". The tile pans a
+ *  teal→cyan aurora, carries a fixed glass highlight + inner ring, and a light
+ *  sweep crosses it on a loop (all honoring prefers-reduced-motion). */
 export function Monogram({ px }: { px: number }) {
+  const gid = useId().replace(/:/g, "");
   return (
     <span
       aria-hidden
       style={{ width: px, height: px }}
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-[28%]",
-        "bg-[linear-gradient(135deg,#14B8A6_0%,#0F766E_52%,#0B5B54_100%)]",
-        "ring-1 ring-black/[0.06] shadow-[0_2px_10px_-2px_rgba(15,118,110,0.45)]"
+        "clp-logo-tile relative flex shrink-0 items-center justify-center overflow-hidden rounded-[28%]"
       )}
     >
-      <svg viewBox="0 0 48 48" fill="none" className="h-[70%] w-[70%]">
-        <path
-          fill="white"
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M12.5 40V22.5L24 12l11.5 10.5V40zM16 40v-6.2h4V29h4.4v4.8h2.4v-7.6h4.4v5.4h2.8V40z"
-        />
+      <svg
+        viewBox="0 0 48 48"
+        fill="none"
+        className="relative h-[70%] w-[70%] drop-shadow-[0_1.5px_2px_rgba(8,60,52,0.35)]"
+      >
+        <defs>
+          <linearGradient id={`${gid}-city`} x1="24" y1="26" x2="24" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#FDE68A" />
+            <stop offset="1" stopColor="#F59E0B" />
+          </linearGradient>
+        </defs>
+        <path d="M12.5 40V22.5L24 12l11.5 10.5V40z" fill="white" />
+        <path d="M16 40v-6.2h4V29h4.4v4.8h2.4v-7.6h4.4v5.4h2.8V40z" fill={`url(#${gid}-city)`} />
       </svg>
+      <span className="clp-logo-glass" />
+      <span className="clp-logo-shimmer" />
     </span>
   );
 }

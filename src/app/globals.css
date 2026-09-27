@@ -399,6 +399,63 @@
     0 18px 40px -14px var(--cat-glow);
 }
 
+/* ---------- Brand monogram: animated aurora-glass tile ---------- */
+
+/* Tile: panning multi-stop emerald/cyan aurora + inset glass ring. */
+.clp-logo-tile {
+  position: relative;
+  background: linear-gradient(135deg, #24c6b0 0%, #0d9488 26%, #0f766e 52%, #0b5b54 76%, #0e7490 100%);
+  background-size: 240% 240%;
+  animation: clp-aurora 6s ease-in-out infinite;
+  box-shadow:
+    0 2px 10px -2px rgba(15, 118, 110, 0.5),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
+}
+@keyframes clp-aurora {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Fixed glassmorphism highlight across the top-left face of the tile. */
+.clp-logo-glass {
+  position: absolute;
+  inset: 0;
+  border-radius: 28%;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.1) 34%,
+    rgba(255, 255, 255, 0) 56%
+  );
+  pointer-events: none;
+}
+
+/* Light sweep crossing the tile on a loop. */
+.clp-logo-shimmer {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 26%;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-180%) skewX(-16deg);
+  animation: clp-shimmer 4.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes clp-shimmer {
+  0% {
+    transform: translateX(-180%) skewX(-16deg);
+  }
+  55%,
+  100% {
+    transform: translateX(560%) skewX(-16deg);
+  }
+}
+
 /* Accessibility: honor prefers-reduced-motion (ui-ux-pro-max CRITICAL rule) —
    collapse all CSS animation/transition to near-instant, keep scroll instant. */
 @media (prefers-reduced-motion: reduce) {

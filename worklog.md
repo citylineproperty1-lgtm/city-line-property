@@ -1084,3 +1084,20 @@ Work Log:
 Stage Summary:
 - Final brand mark: emerald gradient tile + white home with city skyline carved inside — simple, bold, memorable, and unique to City Line Property; consistent across header, footer, splash, office chip, favicon and apple-touch-icon
 - Lab-driven design process (render variants → screenshot → pick) recorded as the pattern for future brand/visual decisions
+---
+Task ID: 50
+Agent: Z.ai Code (main session)
+Task: User rejected the flat skyline monogram ("what a fucking logo is this") — demanded a colorful, animated, glassmorphism logo.
+
+Work Log:
+- Lab-tested 2 glass concepts (.logo-lab/glass.html, screenshots at 32/44/64/128px across two animation moments): V1 aurora tile + white home + GOLDEN city + glass layers vs V3 teal→cyan→gold sunset tile with cutout — V1 won decisively (gold pops at every size; V3's multi-stop diagonal went muddy green mid-tile)
+- Final mark: white home with a rising GOLDEN city inside (amber gradient FDE68A→F59E0B — "the golden city lives here") on an animated aurora-glass tile; glyph carries a soft drop shadow for depth
+- Animation stack (globals.css): .clp-logo-tile = 5-stop teal/cyan aurora gradient, background-size 240%, clp-aurora pan 6s ease-in-out infinite + inset glass ring; .clp-logo-glass = fixed 155° glassmorphism highlight (white .34→0); .clp-logo-shimmer = skewed light sweep crossing every 4.6s (clp-shimmer). All covered by the global prefers-reduced-motion kill-switch
+- logo.tsx: Monogram rebuilt with useId()-scoped SVG gradient ids (safe for 5 simultaneous instances), tile/glass/shimmer via the new classes; static favicon logo.svg rebuilt with the same glass + gold + ring baked in; PNGs regenerated via sharp (512: 67KB, 192: 18KB)
+- INCIDENT (recurring): Turbopack served stale CSS without .clp-logo-tile (ghost-white tile) — rm -rf .next + clean restart fixed; recipe from Task 47 re-applied, now 2nd occurrence
+- Polish pass: deepened gradient first stop #2DD4BF→#24C6B0 and glass .40→.34 after small-size screenshots showed a pastel wash
+- Verified: lint 0; computed styles confirm aurora/glass/anim applied; zoomed footer crop + desktop/mobile headers + hero office chip all show the golden-city glass mark; two-frame comparison confirms the aurora pan animates
+
+Stage Summary:
+- Logo is now colorful (gold city + cyan-teal aurora), animated (aurora pan + shimmer sweep), and glassmorphic (glass highlight + inner ring + drop shadow) — consistent across header, footer, splash, office chip, unlock dialog, favicon SVG/PNGs
+- Ops: Turbopack stale-CSS recurrence confirmed — ALWAYS rm -rf .next after any globals.css addition, touching is not enough
