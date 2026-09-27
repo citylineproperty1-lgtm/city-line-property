@@ -973,3 +973,9 @@ Stage Summary:
 - Future UI work on City Line Property can query it: python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system / --domain <d> / --stack nextjs
 - Old slim version backed up at /tmp/ui-ux-pro-max-old-backup (ephemeral)
 - Git incident during this task: platform file-sync again rolled local history to the old SEO-era chain (4ebe7d5 "worklog task 30" + stray c348d1d UUID commit) causing a non-fast-forward push rejection. Repaired per Task 41 recipe: saved Task 45 section, git reset --hard origin/main (2c19ebd), re-appended entry; post-reset sanity checks below. Remote was never affected.
+
+Task 45 addendum — sync-bot rollback fully repaired (post-install sanity caught it):
+- The platform sync did not just rewind git; it ALSO reverted .env to the SQLite file: trap (zero postgresql lines), left a stale Prisma client, and killed the dev server (curl 000)
+- Repaired per Task 41 recipe + Task 28/29 notes: rewrote .env with the two Supabase pooler URLs (region aws-0-ap-southeast-1 recovered from worklog line 643; deliberately NO ADMIN_SESSION_SECRET so locally-minted admin cookies stay valid against prod, same as before), bunx prisma generate (client v6 regenerated → mediaFile model back), clean dev restart (unset env inside subshell)
+- Verified: DB CONNECT OK, 15 published listings all AVAILABLE (CLP-101→116, CLP-113 absent — removed in a prior session; the "16" in older notes counted a since-deleted test/artifact row; NO data loss), setting rows 6, mediaFile 0, home 200, /api/settings + /api/properties 200 with live Supabase data
+- Production was never affected (Vercel env separate). Lesson stands: ALWAYS check .env + prisma generate + dev health after ANY push rejection / UUID-commit sighting
