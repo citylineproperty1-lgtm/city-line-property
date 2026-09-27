@@ -14,6 +14,16 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/site/logo";
 
+/** Column heading — white label with a small brand-gradient accent bar. */
+function FooterHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="text-[13px] font-semibold uppercase tracking-wider text-white">{children}</h3>
+      <div aria-hidden className="brand-gradient mt-2 h-0.5 w-8 rounded-full" />
+    </div>
+  );
+}
+
 export function SiteFooter() {
   const { navigate, setFilters } = useAppStore();
 
@@ -32,17 +42,9 @@ export function SiteFooter() {
   };
 
   return (
-    <footer className="relative mt-auto overflow-hidden bg-[#0C1210] text-[#E6ECEA] print:hidden">
-      {/* Subtle emerald wash */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-b from-[#0F1B18] via-[#0C1210] to-[#090D0C]"
-      />
-      {/* Brand hairline at the very top */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#0F766E]/70 to-transparent"
-      />
+    <footer className="bg-mesh-dark relative mt-auto overflow-hidden text-neutral-200 print:hidden">
+      {/* Brand gradient hairline at the very top */}
+      <div aria-hidden className="gradient-hairline absolute inset-x-0 top-0" />
 
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.6fr_1.25fr_1fr_1fr_1.2fr]">
@@ -64,59 +66,58 @@ export function SiteFooter() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#7FE0CD]">
-              Contact
-            </h3>
-            <ul className="mt-4 space-y-3 text-sm text-[#B9C4C0]">
-              <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2DD4BF]" />
-                <span>{BUSINESS.officeAddress}</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
-                <a
-                  href={telLink()}
-                  className="transition-colors hover:text-[#7FE0CD]"
-                >
-                  {BUSINESS.phonePrimary}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
-                <a
-                  href={telLink(BUSINESS.telSecondary)}
-                  className="transition-colors hover:text-[#7FE0CD]"
-                >
-                  {BUSINESS.phoneSecondary}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
-                <a
-                  href={`mailto:${BUSINESS.email}`}
-                  className="break-all transition-colors hover:text-[#7FE0CD]"
-                >
-                  {BUSINESS.email}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <Clock className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
-                <span>{BUSINESS.hours}</span>
-              </li>
-            </ul>
+            <FooterHeading>Contact</FooterHeading>
+            {/* Key contact info in a frosted dark card */}
+            <div className="glass-dark mt-4 rounded-2xl border border-white/10 p-4">
+              <ul className="space-y-3 text-sm text-white">
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2DD4BF]" />
+                  <span>{BUSINESS.officeAddress}</span>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Phone className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
+                  <a
+                    href={telLink()}
+                    className="font-medium transition-colors hover:text-[#5EB9A9]"
+                  >
+                    {BUSINESS.phonePrimary}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Phone className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
+                  <a
+                    href={telLink(BUSINESS.telSecondary)}
+                    className="font-medium transition-colors hover:text-[#5EB9A9]"
+                  >
+                    {BUSINESS.phoneSecondary}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
+                  <a
+                    href={`mailto:${BUSINESS.email}`}
+                    className="break-all font-medium transition-colors hover:text-[#5EB9A9]"
+                  >
+                    {BUSINESS.email}
+                  </a>
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <Clock className="h-4 w-4 shrink-0 text-[#2DD4BF]" />
+                  <span>{BUSINESS.hours}</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Areas */}
           <div>
-            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#7FE0CD]">
-              Our areas
-            </h3>
+            <FooterHeading>Our areas</FooterHeading>
             <ul className="mt-4 space-y-2.5">
               {AREAS.map((area) => (
                 <li key={area}>
                   <button
                     onClick={() => goArea(area)}
-                    className="text-sm text-[#B9C4C0] transition-colors hover:text-[#7FE0CD]"
+                    className="text-sm text-[#B9C4C0] transition-colors hover:text-[#5EB9A9]"
                   >
                     {area}
                   </button>
@@ -127,15 +128,13 @@ export function SiteFooter() {
 
           {/* Categories */}
           <div>
-            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#7FE0CD]">
-              Categories
-            </h3>
+            <FooterHeading>Categories</FooterHeading>
             <ul className="mt-4 space-y-2.5">
               {CATEGORIES.map((cat) => (
                 <li key={cat.slug}>
                   <button
                     onClick={() => goCategory(cat.slug)}
-                    className="text-sm text-[#B9C4C0] transition-colors hover:text-[#7FE0CD]"
+                    className="text-sm text-[#B9C4C0] transition-colors hover:text-[#5EB9A9]"
                   >
                     {cat.name}
                   </button>
@@ -146,9 +145,7 @@ export function SiteFooter() {
 
           {/* Visit us */}
           <div>
-            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#7FE0CD]">
-              Visit the office
-            </h3>
+            <FooterHeading>Visit the office</FooterHeading>
             <p className="mt-4 text-sm leading-relaxed text-[#B9C4C0]">
               Walk in for on-ground deals, plot visits and instant file transfers —
               we deal directly, you pay 1%.
@@ -157,7 +154,7 @@ export function SiteFooter() {
               href={`https://www.google.com/maps/dir/?api=1&destination=151-C+Etihad+Town+Phase+1+Lahore`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/50 bg-[#0F766E]/15 px-3.5 py-1.5 text-[12.5px] font-semibold text-[#7FE0CD] transition-colors hover:bg-[#0F766E]/25"
+              className="sheen mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/50 bg-[#0F766E]/15 px-3.5 py-1.5 text-[12.5px] font-semibold text-[#7FE0CD] transition-colors hover:bg-[#0F766E]/25"
             >
               <MapPin className="h-3.5 w-3.5" aria-hidden />
               Get directions
@@ -167,8 +164,9 @@ export function SiteFooter() {
       </div>
 
       {/* Bottom bar */}
-      <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-[12.5px] text-[#7E8B86] sm:flex-row sm:px-6">
+      <div aria-hidden className="gradient-hairline relative opacity-40" />
+      <div className="relative">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-[12.5px] text-white/50 sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} City Line Property. All rights reserved.</span>
           <span>Crafted with care in Lahore · Punjab, Pakistan</span>
           <button

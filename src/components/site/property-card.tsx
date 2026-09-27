@@ -56,8 +56,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.3), ease: "easeOut" }}
-      whileHover={{ y: -4 }}
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-black/[0.07] bg-white transition-shadow duration-300 hover:shadow-[0_20px_48px_-18px_rgba(15,23,42,0.22)]"
+      className="group cursor-pointer"
       onClick={() => navigate({ name: "property", id: property.id })}
       role="button"
       tabIndex={0}
@@ -66,6 +65,10 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       }}
       aria-label={`${property.title} — ${formatPKR(property.price, isRent)}`}
     >
+      {/* Visual card surface — gradient hairline border + hover lift/bloom.
+          Kept as an inner wrapper so CSS `lift` transitions never fight
+          framer-motion's inline transform on the animated article. */}
+      <div className="lift gradient-border overflow-hidden rounded-2xl">
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
         <Image
@@ -73,7 +76,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           alt={property.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 animate-in fade-in group-hover:scale-[1.04]"
+          className="object-cover transition-transform duration-700 animate-in fade-in group-hover:scale-[1.06]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         {/* Status + availability badges */}
@@ -82,13 +85,19 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
             className={cn(
               "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
               isRent
-                ? "border border-[#0F766E]/25 bg-white/95 text-[#0B6B5D]"
+                ? "glass-chip border border-white/50 text-[#0B6B5D]"
                 : "brand-gradient text-white"
             )}
           >
             {isRent ? "For Rent" : "For Sale"}
           </span>
           <StateBadge state={property.listingState} />
+        </div>
+        {/* Price — frosted glass chip over the image */}
+        <div className="glass-chip absolute bottom-3 left-3 rounded-full border border-white/50 px-3 py-1 shadow-sm">
+          <p className="text-[13.5px] font-bold tracking-tight tabular-nums text-neutral-900">
+            {formatPKR(property.price, isRent)}
+          </p>
         </div>
         {/* Favorite */}
         <button
@@ -127,13 +136,8 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
 
       {/* Body */}
       <div className="p-5">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-lg font-semibold tracking-tight tabular-nums text-neutral-900">
-            {formatPKR(property.price, isRent)}
-          </p>
-          <CategoryChip type={property.type} />
-        </div>
-        <h3 className="mt-1.5 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#0B6B5D]">
+        <CategoryChip type={property.type} />
+        <h3 className="mt-2 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#0B6B5D]">
           {property.title}
         </h3>
         <p className="mt-1 flex items-center gap-1 text-[13px] text-neutral-400">
@@ -143,30 +147,39 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           </span>
         </p>
 
-        <div className="mt-4 flex items-center gap-4 border-t border-neutral-100 pt-3.5 text-[13px] text-neutral-500">
+        <div className="mt-4 flex items-center gap-3 border-t border-neutral-100 pt-3.5 text-[13px] text-neutral-500">
           {property.beds > 0 && (
             <span className="flex items-center gap-1.5" title="Bedrooms">
-              <BedDouble className="h-4 w-4 text-neutral-400" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
+                <BedDouble className="h-3.5 w-3.5 text-[#0F766E]" />
+              </span>
               {property.beds}
             </span>
           )}
           {property.baths > 0 && (
             <span className="flex items-center gap-1.5" title="Bathrooms">
-              <Bath className="h-4 w-4 text-neutral-400" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
+                <Bath className="h-3.5 w-3.5 text-[#0F766E]" />
+              </span>
               {property.baths}
             </span>
           )}
           <span className="flex items-center gap-1.5" title="Area (sqft)">
-            <Ruler className="h-4 w-4 text-neutral-400" />
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
+              <Ruler className="h-3.5 w-3.5 text-[#0F766E]" />
+            </span>
             {property.area.toLocaleString()} sqft
           </span>
           {property.parking && (
             <span className="ml-auto hidden items-center gap-1.5 sm:flex" title="Parking">
-              <Car className="h-4 w-4 text-neutral-400" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
+                <Car className="h-3.5 w-3.5 text-[#0F766E]" />
+              </span>
               {property.parking}
             </span>
           )}
         </div>
+      </div>
       </div>
     </motion.article>
   );

@@ -251,6 +251,151 @@
   animation: brand-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* ---------- Design system (Task 46): mesh gradients · glass tiers · motion ---------- */
+
+/* Vibrant aurora mesh — the colorful backdrop glassmorphism needs.
+   Layered radial glows on a paper-white base + faint brand dots. */
+@utility bg-mesh {
+  background-color: #f7fbfa;
+  background-image:
+    radial-gradient(42rem 42rem at 8% -12%, rgba(20, 160, 143, 0.16), transparent 60%),
+    radial-gradient(36rem 36rem at 104% 6%, rgba(94, 185, 169, 0.2), transparent 56%),
+    radial-gradient(30rem 30rem at 50% 118%, rgba(15, 118, 110, 0.12), transparent 62%),
+    radial-gradient(rgba(15, 118, 110, 0.09) 1px, transparent 1px);
+  background-size: auto, auto, auto, 22px 22px;
+}
+
+/* Deep emerald night mesh — footer, dark CTA bands, premium section wrappers. */
+@utility bg-mesh-dark {
+  background-color: #07120f;
+  background-image:
+    radial-gradient(40rem 40rem at 12% -14%, rgba(20, 160, 143, 0.3), transparent 60%),
+    radial-gradient(34rem 34rem at 108% 18%, rgba(45, 212, 191, 0.15), transparent 55%),
+    radial-gradient(30rem 30rem at 50% 122%, rgba(11, 93, 86, 0.38), transparent 66%);
+}
+
+/* Glass tiers — per ui-ux-pro-max glassmorphism spec (blur 10–20px, 15–30%
+   translucency, 1px light border; pair with bg-mesh for the vibrant layer). */
+@utility glass-strong {
+  background-color: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+@utility glass-dark {
+  background-color: rgba(7, 18, 15, 0.55);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+@utility glass-chip {
+  background-color: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* Gradient hairline border — transparent border + double-background trick.
+   Element keeps its own bg via padding-box layer, gradient paints the ring. */
+@utility gradient-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, rgba(20, 160, 143, 0.6), rgba(15, 118, 110, 0.14) 42%, rgba(94, 185, 169, 0.55)) border-box;
+}
+@utility gradient-border-dark {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(18, 23, 21, 0.92), rgba(18, 23, 21, 0.92)) padding-box,
+    linear-gradient(135deg, rgba(45, 212, 191, 0.55), rgba(45, 212, 191, 0.08) 45%, rgba(20, 160, 143, 0.45)) border-box;
+}
+/* Translucent variant — gradient ring + frosted body (keeps backdrop blur alive;
+   fixes the cascade where gradient-border's opaque padding-box beats glass-strong). */
+@utility gradient-border-glass {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)) padding-box,
+    linear-gradient(135deg, rgba(20, 160, 143, 0.6), rgba(15, 118, 110, 0.14) 42%, rgba(94, 185, 169, 0.55)) border-box;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* Animated gradient text — slow pan, subtle. */
+@keyframes gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@utility text-gradient-animated {
+  background-image: linear-gradient(120deg, #0f766e 0%, #14a08f 35%, #2dd4bf 60%, #0b5d56 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 7s ease-in-out infinite;
+}
+@utility animate-gradient-pan {
+  animation: gradient-pan 7s ease-in-out infinite;
+}
+
+/* Shine sweep for primary CTAs — hover triggers a light pass. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.35) 50%, transparent 62%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.sheen:hover::after {
+  transform: translateX(120%);
+}
+
+/* Soft hover lift + emerald shadow bloom (apply to cards). */
+@utility lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s;
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.04),
+    0 12px 24px -8px rgba(15, 23, 42, 0.1),
+    0 24px 48px -16px rgba(15, 118, 110, 0.22);
+}
+
+/* Gradient section divider hairline. */
+@utility gradient-hairline {
+  height: 1px;
+  background-image: linear-gradient(90deg, transparent, rgba(15, 118, 110, 0.35) 20%, rgba(45, 212, 191, 0.45) 50%, rgba(15, 118, 110, 0.35) 80%, transparent);
+}
+
+/* Accessibility: honor prefers-reduced-motion (ui-ux-pro-max CRITICAL rule) —
+   collapse all CSS animation/transition to near-instant, keep scroll instant. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .sheen::after {
+    display: none;
+  }
+}
+
 /* ---------- Leaflet integration ---------- */
 
 /* Map pins rendered as div icons */

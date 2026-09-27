@@ -91,10 +91,10 @@ export function ContactBubble() {
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 320, damping: 26 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
             role="dialog"
             aria-label="Contact City Line Property"
-            className="w-[288px] overflow-hidden rounded-3xl border border-black/10 bg-white shadow-[0_28px_70px_-18px_rgba(15,23,42,0.5)]"
+            className="glass-strong w-[288px] overflow-hidden rounded-3xl border border-[#0F766E]/15 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.4)]"
           >
             {/* Brand strip */}
             <div className="brand-gradient relative px-4 pb-4 pt-3.5 text-white">
@@ -122,6 +122,9 @@ export function ContactBubble() {
               </div>
             </div>
 
+            {/* Gradient hairline under the brand strip */}
+            <div aria-hidden className="gradient-hairline opacity-90" />
+
             {/* Body */}
             <div className="px-4 pb-4 pt-3.5">
               <p className="text-[14px] font-semibold text-neutral-900">
@@ -135,7 +138,7 @@ export function ContactBubble() {
               <div className="mt-3.5 grid grid-cols-2 gap-2">
                 <a
                   href={telLink()}
-                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#0F766E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(15,118,110,0.7)] transition-transform hover:scale-[1.03] active:scale-95"
+                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#0F766E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(15,118,110,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
                   aria-label={`Call ${BUSINESS.phonePrimary}`}
                 >
                   <Phone className="h-3.5 w-3.5" aria-hidden />
@@ -145,7 +148,7 @@ export function ContactBubble() {
                   href={waLink(WA_GREETING)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#22C55E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(34,197,94,0.7)] transition-transform hover:scale-[1.03] active:scale-95"
+                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#22C55E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(34,197,94,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
                   aria-label="Chat with us on WhatsApp"
                 >
                   <WhatsAppIcon className="h-3.5 w-3.5" aria-hidden />
@@ -168,7 +171,7 @@ export function ContactBubble() {
             initial={{ opacity: 0, scale: 0.6, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.6, y: 12 }}
-            transition={{ type: "spring", stiffness: 320, damping: 24 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
             onClick={() => (cardOpen ? dismiss() : setCardOpen(true))}
             className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#22C55E] text-white shadow-[0_12px_30px_-10px_rgba(15,23,42,0.4)] transition-all hover:bg-[#16A34A] active:scale-95"
             aria-label={cardOpen ? "Close contact popup" : "Contact us for any information"}

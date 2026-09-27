@@ -47,9 +47,9 @@ export function SiteHeader() {
         animate={{ height: scrolled ? 54 : 64 }}
         transition={{ type: "spring", stiffness: 280, damping: 30 }}
         className={cn(
-          "mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-full border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:px-4",
+          "relative mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-full border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:px-4",
           scrolled
-            ? "border-black/10 bg-white/85 shadow-[0_12px_36px_-18px_rgba(15,23,42,0.35)] backdrop-blur-xl saturate-150"
+            ? "border-black/10 bg-white/85 shadow-[0_12px_36px_-18px_rgba(15,118,110,0.45)] ring-1 ring-[#0F766E]/15 backdrop-blur-xl saturate-150"
             : "border-black/5 bg-white/65 backdrop-blur-xl saturate-150"
         )}
       >
@@ -142,7 +142,7 @@ export function SiteHeader() {
           {/* CTA */}
           <Button
             onClick={() => go({ name: "contact" })}
-            className="brand-gradient hidden h-9 rounded-full px-4 text-[13px] font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95 lg:inline-flex"
+            className="brand-gradient sheen hidden h-9 rounded-full px-4 text-[13px] font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95 lg:inline-flex"
           >
             Post Requirement
           </Button>
@@ -161,9 +161,15 @@ export function SiteHeader() {
             </SheetTrigger>
             <SheetContent
               side="bottom"
-              className="rounded-t-3xl border-t border-black/10 bg-white px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-0 sm:px-6"
+              className="glass-strong rounded-t-3xl border-t border-black/10 px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-0 sm:px-6"
             >
               <SheetTitle className="sr-only">Menu</SheetTitle>
+
+              {/* Subtle brand hairline along the sheet's top edge */}
+              <div
+                aria-hidden
+                className="gradient-hairline pointer-events-none absolute left-6 right-6 top-0 opacity-70"
+              />
 
               {/* Grabber */}
               <div
@@ -228,7 +234,7 @@ export function SiteHeader() {
                 <div className="grid grid-cols-[1fr_auto_auto] gap-2">
                   <Button
                     onClick={() => go({ name: "contact" })}
-                    className="brand-gradient h-11 rounded-full text-[14px] font-semibold text-white shadow-[0_10px_26px_-10px_rgba(15,118,110,0.75)] hover:opacity-95"
+                    className="brand-gradient sheen h-11 rounded-full text-[14px] font-semibold text-white shadow-[0_10px_26px_-10px_rgba(15,118,110,0.75)] hover:opacity-95"
                   >
                     Post Requirement
                   </Button>
@@ -256,6 +262,14 @@ export function SiteHeader() {
             </SheetContent>
           </Sheet>
         </div>
+
+        {/* Emerald gradient underline inside the scrolled dock */}
+        {scrolled && (
+          <div
+            aria-hidden
+            className="gradient-hairline pointer-events-none absolute bottom-0 left-6 right-6 opacity-60"
+          />
+        )}
       </motion.div>
     </header>
   );

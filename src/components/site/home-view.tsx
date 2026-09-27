@@ -18,6 +18,7 @@ import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
@@ -296,13 +297,9 @@ export function HomeView() {
       {/* ================= HERO ================= */}
       <section
         ref={heroRef}
-        className="relative overflow-hidden"
+        className="bg-mesh relative overflow-hidden"
         aria-label="City Line Property — your key to the city"
       >
-        {/* faint emerald washes on white */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(55%_45%_at_78%_8%,rgba(15,118,110,0.07),transparent_70%)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_35%_at_8%_85%,rgba(15,118,110,0.045),transparent_70%)]" />
-        <div className="bg-dots pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,black,transparent)]" />
 
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-12 sm:px-6 sm:pt-16">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
@@ -332,7 +329,7 @@ export function HomeView() {
                     animate="show"
                     className={
                       i >= 1
-                        ? "text-brand-gradient mr-[0.22em] inline-block"
+                        ? "text-gradient-animated mr-[0.22em] inline-block"
                         : "mr-[0.22em] inline-block"
                     }
                     aria-hidden
@@ -357,8 +354,8 @@ export function HomeView() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.55, ease: "easeOut" }}
-                className="mt-8 rounded-3xl border border-black/[0.07] bg-white p-3 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.28)] backdrop-blur-xl"
+                transition={{ delay: 0.75, duration: 0.55, ease: "easeOut" }}
+                className="gradient-border-glass mt-8 rounded-3xl p-3 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.35)]"
               >
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Select value={heroType} onValueChange={setHeroType}>
@@ -403,7 +400,7 @@ export function HomeView() {
                   </Select>
                   <Button
                     onClick={heroSearch}
-                    className="h-11 rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95"
+                    className="sheen h-11 rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95"
                     aria-label="Search listings"
                   >
                     <Search className="mr-1.5 h-4 w-4" />
@@ -413,11 +410,12 @@ export function HomeView() {
               </motion.div>
 
               {/* Trust row */}
+              <div className="gradient-hairline mt-7 w-full max-w-md" aria-hidden />
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.95, duration: 0.6 }}
-                className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12.5px] font-medium text-neutral-500"
+                transition={{ delay: 1.05, duration: 0.6 }}
+                className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12.5px] font-medium text-neutral-500"
               >
                 <span className="inline-flex items-center gap-1.5">
                   <Building2 className="h-3.5 w-3.5 text-[#0F766E]" />
@@ -448,7 +446,7 @@ export function HomeView() {
             <motion.div
               initial={{ opacity: 0, y: 32, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.35, duration: 0.7, ease: "easeOut" }}
+              transition={{ delay: 0.45, duration: 0.7, ease: "easeOut" }}
               className="relative"
             >
               <motion.div style={{ y: parY }} className="relative">
@@ -470,33 +468,35 @@ export function HomeView() {
                   </motion.div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
                   {/* floating commission chip */}
-                  <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 text-[11.5px] font-bold uppercase tracking-wide text-[#0B6B5D] shadow-md backdrop-blur">
+                  <span className="glass-chip absolute left-4 top-4 inline-flex animate-float items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1.5 text-[11.5px] font-bold uppercase tracking-wide text-[#0B6B5D] shadow-lg">
                     <BadgePercent className="h-3.5 w-3.5" />
                     Only 1% commission
                   </span>
                   {/* floating office card */}
-                  <motion.button
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    whileHover={{ scale: 1.03 }}
-                    onClick={() => navigate({ name: "contact" })}
-                    className="absolute bottom-4 left-4 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/95 p-3 pr-5 text-left shadow-xl backdrop-blur"
-                    aria-label="Visit our office page"
-                  >
-                    <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl">
-                      <Monogram px={44} />
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-[11px] font-semibold uppercase tracking-wide text-[#0B6B5D]">
-                        Our office
+                  <div className="absolute bottom-4 left-4 animate-float [animation-delay:1.2s]">
+                    <motion.button
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.15, duration: 0.5 }}
+                      whileHover={{ scale: 1.03 }}
+                      onClick={() => navigate({ name: "contact" })}
+                      className="glass-chip flex items-center gap-3 rounded-2xl border border-white/60 p-3 pr-5 text-left shadow-xl"
+                      aria-label="Visit our office page"
+                    >
+                      <span className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl">
+                        <Monogram px={44} />
                       </span>
-                      <span className="text-[13px] font-semibold tracking-tight text-neutral-900">
-                        151-C, Etihad Town Phase 1
+                      <span className="flex flex-col">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-[#0B6B5D]">
+                          Our office
+                        </span>
+                        <span className="text-[13px] font-semibold tracking-tight text-neutral-900">
+                          151-C, Etihad Town Phase 1
+                        </span>
                       </span>
-                    </span>
-                    <ArrowRight className="ml-2 h-4 w-4 text-neutral-300" />
-                  </motion.button>
+                      <ArrowRight className="ml-2 h-4 w-4 text-neutral-300" />
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
@@ -520,40 +520,41 @@ export function HomeView() {
       </section>
 
       {/* ================= TRUST STATS BAND ================= */}
-      <section
-        className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6"
-        aria-label="City Line Property in numbers"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-black/[0.07] bg-black/[0.06] shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] md:grid-cols-4"
-        >
+      <section className="w-full bg-mesh" aria-label="City Line Property in numbers">
+        <div className="mx-auto w-full max-w-6xl px-4 pb-6 pt-10 sm:px-6 sm:pb-8 sm:pt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="grid grid-cols-2 gap-3.5 md:grid-cols-4"
+          >
           {[
             {
               label: "Live listings",
-              value: <AnimatedNumber value={stats?.properties ?? null} className="tabular-nums" />,
+              value: <AnimatedNumber value={stats?.properties ?? null} className="text-gradient-animated tabular-nums" />,
               sub: "Verified · published daily",
             },
             {
               label: "Societies covered",
-              value: <AnimatedNumber value={AREAS.length} className="tabular-nums" />,
+              value: <AnimatedNumber value={AREAS.length} className="text-gradient-animated tabular-nums" />,
               sub: "Only where we work on foot",
             },
             {
               label: "Commission",
-              value: <span className="brand-gradient bg-clip-text text-transparent">1%</span>,
+              value: <span className="text-gradient-animated">1%</span>,
               sub: "Flat — confirmed in writing",
             },
             {
               label: "Hidden charges",
-              value: <span className="tabular-nums">0</span>,
+              value: <span className="text-gradient-animated tabular-nums">0</span>,
               sub: "No margin, no middlemen",
             },
           ].map((s) => (
-            <div key={s.label} className="bg-white px-5 py-6 text-center sm:px-6 sm:py-7">
+            <div
+              key={s.label}
+              className="glass rounded-2xl border border-black/[0.06] px-5 py-6 text-center shadow-[0_18px_50px_-30px_rgba(15,118,110,0.28)] sm:px-6 sm:py-7"
+            >
               <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-neutral-400">{s.label}</p>
               <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-neutral-900 sm:text-[30px]">
                 {s.value}
@@ -561,7 +562,8 @@ export function HomeView() {
               <p className="mt-2 text-[11.5px] font-medium leading-snug text-neutral-400">{s.sub}</p>
             </div>
           ))}
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ================= EXPLORE ETIHAD TOWN ================= */}
@@ -590,8 +592,9 @@ export function HomeView() {
                 <motion.button
                   key={g.slug}
                   variants={pop}
+                  whileHover={{ y: -4 }}
                   onClick={() => exploreArea(g.name)}
-                  className="group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none transition-shadow duration-300 focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 hover:shadow-[0_40px_90px_-36px_rgba(15,23,42,0.55)] sm:h-[380px]"
+                  className="lift group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 sm:h-[380px]"
                   aria-label={`Explore properties in ${g.name}`}
                 >
                   <Image
@@ -599,28 +602,37 @@ export function HomeView() {
                     alt={g.name}
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
                   />
                   <div
-                    className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,32,28,0.10)_0%,rgba(5,32,28,0.42)_55%,rgba(4,26,23,0.92)_100%)]"
+                    className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/35 to-transparent"
                     aria-hidden
                   />
                   {g.office && (
-                    <span className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[11.5px] font-semibold text-[#0B6B5D] shadow-sm backdrop-blur">
+                    <span className="glass-chip absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3 py-1 text-[11.5px] font-semibold text-[#0B6B5D] shadow-sm">
                       <MapPin className="h-3 w-3" />
                       Our office here
                     </span>
                   )}
                   <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7">
                     <h3 className="text-[22px] font-bold tracking-tight text-white sm:text-2xl">{g.name}</h3>
-                    <p className="mt-1 text-[13px] font-medium text-white/85">{g.goodFor.join("  •  ")}</p>
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {g.goodFor.map((tag) => (
+                        <span
+                          key={tag}
+                          className="glass-chip inline-flex items-center rounded-full border border-white/40 px-2.5 py-1 text-[11px] font-semibold text-[#0B6B5D]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                     <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/25 pt-4">
                       <span className="text-[12.5px] font-semibold text-white/80">
                         {count > 0
                           ? `${count} live ${count === 1 ? "listing" : "listings"}`
                           : "Files available on request"}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-white transition-transform duration-300 group-hover:translate-x-1">
+                      <span className="sheen inline-flex items-center gap-1.5 text-[13.5px] font-bold text-white transition-transform duration-300 group-hover:translate-x-1">
                         Explore Properties
                         <ArrowRight className="h-4 w-4" />
                       </span>
@@ -662,19 +674,20 @@ export function HomeView() {
                 <motion.button
                   key={c.slug}
                   variants={pop}
+                  whileHover={{ y: -4 }}
                   onClick={() => browseType(c.slug)}
-                  className="group flex flex-col items-start rounded-2xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_-18px_rgba(15,23,42,0.22)]"
-                  style={{
-                    backgroundColor: `${c.color}12`,
-                    borderColor: `${c.color}33`,
-                  }}
+                  className="gradient-border lift group flex flex-col items-start rounded-2xl p-5 text-left"
                   aria-label={`Browse ${c.name} — ${count} listings`}
                 >
                   <span
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sm transition-transform duration-300 group-hover:scale-110"
-                    style={{ backgroundColor: c.color }}
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
+                      count > 0
+                        ? "brand-gradient text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]"
+                        : "bg-[#E7F4F0] text-[#0F766E]"
+                    )}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-[18px] w-[18px]" />
                   </span>
                   <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-neutral-900">
                     {c.name}
@@ -689,11 +702,12 @@ export function HomeView() {
             {/* filler tile → contact */}
             <motion.button
               variants={pop}
+              whileHover={{ y: -4 }}
               onClick={() => navigate({ name: "contact" })}
-              className="group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_48px_-16px_rgba(15,118,110,0.55)]"
+              className="lift group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-5 text-left"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/25 text-white">
-                <Phone className="h-5 w-5" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/25 text-white">
+                <Phone className="h-[18px] w-[18px]" />
               </span>
               <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-white">
                 Not sure? Talk to us
@@ -714,7 +728,8 @@ export function HomeView() {
         >
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Handpicked for you</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
               Featured listings
             </h2>
           </div>
@@ -728,7 +743,13 @@ export function HomeView() {
           </Button>
         </motion.div>
 
-        <div className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0"
+        >
           {!featuredLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
@@ -742,11 +763,11 @@ export function HomeView() {
                 </div>
               )
               : featured.map((p) => (
-                <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
+                <motion.div key={p.id} variants={item} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
-                </div>
+                </motion.div>
               ))}
-        </div>
+        </motion.div>
 
         <div className="mt-5 text-center sm:hidden">
           <Button
@@ -768,7 +789,8 @@ export function HomeView() {
         >
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Just added to the board</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
               Latest listings
             </h2>
           </div>
@@ -782,7 +804,13 @@ export function HomeView() {
           </Button>
         </motion.div>
 
-        <div className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0"
+        >
           {!latestLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
@@ -792,11 +820,11 @@ export function HomeView() {
             : latest.length === 0
               ? null
               : latest.map((p) => (
-                <div key={p.id} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
+                <motion.div key={p.id} variants={item} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
-                </div>
+                </motion.div>
               ))}
-        </div>
+        </motion.div>
 
         <div className="mt-5 text-center sm:hidden">
           <Button
@@ -861,33 +889,36 @@ export function HomeView() {
       </section>
 
       {/* ================= WHY US ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Why choose City Line Property">
-        <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
-          <motion.div variants={item} className="text-center">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Why City Line</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
-              Property, minus the games.
-            </h2>
-          </motion.div>
+      <section className="w-full bg-mesh" aria-label="Why choose City Line Property">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
+            <motion.div variants={item} className="text-center">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Why City Line</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                Property, minus the games.
+              </h2>
+            </motion.div>
+            <motion.div variants={item} className="gradient-hairline mx-auto mt-6 w-full max-w-xs" aria-hidden />
 
-          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {WHY_US.map((w) => (
-              <motion.div key={w.title} variants={item} className="h-full">
-                <TiltCard className="h-full rounded-2xl border border-black/[0.07] bg-white p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)]">
-                  <span className="brand-gradient flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(15,118,110,0.6)]">
-                    <w.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900">{w.title}</h3>
-                  <p className="mt-2 text-[13.5px] leading-relaxed text-neutral-500">{w.text}</p>
-                </TiltCard>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+            <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {WHY_US.map((w) => (
+                <motion.div key={w.title} variants={item} className="h-full">
+                  <TiltCard className="glass-strong lift h-full rounded-3xl border border-white/70 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)]">
+                    <span className="brand-gradient flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(15,118,110,0.6)]">
+                      <w.icon className="h-5 w-5" />
+                    </span>
+                    <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900">{w.title}</h3>
+                    <p className="mt-2 text-[13.5px] leading-relaxed text-neutral-500">{w.text}</p>
+                  </TiltCard>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ================= PROCESS ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="How a deal works">
+      <section className="mx-auto w-full max-w-6xl px-4 sm:px-6" aria-label="How a deal works">
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">How a deal works</p>
@@ -992,56 +1023,57 @@ export function HomeView() {
 
 
       {/* ================= FINAL CTA BAND ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pb-6 pt-16 sm:px-6 sm:pt-20" aria-label="Visit our office">
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_55%,#084C46_100%)] px-8 py-14 text-center shadow-[0_40px_90px_-35px_rgba(15,118,110,0.65)] sm:py-16"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_45%_at_50%_0%,rgba(255,255,255,0.12),transparent_70%)]" />
-          <div className="relative">
-            <span className="mx-auto flex w-fit">
-              <Monogram px={64} />
-            </span>
-            <h2 className="mx-auto mt-6 max-w-2xl text-2xl font-bold tracking-tight text-white sm:text-4xl">
-              Visit our office — 151-C, Etihad Town Phase 1
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-[14.5px] leading-relaxed text-[#C7EAE2]">
-              Bring your requirement over a cup of chai. Direct dealing, honest advice
-              and the same 1% commission — face to face.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button
-                asChild
-                className="h-12 rounded-full bg-white px-7 text-sm font-semibold text-[#0B5B54] shadow-[0_10px_26px_-10px_rgba(0,0,0,0.45)] hover:bg-white/90"
-              >
-                <a href={`tel:${BUSINESS.telPrimary}`}>
-                  <Phone className="mr-2 h-4 w-4" />
-                  Call {BUSINESS.phonePrimary}
-                </a>
-              </Button>
-              <Button
-                asChild
-                className="h-12 rounded-full border border-white/50 bg-white/10 px-7 text-sm font-semibold text-white backdrop-blur hover:bg-white/20"
-              >
-                <a
-                  href={waLink("Hi City Line Property — I'd like to visit your office in Etihad Town Phase 1.")}
-                  target="_blank"
-                  rel="noreferrer"
+      <section className="w-full bg-mesh-dark text-white" aria-label="Visit our office">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="glass-dark relative overflow-hidden rounded-3xl border border-white/10 p-8 text-center sm:p-10"
+          >
+            <div className="relative">
+              <span className="mx-auto flex w-fit">
+                <Monogram px={64} />
+              </span>
+              <h2 className="mx-auto mt-6 max-w-2xl text-2xl font-bold tracking-tight text-white sm:text-4xl">
+                Visit our office — <span className="text-[#5EB9A9]">151-C, Etihad Town Phase 1</span>
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-[14.5px] leading-relaxed text-[#C7EAE2]">
+                Bring your requirement over a cup of chai. Direct dealing, honest advice
+                and the same 1% commission — face to face.
+              </p>
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button
+                  asChild
+                  className="brand-gradient sheen h-12 rounded-full px-7 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(0,0,0,0.45)] hover:opacity-95"
                 >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  WhatsApp {BUSINESS.phoneSecondary}
-                </a>
-              </Button>
+                  <a href={`tel:${BUSINESS.telPrimary}`}>
+                    <Phone className="mr-2 h-4 w-4" />
+                    Call {BUSINESS.phonePrimary}
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  className="h-12 rounded-full border border-white/20 bg-white/10 px-7 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/15"
+                >
+                  <a
+                    href={waLink("Hi City Line Property — I'd like to visit your office in Etihad Town Phase 1.")}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    WhatsApp {BUSINESS.phoneSecondary}
+                  </a>
+                </Button>
+              </div>
+              <p className="mt-7 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[12.5px] font-semibold text-white/60 ring-1 ring-white/20 backdrop-blur">
+                <Clock className="h-4 w-4" />
+                {BUSINESS.hours}
+              </p>
             </div>
-            <p className="mt-7 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-[12.5px] font-semibold text-white ring-1 ring-white/20 backdrop-blur">
-              <Clock className="h-4 w-4" />
-              {BUSINESS.hours}
-            </p>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
     </div>
   );

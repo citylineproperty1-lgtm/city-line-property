@@ -28,7 +28,7 @@ const fadeUp = {
 export function AboutView() {
   const { navigate } = useAppStore();
   return (
-    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
+    <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       {/* Hero */}
       <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
         <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
@@ -52,7 +52,7 @@ export function AboutView() {
       {/* Image */}
       <motion.div
         {...fadeUp}
-        className="relative mt-12 aspect-[16/8] overflow-hidden rounded-3xl border border-black/[0.06] shadow-[0_30px_80px_-30px_rgba(15,23,42,0.35)]"
+        className="gradient-border relative mt-12 aspect-[16/8] overflow-hidden rounded-3xl shadow-[0_30px_80px_-30px_rgba(15,23,42,0.35)]"
       >
         <Image
           src="/images/about-team.jpg"
@@ -75,7 +75,7 @@ export function AboutView() {
           { value: "100%", label: "Direct dealing, in writing" },
         ].map((s) => (
           <div key={s.label} className="bg-white px-6 py-8 text-center">
-            <p className="text-2xl font-semibold tracking-tight text-[#0F766E] sm:text-3xl">
+            <p className="text-gradient-animated text-2xl font-semibold tracking-tight sm:text-3xl">
               {s.value}
             </p>
             <p className="mt-1.5 text-[13px] font-medium text-neutral-400">{s.label}</p>
@@ -115,7 +115,7 @@ export function AboutView() {
               key={v.title}
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-              className="rounded-2xl border border-black/[0.07] bg-white p-6 transition-shadow hover:shadow-md"
+              className="gradient-border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_44px_-18px_rgba(15,118,110,0.28)]"
             >
               <span className="brand-gradient flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(15,118,110,0.6)]">
                 <v.icon className="h-5 w-5" />
@@ -177,7 +177,7 @@ export function AboutView() {
               className="mt-6 h-60 w-full rounded-2xl border border-[#0F766E]/15 bg-white shadow-sm"
             />
           </div>
-          <div className="flex flex-col justify-center gap-3 rounded-2xl border border-black/[0.06] bg-[#F7F9F8] p-5 text-[13.5px]">
+          <div className="flex flex-col justify-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-5 text-[13.5px] backdrop-blur-sm">
             {[
               { icon: Phone, label: "Phones", value: `${BUSINESS.phonePrimary} · ${BUSINESS.phoneSecondary}` },
               { icon: Mail, label: "Email", value: BUSINESS.email },

@@ -106,7 +106,7 @@ export function AreasIndexView() {
   const stats = useDistrictStats();
 
   return (
-    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
+    <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       {/* Header */}
       <motion.header {...fadeUp} transition={{ duration: 0.4, ease: "easeOut" }}>
         <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
@@ -132,8 +132,9 @@ export function AreasIndexView() {
               key={area.slug}
               {...fadeUp}
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 + i * 0.06 }}
+              whileHover={{ y: -4 }}
               className={cn(
-                "group flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:shadow-[0_20px_48px_-18px_rgba(15,23,42,0.22)]",
+                "lift group flex cursor-pointer flex-col overflow-hidden rounded-3xl gradient-border shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_48px_-18px_rgba(15,118,110,0.28)]",
                 i === 0 && "sm:col-span-2 lg:col-span-1"
               )}
               onClick={() => navigate({ name: "area", slug: area.slug })}
@@ -330,7 +331,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
+    <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <button
         onClick={() => navigate({ name: "areas" })}
         className="group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white px-4 py-2 text-[13px] font-medium text-neutral-600 transition-all hover:border-[#0F766E]/40 hover:text-[#0B6B5D]"
@@ -417,7 +418,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
 
       {/* Story + highlights */}
       <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
-        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.05 }} className="rounded-3xl border border-neutral-200/80 bg-white p-6 sm:p-8">
+        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.05 }} className="glass-strong rounded-3xl border border-white/70 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)] sm:p-8">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
             The honest picture
           </h2>
@@ -438,7 +439,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           </div>
         </motion.section>
 
-        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-[#0F766E]/20 bg-[linear-gradient(135deg,rgba(231,244,240,0.9),rgba(231,244,240,0.45))] p-6 sm:p-8">
+        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-[#0F766E]/20 bg-[linear-gradient(135deg,rgba(231,244,240,0.9),rgba(231,244,240,0.45))] p-6 ring-1 ring-[#0F766E]/10 backdrop-blur-sm sm:p-8">
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
             Why buyers pick it
           </h2>
@@ -497,7 +498,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           <motion.figure
             {...fadeUp}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="mt-6 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
+            className="gradient-border mt-6 overflow-hidden rounded-3xl shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
           >
             <button
               type="button"
@@ -534,7 +535,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           <motion.div
             {...fadeUp}
             transition={{ duration: 0.45, ease: "easeOut" }}
-            className="mt-6 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
+            className="gradient-border mt-6 overflow-hidden rounded-3xl shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
           >
             <div className="h-[400px] sm:h-[460px]">
               <RealMap markers={areaMarkers} center={areaCoord} zoom={15} className="h-full w-full" />

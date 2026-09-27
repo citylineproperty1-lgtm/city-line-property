@@ -51,13 +51,13 @@ const FAQS = [
 
 export function ContactView() {
   return (
-    <div className="mx-auto max-w-6xl bg-background px-4 py-10 sm:px-6 sm:py-14">
+    <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
         <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
           Contact
         </p>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
-          Let&rsquo;s talk property.
+          Let&rsquo;s talk <span className="text-gradient-animated">property.</span>
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
           Buying, selling, renting or just want to know what your file is worth — post
@@ -70,7 +70,7 @@ export function ContactView() {
         {/* Requirement form → saved as a CRM lead */}
         <motion.div
           {...fadeUp}
-          className="rounded-3xl border border-black/[0.07] bg-white p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.35)] sm:p-8"
+          className="gradient-border rounded-3xl p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.35)] sm:p-8"
         >
           <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
             Post your requirement — we call you back
