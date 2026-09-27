@@ -1053,3 +1053,19 @@ Stage Summary:
 - Categories section = previous beloved color combination (per-category identity colors) + a new layer of micro-interactions (lift, colored glow, icon tilt, sheen, arrow reveal) — user request satisfied on both counts
 - .cat-card joins the reusable design-system utilities (globals.css): works for ANY card that wants identity-color theming via 5 inline CSS vars
 - Ops lesson recorded: Turbopack dev cache can serve stale CSS through restarts — rm -rf .next is the fix
+---
+Task ID: 48
+Agent: Z.ai Code (main session)
+Task: User asked to (1) put a space between CITY and LINE in the wordmark and (2) change the monogram — "not look good".
+
+Work Log:
+- Wordmark: logo.tsx was the single source of the "CITYLINE&nbsp;PROPERTY" lockup (metadata/JSON-LD already used "City Line Property") → now renders "CITY LINE PROPERTY"; verified fit in mobile 375px header
+- Monogram redesign (old glyph read as generic equalizer bars): new skyline composition on the 48-grid inside the same emerald gradient tile — left building with stepped roof (+window at detail size), center tall tower with antenna + 2x2 window grid, right pitched-roof house with door (the "property" semantics), brand baseline, soft sun accent top-right
+- Responsive detail rule: px >= 40 renders windows/door; smaller marks (header 32px) drop fine details so the silhouette stays crisp — favicon-grade simplification pattern
+- Favicon overhaul: public/logo.svg was still the template's off-brand "Z" mark → replaced with the new monogram full tile (emerald gradient rx14 + glyph); regenerated public/logo.png (512px) + new public/logo-192.png via sharp (bun script, env-unset protocol)
+- Usages auto-inherit: site-header (sm x2), site-footer (md dark + tagline), detail-unlock (sm), home-view OUR OFFICE chip (px44) + splash (px64) — all verified in browser
+- Verified: lint exit 0; desktop header/footer screenshots + mobile 375px — spacing correct, detail variant crisp on dark footer, simplified variant clean at 32px; /logo.svg + /logo.png (33918b) serve 200; logo.png visually inspected at 512px — skyline reads clearly
+
+Stage Summary:
+- Brand mark now looks like a real-estate city skyline (was generic bars) and the wordmark reads "CITY LINE PROPERTY" with correct spacing; favicon/apple-touch-icon match the new mark
+- Single source of truth unchanged: all lockups flow from logo.tsx; static favicon assets regenerated to match
