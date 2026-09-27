@@ -954,3 +954,22 @@ Stage Summary:
 - JPEG map upload is LIVE in production and verified end-to-end: owner uploads at Admin panel (/#/admin) → Settings → "Society block maps" → Upload per area (JPG/PNG/WebP/AVIF, ≤4 MB) → map instantly appears on that area's guide page with full-screen Lightbox; until then each guide shows a live OpenStreetMap fallback + "Open in Google Maps"
 - Waiting on the owner's three map files (Phase 1, Phase 2, Premier Enclave) — either self-upload via admin, or send in chat and the agent uploads via the same API
 - Prod upload path proven with real bytes through Vercel + Supabase Postgres (base64 MediaFile), cleanup done
+---
+Task ID: 45
+Agent: Z.ai Code (main session)
+Task: User requested installing the GitHub skill https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+
+Work Log:
+- Discovered a slim adaptation (v0.1.0, 43-line SKILL.md, ClawHub meta) already at skills/ui-ux-pro-max/ — environment skills root is /home/z/my-project/skills/ (git-ignored, environment-managed)
+- Cloned the upstream repo → official UI/UX Pro Max v2.13.0 (commit 09170ee), a plugin bundle whose canonical package lives at .claude/skills/ui-ux-pro-max/
+- Backed up old copy to /tmp/ui-ux-pro-max-old-backup, replaced with the official package: SKILL.md (214 lines) + references/ (quick-reference, pro-rules) + data/ (12 domain CSVs, 22 stack CSVs, ui-reasoning) + scripts/ (search.py, core.py, design_system.py, reasoning_contract.py, validate_data.py + tests) — 73 files, 3.7 MB
+- SKILL.md kept upstream-identical except ONE added local note mapping ${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/ → /home/z/my-project/skills/ui-ux-pro-max/; _meta.json updated (version 2.13.0, source repo, upstreamCommit, installedAt)
+- Verified toolchain: --domain ux search ✓ (touch-target rules), --design-system generation ✓ ("City Line Property" → Hero-Centric pattern + Glassmorphism style + trust-teal palette #0F766E matching the site's existing brand), --stack nextjs ✓ (next/image guidance), validate_data.py → "OK: validated 12 domain files, 22 stack files, and ui-reasoning.csv"
+- No git commit needed for the skill itself (skills/ is git-ignored); only this worklog entry is committed
+- Repo also bundles 6 sibling skills (design, ui-styling, design-system, slides, brand, banner-design) under .claude/skills/ — not installed; available on request
+
+Stage Summary:
+- ui-ux-pro-max v2.13.0 (official NextLevelBuilder package) is installed and fully functional at /home/z/my-project/skills/ui-ux-pro-max/ — searchable design intelligence (79 styles, 192 palettes, 74 font pairings, 119 UX guidelines, 25 chart types, 22 stacks incl. nextjs/shadcn/html-tailwind)
+- Future UI work on City Line Property can query it: python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system / --domain <d> / --stack nextjs
+- Old slim version backed up at /tmp/ui-ux-pro-max-old-backup (ephemeral)
+- Git incident during this task: platform file-sync again rolled local history to the old SEO-era chain (4ebe7d5 "worklog task 30" + stray c348d1d UUID commit) causing a non-fast-forward push rejection. Repaired per Task 41 recipe: saved Task 45 section, git reset --hard origin/main (2c19ebd), re-appended entry; post-reset sanity checks below. Remote was never affected.
