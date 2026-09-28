@@ -1101,3 +1101,23 @@ Work Log:
 Stage Summary:
 - Logo is now colorful (gold city + cyan-teal aurora), animated (aurora pan + shimmer sweep), and glassmorphic (glass highlight + inner ring + drop shadow) — consistent across header, footer, splash, office chip, unlock dialog, favicon SVG/PNGs
 - Ops: Turbopack stale-CSS recurrence confirmed — ALWAYS rm -rf .next after any globals.css addition, touching is not enough
+
+---
+Task ID: 51
+Agent: Z.ai Code (main session)
+Task: User asked "how do I buy a domain" + housekeeping (dev server down, corrupted working tree)
+
+Work Log:
+- Found dev server down (no dev.log) → restarted per protocol (Ready in 710ms)
+- Found working tree corrupted: src/app/api/admin/upload/route.ts deleted (still referenced by admin-listing-drawer/admin-settings/admin-digest) + 12 files with spurious mode flips 100644→100755 (sync-bot/crash artifact) → git checkout -- restored all to HEAD; tree clean except .zscripts/dev.pid (normal churn)
+- Domain research (web search + DNS NS probes):
+  - citylineproperty.pk → ENOTFOUND → appears AVAILABLE
+  - citylineproperty.com.pk → ENOTFOUND → appears AVAILABLE
+  - citylineproperty.com → REGISTERED (ns1/ns2.domaindiscover.com) → TAKEN
+  - PKNIC official price for PK-based registrants: Rs 2,100/yr (raised from Rs 1,800 on 2026-08-01); registrant verification via CNIC (individual) / NTN (company); retail Rs 2,500–3,500/yr via Websouls / HostBreak / HosterPK / Pakish.NET / Nexus
+- Sent user step-by-step purchase guide (own account + own email, CNIC under owner name, auto-renew ON, no hosting upsells) + Vercel wiring plan (nameserver method ns1/ns2.vercel-dns.com OR A @ 76.76.21.21 + CNAME www cname.vercel-dns.com)
+- Rebuilt cleared cron webDevReview (fixed_rate 900s)
+
+Stage Summary:
+- Site healthy (dev up, tree clean); awaiting user to buy citylineproperty.pk (or .com.pk). The moment it's purchased: point DNS → Vercel, then swap sitemap/canonical/JSON-LD from citylineproperty.vercel.app → new domain + GSC re-verify (~15-min job on our side)
+- .com is TAKEN — do not chase it
