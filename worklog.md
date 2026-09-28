@@ -1161,3 +1161,4 @@ Stage Summary:
   (no admin credentials needed; same Supabase DB as production → live immediately, no redeploy). Then verify #/areas/etihad-town-phase-1 shows the plan + lightbox
 - Production healthy (revocation tests passed post-871c7a4); the Vercel-error screenshot seen during the stand-in test was a Sep-22-era image used as stand-in, NOT current state
 - Admin password rotated by owner — API-path scripts now need CLP_ADMIN_PASSWORD env; direct path unaffected
+- Cron note: webDevReview jobs 420419/420717 both auto-disabled by platform ("exec limits exceeded" — 420717 disabled at creation instant). NEXT SESSION: list cron first and recreate (fixed_rate 900s, mandatory payload) — likely a temporary platform quota window.
