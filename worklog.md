@@ -1139,3 +1139,25 @@ Work Log:
 Stage Summary:
 - Admin sessions now end on: tab/window close, refresh, browser quit, back/forward away from #/admin, and the "View site" button — enforced server-side, works even if cookies are not cleared
 - .env restore recipe: Supabase transaction pooler 6543 (pgbouncer) + session pooler 5432; if APIs start 500-ing, first check `rg -o "^[A-Z_]+" .env`
+
+---
+Task ID: 53
+Agent: Z.ai Code (main session)
+Task: User uploaded "Etihad town phase 1 map.pdf" (official LDA revised layout plan) to attach at Etihad Town Phase 1
+
+Work Log:
+- Explored pipeline: areas-view AreaDetailView fetches /api/settings → areaMaps[slug]; if present renders uploaded SOCIETY MAP card (tap-to-zoom lightbox), else Leaflet live map. Upload = POST /api/admin/upload → MediaFile(base64) → /api/media/{id}; key = Setting area_map_<slug> (ALLOWED = AREA_GUIDES slugs)
+- BLOCKER 1: the PDF never reached /home/z/my-project/upload/ (only 20 old pasted images; full-disk find by name/UUID/mtime-negative found nothing; polled 10+ min). Upload sync for this message failed
+- BLOCKER 2: default admin password (CityLine@2025) stopped working mid-session (~16:20→16:45 window; last successful default login 200 was the production revocation proof; no cron run fits the window) — owner presumably rotated it themselves via admin Settings. Map attach therefore built on a no-auth path
+- Built tooling (committed):
+  - scripts/upload-area-map.ts — API path (login→upload→PUT settings; env CLP_ADMIN_EMAIL/CLP_ADMIN_PASSWORD override defaults)
+  - scripts/attach-area-map.ts — DB-direct path (pdftoppm 170 DPI → sharp JPEG ≤3.6MB q84 → MediaFile row → Setting upsert; NO admin login needed)
+- VERIFIED end-to-end with stand-in image: attach → /api/settings serves areaMaps → area page SOCIETY MAP card renders uploaded img (1102px wide) → tap-to-zoom lightbox opens (role=dialog, 1/1) → rows deleted, site falls back to Leaflet (areaMaps:{})
+- Self-test rows cleaned (zz-selftest media+setting removed)
+
+Stage Summary:
+- ⚡ WHEN THE MAP FILE LANDS (user re-attach or cron finds it in upload/): run
+  `bun scripts/attach-area-map.ts "upload/Etihad town phase 1 map.pdf" etihad-town-phase-1`
+  (no admin credentials needed; same Supabase DB as production → live immediately, no redeploy). Then verify #/areas/etihad-town-phase-1 shows the plan + lightbox
+- Production healthy (revocation tests passed post-871c7a4); the Vercel-error screenshot seen during the stand-in test was a Sep-22-era image used as stand-in, NOT current state
+- Admin password rotated by owner — API-path scripts now need CLP_ADMIN_PASSWORD env; direct path unaffected
