@@ -1121,3 +1121,21 @@ Work Log:
 Stage Summary:
 - Site healthy (dev up, tree clean); awaiting user to buy citylineproperty.pk (or .com.pk). The moment it's purchased: point DNS → Vercel, then swap sitemap/canonical/JSON-LD from citylineproperty.vercel.app → new domain + GSC re-verify (~15-min job on our side)
 - .com is TAKEN — do not chase it
+
+---
+Task ID: 52
+Agent: Z.ai Code (main session)
+Task: Auto-logout from admin panel when the page is closed or navigated away/back (user request)
+
+Work Log:
+- Design insight: a client beacon alone is NOT enough — browsers (Chrome) may skip Set-Cookie processing on navigator.sendBeacon responses, and the session was a stateless HMAC cookie → close-triggered logout would silently fail. Implemented server-authoritative revocation instead.
+- prisma/schema.prisma: new RevokedSession { hash (sha256 of token) @id, expiresAt }; db:push to Supabase OK; db.ts SCHEMA_STAMP bumped v5→v6 (forces fresh PrismaClient with the new model)
+- src/lib/auth.ts: cookie now SESSION-SCOPED (no maxAge → browser close drops it; token still carries 7d exp); added revokeCurrentSession() (upsert token-hash + prune expired) and revocation check inside getSessionAdmin() (fails open on DB hiccup to avoid owner lockout)
+- /api/admin/logout: now revokeCurrentSession() + destroySession()
+- admin-view.tsx: auto-logout effect while signed in — pagehide → navigator.sendBeacon('/api/admin/logout') (keepalive fetch fallback); hashchange leaving #/admin → same beacon; pageshow(persisted) → re-verify /me. Login card hint: "signs out automatically when the page is closed or left."
+- INCIDENT: .env was clobbered to the retired SQLite single-liner (DATABASE_URL=file:...custom.db) — same corruption family as Task 51's deleted route + mode flips (no crontab entry found; likely same crash/sync event). Restored Supabase transaction-pooler DATABASE_URL + session-pooler DIRECT_URL from session context; db:push then succeeded
+- Verified: curl lifecycle login 200 → me 200 → logout → me-with-same-cookie 401 (revocation proven); agent-browser UI: login → hash '#/' → me 401 + login screen on return; re-login → synthetic pagehide → me 401; RevokedSession rows accumulate (3) and self-prune; lint 0; mobile 375 login card clean; dev.log clean
+
+Stage Summary:
+- Admin sessions now end on: tab/window close, refresh, browser quit, back/forward away from #/admin, and the "View site" button — enforced server-side, works even if cookies are not cleared
+- .env restore recipe: Supabase transaction pooler 6543 (pgbouncer) + session pooler 5432; if APIs start 500-ing, first check `rg -o "^[A-Z_]+" .env`

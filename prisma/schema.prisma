@@ -149,3 +149,13 @@ model SiteVisit {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+// Server-side session revocation — every logout (manual, or automatic when
+// the admin tab closes / navigates away) records the token's hash here so the
+// still-cached cookie is instantly rejected server-side. Needed because
+// browsers may skip Set-Cookie processing on navigator.sendBeacon responses.
+// Rows self-clean: pruned once expiresAt passes.
+model RevokedSession {
+  hash      String   @id
+  expiresAt DateTime
+}

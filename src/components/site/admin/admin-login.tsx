@@ -163,8 +163,11 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
           </form>
         </div>
 
-        <p className="mt-5 text-center text-[12px] text-neutral-400">
+        <p className="mt-5 text-center text-[12px] leading-relaxed text-neutral-400">
           Authorized personnel only · All actions are logged
+          <br />
+          For your security this panel signs out automatically when the page is
+          closed or left.
         </p>
       </motion.div>
     </div>

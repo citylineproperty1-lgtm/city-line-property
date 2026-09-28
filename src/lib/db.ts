@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 // Bump when the Prisma schema changes so dev servers holding a stale cached
 // client (missing new models) re-instantiate instead of serving `undefined`.
-const SCHEMA_STAMP = 'v5-postgres'
+const SCHEMA_STAMP = 'v6-postgres'
 
 // Data layer: Supabase Postgres (single source of truth).
 // The DATABASE_URL connection string (transaction pooler, port 6543 +

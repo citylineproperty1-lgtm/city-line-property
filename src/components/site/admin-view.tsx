@@ -108,6 +108,49 @@ export function AdminView() {
     };
   }, []);
 
+  // Security policy: the session ends the moment the panel is left. Closing or
+  // refreshing the tab (pagehide), or navigating back/away to the public site
+  // (hashchange), fires a beacon that revokes the session server-side — even
+  // if the browser never clears the cookie.
+  const signedIn = session.status === "in";
+  useEffect(() => {
+    if (!signedIn) return;
+
+    const endSession = () => {
+      try {
+        navigator.sendBeacon("/api/admin/logout");
+      } catch {
+        // Very old browsers without sendBeacon — keepalive fetch is the
+        // closest equivalent during unload.
+        void fetch("/api/admin/logout", { method: "POST", keepalive: true }).catch(() => {});
+      }
+    };
+    const onHashChange = () => {
+      if (!/^#\/admin\b/.test(window.location.hash)) endSession();
+    };
+    const onShow = (e: PageTransitionEvent) => {
+      // Restored from the back/forward cache after an auto-logout → re-verify.
+      if (!e.persisted) return;
+      setSession({ status: "checking" });
+      fetch("/api/admin/me", { cache: "no-store" })
+        .then(async (res) => {
+          if (!res.ok) throw new Error("unauthorized");
+          const d = (await res.json()) as { admin: AdminUser };
+          setSession({ status: "in", admin: d.admin });
+        })
+        .catch(() => setSession({ status: "out" }));
+    };
+
+    window.addEventListener("pagehide", endSession);
+    window.addEventListener("hashchange", onHashChange);
+    window.addEventListener("pageshow", onShow);
+    return () => {
+      window.removeEventListener("pagehide", endSession);
+      window.removeEventListener("hashchange", onHashChange);
+      window.removeEventListener("pageshow", onShow);
+    };
+  }, [signedIn]);
+
   const logout = async () => {
     try {
       await fetch("/api/admin/logout", { method: "POST" });

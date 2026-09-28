@@ -78,7 +78,9 @@ export async function createSession(admin: SessionAdmin): Promise<void> {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    maxAge: MAX_AGE_SECONDS,
+    // Session-scoped cookie (no maxAge): closing the browser drops it
+    // automatically. Tab closes / navigations away are covered on top by
+    // server-side revocation (revokeCurrentSession + the pagehide beacon).
     secure: false, // sandbox preview runs on http; flip to true behind https
   });
 }
@@ -88,9 +90,65 @@ export async function destroySession(): Promise<void> {
   jar.set(COOKIE_NAME, "", { httpOnly: true, path: "/", maxAge: 0 });
 }
 
+/* ---------------- server-side revocation ---------------- */
+
+function tokenHash(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function tokenExpiry(token: string): number {
+  try {
+    const body = token.split(".")[0] ?? "";
+    const data = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as {
+      exp?: number;
+    };
+    return typeof data.exp === "number" ? data.exp : Date.now() + MAX_AGE_SECONDS * 1000;
+  } catch {
+    return Date.now() + MAX_AGE_SECONDS * 1000;
+  }
+}
+
+/**
+ * Server-side logout: record the current token's hash so the session stays
+ * dead even if the browser keeps the cookie — sendBeacon responses (used for
+ * close/navigate-away auto-logout) may not process Set-Cookie headers.
+ */
+export async function revokeCurrentSession(): Promise<void> {
+  const jar = await cookies();
+  const token = jar.get(COOKIE_NAME)?.value;
+  if (!token) return;
+  try {
+    const expiresAt = new Date(tokenExpiry(token));
+    await db.revokedSession.upsert({
+      where: { hash: tokenHash(token) },
+      update: { expiresAt },
+      create: { hash: tokenHash(token), expiresAt },
+    });
+    // Opportunistic cleanup of revocations whose tokens already expired.
+    await db.revokedSession.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+  } catch (e) {
+    // Never block logout on a revocation hiccup — cookie clearing still runs.
+    console.error("revokeCurrentSession", e);
+  }
+}
+
 export async function getSessionAdmin(): Promise<SessionAdmin | null> {
   const jar = await cookies();
-  return readToken(jar.get(COOKIE_NAME)?.value);
+  const token = jar.get(COOKIE_NAME)?.value;
+  const admin = readToken(token);
+  if (!admin || !token) return null;
+  try {
+    const revoked = await db.revokedSession.findUnique({
+      where: { hash: tokenHash(token) },
+      select: { hash: true },
+    });
+    if (revoked) return null;
+  } catch (e) {
+    // DB hiccup: every guarded route queries the DB anyway, so fail open here
+    // rather than locking the owner out of an otherwise healthy session.
+    console.error("getSessionAdmin revocation check", e);
+  }
+  return admin;
 }
 
 /**
