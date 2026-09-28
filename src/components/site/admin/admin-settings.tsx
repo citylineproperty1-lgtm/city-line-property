@@ -17,6 +17,7 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
+  FileText,
   Info,
   KeyRound,
   Loader2,
@@ -432,7 +433,7 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
             </h3>
             <p className="mt-0.5 text-[12px] text-neutral-400">
               Upload the official layout map for each area — it shows on that
-              area&rsquo;s guide page. JPG · PNG · WebP · AVIF, up to 4 MB.
+              area&rsquo;s guide page. JPG · PNG · WebP · AVIF · PDF, up to 4.5 MB.
             </p>
           </div>
         </div>
@@ -454,13 +455,22 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
               >
                 <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-black/[0.06] bg-[#F7F9F8]">
                   {path ? (
-                    <Image
-                      src={path}
-                      alt={`${slot.name} block map`}
-                      fill
-                      sizes="96px"
-                      className="object-contain"
-                    />
+                    path.toLowerCase().endsWith(".pdf") ? (
+                      <span className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-[#0B6B5D]">
+                        <FileText className="h-5 w-5" />
+                        <span className="text-[9px] font-bold uppercase tracking-[0.14em]">
+                          PDF
+                        </span>
+                      </span>
+                    ) : (
+                      <Image
+                        src={path}
+                        alt={`${slot.name} block map`}
+                        fill
+                        sizes="96px"
+                        className="object-contain"
+                      />
+                    )
                   ) : (
                     <span className="flex h-full w-full items-center justify-center text-neutral-300">
                       <Map className="h-5 w-5" />
@@ -473,7 +483,9 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
                   </p>
                   <p className="mt-0.5 text-[11.5px] text-neutral-400">
                     {path
-                      ? "Official map is live on the area page"
+                      ? path.toLowerCase().endsWith(".pdf")
+                        ? "Official PDF layout plan is live on the area page"
+                        : "Official map is live on the area page"
                       : "No map yet — visitors see the live location map"}
                   </p>
                 </div>
@@ -491,7 +503,7 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
                     {path ? "Replace" : "Upload"}
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp,image/avif"
+                      accept="image/jpeg,image/png,image/webp,image/avif,application/pdf,.pdf"
                       className="hidden"
                       onChange={(e) => {
                         const f = e.target.files?.[0];

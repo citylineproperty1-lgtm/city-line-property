@@ -1162,3 +1162,21 @@ Stage Summary:
 - Production healthy (revocation tests passed post-871c7a4); the Vercel-error screenshot seen during the stand-in test was a Sep-22-era image used as stand-in, NOT current state
 - Admin password rotated by owner — API-path scripts now need CLP_ADMIN_PASSWORD env; direct path unaffected
 - Cron note: webDevReview jobs 420419/420717 both auto-disabled by platform ("exec limits exceeded" — 420717 disabled at creation instant). NEXT SESSION: list cron first and recreate (fixed_rate 900s, mandatory payload) — likely a temporary platform quota window.
+
+---
+Task ID: 54
+Agent: Z.ai Code (main session)
+Task: User request — "in admin allow to upload pdf file in map options" (so the owner can upload the layout-plan PDF themselves)
+
+Work Log:
+- upload route: now accepts application/pdf (4.5 MB cap; images stay 4 MB; PDF >4.5 MB → 413 with a compress hint). PDFs return a `.pdf`-suffixed path (/api/media/<id>.pdf) so the UI can distinguish documents from images
+- media route: tolerates optional extension suffixes (strips .pdf/.jpg/… before DB lookup); serves stored mime → PDFs stream as application/pdf with Content-Disposition inline
+- admin-settings Area maps card: file input accepts .pdf; PDF slots show a FileText "PDF" chip instead of a next/image thumbnail (optimizer would fail on PDFs); status line says "Official PDF layout plan is live"
+- areas-view: isPdfMap branch — PDF maps render as an inline <iframe> PDF viewer (h-420/sm-540) with "Open PDF ↗" caption link; image maps unchanged; "View full screen" opens the Lightbox which now embeds PDFs in an iframe with an "Open PDF in a new tab" fallback button (iOS where iframe PDFs can be flaky); thumbnails show FileText for pdf entries
+- E2E verified (forged local session cookie — fallback secret, same as prod by design): hand-crafted valid PDF → POST /api/admin/upload 200 (path with .pdf) → GET serves application/pdf with & without suffix → PUT settings via real route → area page renders inline PDF viewer (desktop 1280: full viewer w/ zoom+print toolbar; lightbox iframe + open-tab fallback) → mobile 375 card 341x420 visible → test rows deleted, areaMaps:{} restored
+- Ghostscript is broken in this sandbox ("Current allocation mode is local") — test PDF was hand-generated with computed xref; scripts/attach-area-map.ts unaffected (uses pdftoppm, verified Task 53)
+
+Stage Summary:
+- Owner can now upload the layout plan PDF directly: Admin → Settings → Society block maps → Upload (accepts PDF up to 4.5 MB) → area page shows an embedded PDF viewer instantly (shared Supabase DB → live without redeploy)
+- The real Etihad Town Phase 1 PDF still pending from the user (Task 53) — OR they can now self-serve via the admin panel
+- Cron webDevReview still platform-disabled (exec limits) — recreate next session

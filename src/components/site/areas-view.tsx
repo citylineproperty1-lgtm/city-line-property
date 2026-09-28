@@ -310,7 +310,10 @@ export function AreaDetailView({ slug }: { slug: string }) {
   const loading = !listings || listings.key !== area.name;
   const others = AREA_GUIDES.filter((a) => a.slug !== area.slug);
   // Society block map: admin-uploaded layout if present, live map otherwise.
+  // Uploaded PDFs (layout plans) carry a `.pdf` suffix and render as an
+  // embedded document viewer instead of an image.
   const mapImage = areaMaps?.[area.slug] ?? null;
+  const isPdfMap = (mapImage ?? "").toLowerCase().endsWith(".pdf");
   const areaCoord = AREA_COORDS[area.name] ?? OFFICE_COORD;
   const areaMarkers: MapMarker[] = [
     { id: `area-${area.slug}`, lat: areaCoord.lat, lng: areaCoord.lng, title: area.name, kind: "area" },
@@ -500,35 +503,61 @@ export function AreaDetailView({ slug }: { slug: string }) {
             transition={{ duration: 0.45, ease: "easeOut" }}
             className="gradient-border mt-6 overflow-hidden rounded-3xl shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
           >
-            <button
-              type="button"
-              onClick={() => setMapOpen(true)}
-              aria-label={`Open the ${area.name} block map full screen`}
-              className="block w-full cursor-zoom-in bg-[#F7F9F8]"
-            >
-              <span className="relative block aspect-[4/3] w-full sm:aspect-[16/9]">
-                <Image
+            {isPdfMap ? (
+              <div className="bg-[#F7F9F8]">
+                <iframe
                   src={mapImage}
-                  alt={`${area.name} society block map`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 1120px"
-                  className="object-contain"
+                  title={`${area.name} society layout plan (PDF)`}
+                  loading="lazy"
+                  className="h-[420px] w-full sm:h-[540px]"
                 />
-              </span>
-            </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setMapOpen(true)}
+                aria-label={`Open the ${area.name} block map full screen`}
+                className="block w-full cursor-zoom-in bg-[#F7F9F8]"
+              >
+                <span className="relative block aspect-[4/3] w-full sm:aspect-[16/9]">
+                  <Image
+                    src={mapImage}
+                    alt={`${area.name} society block map`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 1120px"
+                    className="object-contain"
+                  />
+                </span>
+              </button>
+            )}
             <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 px-5 py-3.5">
               <span className="text-[12.5px] leading-relaxed text-neutral-500">
-                Official society layout — tap the map to zoom in.
+                {isPdfMap
+                  ? "Official society layout — open the PDF for full detail."
+                  : "Official society layout — tap the map to zoom in."}
               </span>
-              <a
-                href={waLink(`Hi City Line Property! Please share the latest ${area.name} block map with prices.`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
-              >
-                Ask for the latest block prices
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
+              <span className="flex flex-wrap items-center gap-4">
+                {isPdfMap && (
+                  <a
+                    href={mapImage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+                  >
+                    Open PDF
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                )}
+                <a
+                  href={waLink(`Hi City Line Property! Please share the latest ${area.name} block map with prices.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+                >
+                  Ask for the latest block prices
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              </span>
             </figcaption>
           </motion.figure>
         ) : (

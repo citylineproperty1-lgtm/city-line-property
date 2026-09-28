@@ -3,7 +3,7 @@
 import { useCallback, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LightboxProps {
@@ -14,6 +14,9 @@ interface LightboxProps {
   onClose: () => void;
   onIndexChange: (i: number) => void;
 }
+
+/** PDF items are rendered as an embedded document viewer instead of an image. */
+const isPdf = (src: string) => src.toLowerCase().endsWith(".pdf");
 
 export function Lightbox({ images, index, alt, open, onClose, onIndexChange }: LightboxProps) {
   const prev = useCallback(
@@ -71,9 +74,9 @@ export function Lightbox({ images, index, alt, open, onClose, onIndexChange }: L
             </button>
           </div>
 
-          {/* Image */}
+          {/* Image / PDF document */}
           <div
-            className="relative flex min-h-0 flex-1 items-center justify-center px-14 sm:px-20"
+            className="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-14"
             onClick={(e) => e.stopPropagation()}
           >
             <AnimatePresence mode="wait">
@@ -85,14 +88,35 @@ export function Lightbox({ images, index, alt, open, onClose, onIndexChange }: L
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="relative h-full w-full"
               >
-                <Image
-                  src={images[index]}
-                  alt={`${alt} — photo ${index + 1}`}
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                  priority
-                />
+                {isPdf(images[index]) ? (
+                  <div className="flex h-full w-full flex-col gap-2">
+                    <iframe
+                      src={images[index]}
+                      title={`${alt} — document ${index + 1}`}
+                      className="h-full w-full flex-1 rounded-xl bg-white"
+                    />
+                    <div className="flex justify-center">
+                      <a
+                        href={images[index]}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-2 text-[12.5px] font-semibold text-white transition-colors hover:bg-white/20"
+                      >
+                        Open PDF in a new tab
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <Image
+                    src={images[index]}
+                    alt={`${alt} — photo ${index + 1}`}
+                    fill
+                    sizes="100vw"
+                    className="object-contain"
+                    priority
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
 
@@ -131,7 +155,13 @@ export function Lightbox({ images, index, alt, open, onClose, onIndexChange }: L
                   )}
                   aria-label={`Go to photo ${i + 1}`}
                 >
-                  <Image src={img} alt="" fill sizes="80px" className="object-cover" />
+                  {isPdf(img) ? (
+                    <span className="flex h-full w-full items-center justify-center bg-white/10 text-white">
+                      <FileText className="h-5 w-5" />
+                    </span>
+                  ) : (
+                    <Image src={img} alt="" fill sizes="80px" className="object-cover" />
+                  )}
                 </button>
               ))}
             </div>

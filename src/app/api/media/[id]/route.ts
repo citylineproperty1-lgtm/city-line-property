@@ -9,7 +9,11 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  // Tolerate an optional file extension suffix (e.g. /api/media/<id>.pdf) —
+  // PDF uploads return suffixed paths so the UI can detect documents, but the
+  // DB id itself has none.
+  const id = rawId.replace(/\.(pdf|jpe?g|png|webp|avif)$/i, "");
   try {
     const row = await db.mediaFile.findUnique({ where: { id } });
     if (!row) {
