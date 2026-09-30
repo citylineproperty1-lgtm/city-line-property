@@ -13,9 +13,14 @@ const inter = Inter({
 });
 
 // The root layout renders live SEO data from the database (JSON-LD +
-// crawlable homepage content). Keep this segment dynamic so builds never
-// touch the database and every request serves fresh data.
-export const dynamic = "force-dynamic";
+// crawlable homepage content). ISR with a 60s window: the rendered shell is
+// edge-cached on Vercel (TTFB in milliseconds → healthy Core Web Vitals in
+// Search Console) and re-rendered in the background at most once a minute.
+// The server components swallow DB errors, so even a build-time prerender
+// with an unreachable database still succeeds (content fills in on
+// revalidation). Visitor/admin data itself always flows through uncached
+// /api routes, so nothing the user sees is ever stale.
+export const revalidate = 60;
 
 const SITE = "https://citylineproperty.vercel.app";
 
