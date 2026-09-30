@@ -1180,3 +1180,24 @@ Stage Summary:
 - Owner can now upload the layout plan PDF directly: Admin → Settings → Society block maps → Upload (accepts PDF up to 4.5 MB) → area page shows an embedded PDF viewer instantly (shared Supabase DB → live without redeploy)
 - The real Etihad Town Phase 1 PDF still pending from the user (Task 53) — OR they can now self-serve via the admin panel
 - Cron webDevReview still platform-disabled (exec limits) — recreate next session
+
+---
+Task ID: 55
+Agent: Z.ai Code (main session)
+Task: User — "i think we have something left in google search console" (GSC leftover audit + fix)
+
+Work Log:
+- GSC archaeology from worklog: Task 31 verification file live (googled05288ec0718046a.html), Task 32 user VERIFIED ownership + SUBMITTED sitemap; the only recorded leftover = "Request Indexing" daily-quota retry (user-side) + future Change-of-Address when .pk domain is bought
+- Full production GSC-readiness audit: verification file 200 ✓, robots.txt 200 + sitemap directive ✓, sitemap.xml 200 ✓, homepage title/description/canonical/robots index,follow ✓, 2 JSON-LD scripts parse OK (RealEstateAgent + WebSite + ItemList) ✓, single h1 ✓, OG image 200 png ✓, 404 works ✓, http→https 308 ✓
+- 🔴 FOUND THE REAL LEFTOVER: TTFB 4.5–4.7s on homepage AND /api (static assets 0.03–0.3s) — function ran in iad1 (US) while Supabase is in Singapore; every render paid 4 trans-Pacific DB roundtrips; responses no-store → zero edge caching → "Poor" Core Web Vitals in GSC
+- Fix 1: next.config.ts headers() — s-maxage=60 SWR=600 on "/", s-maxage=3600 on "/sitemap.xml" → OVERRIDDEN by Next on force-dynamic routes (learned: config headers don't stick on dynamic segments)
+- Fix 2 (the working one): layout.tsx force-dynamic → export const revalidate = 60 (ISR). Verified no cookies()/headers() in SSR tree first; SeoContent/SeoJsonLd already swallow DB errors so build-time prerender is safe
+- Fix 3: vercel.json {"regions":["sin1"]} — functions co-located with Supabase Singapore
+- Fix 4: sitemap.ts — DB-driven lastmod (newest published property updatedAt; falls back to now on DB error) + force-dynamic; Google distrusts "always-now" lastmod
+- INCIDENT: recurring workspace/history corruption again — push rejected, remote had same commit re-hashed (89b51ee→1659e18, remote = superset incl. re-added upload route + restored binaries); resolved via rebase --onto origin/main 89b51ee, nothing lost; .env was ALSO clobbered to the SQLite single-liner again (4th occurrence) → restored dual pooler URLs; local dev down → restarted per protocol
+- Verified: ISR live (cache-control: public, s-maxage=60 SWR=600, x-vercel-cache PRERENDER→HIT) · TTFB 4.7s→0.035s (135×) · /api/settings 5.0s→0.14s · cached HTML intact: JSON-LD 3 types, 16 hash deep links, title/canonical/robots, 4-item featured ItemList · agent-browser: production home + #/properties render perfectly, console clean
+
+Stage Summary:
+- Core Web Vitals fixed at the source: homepage now served from Vercel edge (35ms TTFB), API in Singapore region (140ms) — GSC "Page experience"/CWV should flip to Good within days of recrawl
+- USER GSC CHECKLIST (off-page, cannot be coded): (1) Request Indexing retry for https://citylineproperty.vercel.app/ (quota reset daily; sitemap already triggers crawling so this is a booster, not a blocker) (2) Sitemaps report should show sitemap.xml "Success" (3) after ~a week check Page indexing + Core Web Vitals reports (4) when citylineproperty.pk is bought: Change of Address + re-verify
+- ISR freshness contract: public SEO shell ≤60s stale after admin edits (acceptable; /api data always live)
