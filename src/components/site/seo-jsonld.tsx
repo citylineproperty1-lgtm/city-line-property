@@ -22,6 +22,17 @@ function firstImage(images: string): string | undefined {
   }
 }
 
+function shortDescription(text: string): string | undefined {
+  const flat = text.replace(/\s+/g, " ").trim();
+  if (!flat) return undefined;
+  return flat.length > 180 ? `${flat.slice(0, 177)}...` : flat;
+}
+
+// ISO date ~1 year out — Merchant listings like a price validity window.
+function priceValidUntil(): string {
+  return new Date(Date.now() + 365 * 86400_000).toISOString().slice(0, 10);
+}
+
 /**
  * Structured data (schema.org JSON-LD), rendered server-side on "/":
  * RealEstateAgent (local business) + WebSite + featured listings ItemList.
@@ -34,22 +45,49 @@ export async function SeoJsonLd() {
       where: { featured: true, published: true },
       orderBy: { createdAt: "desc" },
       take: 8,
-      select: { id: true, title: true, price: true, images: true, listingState: true },
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        images: true,
+        listingState: true,
+        reference: true,
+        description: true,
+        beds: true,
+        baths: true,
+        area: true,
+        district: true,
+        city: true,
+      },
     });
     items = rows.map((p, i) => {
       const img = firstImage(p.images);
+      const desc = shortDescription(p.description);
+      const productUrl = `${SITE}/#/property/${p.id}`;
       return {
         "@type": "ListItem",
         position: i + 1,
         item: {
           "@type": "Product",
           name: p.title,
-          url: `${SITE}/#/property/${p.id}`,
+          url: productUrl,
+          ...(desc ? { description: desc } : {}),
+          // Reference code (CLP-101…) doubles as the SKU Google asks for
+          sku: p.reference,
+          brand: { "@type": "Brand", name: "City Line Property" },
           ...(img ? { image: img } : {}),
+          additionalProperty: [
+            { "@type": "PropertyValue", name: "Bedrooms", value: String(p.beds) },
+            { "@type": "PropertyValue", name: "Bathrooms", value: String(p.baths) },
+            { "@type": "PropertyValue", name: "Area", value: String(p.area), unitText: "sqft" },
+            { "@type": "PropertyValue", name: "Location", value: `${p.district}, ${p.city}` },
+          ],
           offers: {
             "@type": "Offer",
             price: p.price,
             priceCurrency: "PKR",
+            url: productUrl,
+            priceValidUntil: priceValidUntil(),
             availability:
               p.listingState === "AVAILABLE"
                 ? "https://schema.org/InStock"
