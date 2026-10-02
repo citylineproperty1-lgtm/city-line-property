@@ -1243,3 +1243,18 @@ Stage Summary:
 - .env "corruption" is fully explained and permanently mitigated: restarts self-heal at boot; full rebuilds self-heal IF repo.tar carries .env.supabase, else the webDevReview agent restores from the worklog recipe (rg check + cp command below)
 - MANUAL RESTORE RECIPE (unchanged, now last-resort): `cp /home/z/.clp-env-supabase /home/z/my-project/.env` (or recreate dual pooler URLs from Task 52 notes)
 - git push conflicts with the platform's auto-commits are expected: fetch → rebase --onto origin/main <local-base> main → push
+
+---
+Task ID: 58
+Agent: Z.ai Code (main session)
+Task: User forgot the admin password they had rotated (Task 53) — reset on their request
+
+Work Log:
+- Confirmed credential storage: single AdminUser row (admin@citylineproperty.com), scrypt "salt:hash" (crypto.scryptSync pw/salt/64, hex) — one-way, cannot be recovered, only replaced
+- Reset via DB-direct bun script (env-unset protocol): generated fresh 16-byte salt + scrypt hash of a new password (value communicated to the owner in chat ONLY — deliberately NOT written here because worklog.md is pushed to GitHub)
+- Verified end-to-end against PRODUCTION (shared Supabase DB → instant effect): login with new password 200 ok:true; old default CityLine@2025 → 401; random password → 401
+- Advised owner to set their own private password via Admin → Settings since the reset value passed through chat
+
+Stage Summary:
+- Owner access restored. Admin credentials now: username "admin" (shorthand for admin@citylineproperty.com) + the reset password given in chat. scripts/upload-area-map.ts CLP_ADMIN_PASSWORD env works with it too
+- Rule reinforced: NEVER store secrets in worklog.md / any git-tracked file (platform auto-commits + pushes everything tracked)
