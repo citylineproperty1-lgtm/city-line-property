@@ -1201,3 +1201,21 @@ Stage Summary:
 - Core Web Vitals fixed at the source: homepage now served from Vercel edge (35ms TTFB), API in Singapore region (140ms) — GSC "Page experience"/CWV should flip to Good within days of recrawl
 - USER GSC CHECKLIST (off-page, cannot be coded): (1) Request Indexing retry for https://citylineproperty.vercel.app/ (quota reset daily; sitemap already triggers crawling so this is a booster, not a blocker) (2) Sitemaps report should show sitemap.xml "Success" (3) after ~a week check Page indexing + Core Web Vitals reports (4) when citylineproperty.pk is bought: Change of Address + re-verify
 - ISR freshness contract: public SEO shell ≤60s stale after admin edits (acceptable; /api data always live)
+
+---
+Task ID: 56
+Agent: Z.ai Code (main session)
+Task: User shared GSC URL Inspection screenshot ("check that") — page indexed, Product snippets + Merchant listings show "5 valid items, non-critical issues"
+
+Work Log:
+- Screenshot read: URL is on Google ✓, Page is indexed ✓, HTTPS ✓, Product snippets 5 valid + non-critical issues, Merchant listings 5 valid + non-critical issues → the non-critical flags = optional Product fields Google wants (brand/sku/description/attributes); NOT errors
+- Enriched seo-jsonld.tsx Product schema per GSC hints: sku (uses listing reference CLP-xxx), brand {Brand: City Line Property}, description (180-char clean), additionalProperty (Bedrooms/Bathrooms/Area sqft/Location), Offer.url + priceValidUntil (+1y). Query select extended accordingly
+- DELIBERATELY NOT added: aggregateRating/review — no real customer reviews exist yet; fabricating them risks a manual action. That residual warning resolves only when user supplies real testimonials
+- 🔴 INCIDENT: .env clobbered AGAIN (5th occurrence, back to SQLite single-liner) mid-session — discovered because local ItemList vanished (silent failure mode: DB query → catch → empty, page still 200). Culprit = external sync mechanism (not in repo/scripts). MITIGATION: canonical env now persisted at /home/z/.clp-env-supabase (outside sync scope, chmod 600) — restore = `cp /home/z/.clp-env-supabase .env`; ALWAYS check `rg -o "^[A-Z_]+" .env` before bun/db work
+- 🔴 INCIDENT: sync-bot history rewrite now hit LOCAL history too (worklog commit 7b06908 → local 51e18bb while remote kept 7b06908) — push rejected twice; resolved with checkout dev.pid + rebase --onto origin/main <local-old-hash> main; pattern: always fetch + compare tips before push
+- Verified: local ItemList 4 products with all new fields; deployed b9e6bec; production JSON-LD live (sku CLP-110, brand, 4 addProps, priceValidUntil 2027-10-02, all items complete); TTFB still ~0.26-0.3s (ISR revalidation renders); dev.log clean after restart
+
+Stage Summary:
+- GSC status: page IS indexed (the Task-55 "Request Indexing" leftover is effectively moot — Google already indexed it); Product/Merchant "non-critical issues" now minimized to the review/aggregateRating hint that requires real user material
+- User next steps: optional "Request Indexing" click to recrawl the enriched markup faster; supply real testimonials to close the last structured-data gap; .pk domain still the big pending item
+- Ops: .env canonical backup + instant-restore path established; sync-bot now rewrites local history too — always `git fetch` + `git status` before push
