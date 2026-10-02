@@ -1219,3 +1219,27 @@ Stage Summary:
 - GSC status: page IS indexed (the Task-55 "Request Indexing" leftover is effectively moot — Google already indexed it); Product/Merchant "non-critical issues" now minimized to the review/aggregateRating hint that requires real user material
 - User next steps: optional "Request Indexing" click to recrawl the enriched markup faster; supply real testimonials to close the last structured-data gap; .pk domain still the big pending item
 - Ops: .env canonical backup + instant-restore path established; sync-bot now rewrites local history too — always `git fetch` + `git status` before push
+
+---
+Task ID: 57
+Agent: Z.ai Code (main session)
+Task: User asked "why .env is corrupted" — root-cause investigation
+
+Work Log:
+- ROOT CAUSE FOUND (evidence, not guesswork): the sandbox container's boot script /start.sh (root-owned, runs via tini at every container start) contains at lines 70 AND 98:
+    echo "DATABASE_URL=file:/home/z/my-project/db/custom.db" > /home/z/my-project/.env
+  It unconditionally resets .env to the TEMPLATE SQLite config after restoring the project from /home/sync/repo.tar — the platform assumes the default template DB; it cannot know this project migrated to Supabase. EVERY container restart/rebuild = .env reset. Not corruption, not an attack — platform provisioning by design.
+- The same boot script explains EVERY recurring mystery:
+  · Mode flips 100644→100755 (Task 51/52): /start.sh does `chmod -R 755 /home/z/my-project` after restore
+  · UUID-named auto commits (2bffdb1 etc.): platform service runs `git add -A && git commit` (comment in /start.sh cites app/util/git.py) to checkpoint repo.tar; it also pushes → explains remote-ahead/re-hashed-commit push conflicts
+  · "Dev server down" at session starts: boot → .env reset to SQLite → dev.sh runs `bun run db:push` → schema provider mismatch → set -e aborts dev.sh → dev server never starts
+  · Occasional deleted/restored files (upload route Task 51): tar restore races + "corrupted repo.tar → continue partially restored" path (line 96)
+- PERMANENT FIX (deployed 1400d98): .zscripts/dev.sh (git-tracked, runs at every boot AFTER the .env reset, survives container rebuilds via repo.tar) now self-heals before bun install/db:push — if .env lacks `DATABASE_URL="postgresql://`, restore from $PROJECT_DIR/.env.supabase (in-project canonical, gitignored via existing `.env*` pattern so the password never reaches GitHub) else /home/z/.clp-env-supabase (survives restarts, lost on rebuild) else loud warning pointing at worklog
+- Canonical copies created: /home/z/my-project/.env.supabase + /home/z/.clp-env-supabase (chmod 600)
+- Heal tested by simulating the exact boot corruption (`echo DATABASE_URL=file:... > .env`) → triggered → restored → both postgres URLs verified; transient /api/settings 404 during the corruption window cleared itself (200 re-verified)
+- Cosmetic note: Edit tool re-indented dev.sh tabs→spaces; bash -n OK, behavior unchanged
+
+Stage Summary:
+- .env "corruption" is fully explained and permanently mitigated: restarts self-heal at boot; full rebuilds self-heal IF repo.tar carries .env.supabase, else the webDevReview agent restores from the worklog recipe (rg check + cp command below)
+- MANUAL RESTORE RECIPE (unchanged, now last-resort): `cp /home/z/.clp-env-supabase /home/z/my-project/.env` (or recreate dual pooler URLs from Task 52 notes)
+- git push conflicts with the platform's auto-commits are expected: fetch → rebase --onto origin/main <local-base> main → push
