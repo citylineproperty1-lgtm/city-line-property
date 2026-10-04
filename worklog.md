@@ -1358,3 +1358,21 @@ Work Log:
 Stage Summary:
 - Category choices now always make sense for the selected purpose across hero, listings and requirement form; Leaflet dev warning cleared
 - Commit pushed to origin/main (Vercel auto-deploy)
+
+---
+Task ID: 63
+Agent: Z.ai Code (main session)
+Task: "Category" bare label + new Size filter (sqft/Marla) between Category and Area (user request)
+
+Work Log:
+- Category triggers now render bare "Category" when value=ALL (conditional span replacing SelectValue) on hero, properties-view and requirement-form; reset item renamed "Any category" -> "All categories"
+- business.ts: MARLA_SQFT=272.25, SizeUnit type, formatMinArea() chip formatter ("5+ Marla" / "2,000+ sqft")
+- Size control = uncontrolled number Input + unit Select (sqft/Marla, default Marla) in one bordered composite; hero: rounded-2xl cell in sm:grid-cols-3 row between Category and Area; listings bar: rounded-full composite in the same position
+- Store: ListingsFilters.minArea (sqft, null default) + hash round-trip (?area=); API /api/properties: minArea -> where.area gte; properties query + chip + resets (browseType/exploreArea/browseArea) all wired
+- Listings input is uncontrolled + ref: effect DOM-syncs only when f.minArea changed externally (chip clear/reset/hero landing), avoiding react-hooks/set-state-in-effect lint error (initial setState-in-effect attempt failed lint; DOM-write approach passes)
+- E2E: hero 5 Marla -> Search -> 6 listings + "5+ Marla" chip, input shows 5/Marla on listings; unit switch 5 Marla <-> 1361 sqft; fill 2000 sqft -> "2,000+ sqft" chip + 4 listings; Control+a + Backspace clears (probe verified input event fires, chip gone, API called without minArea, 12 listings). Initial "bug" was test tooling (wrong key name ControlOrMeta+a; fill '' no-op), not app code
+- bun run lint 0 errors 0 warnings
+
+Stage Summary:
+- Search UX now: Purpose (Buy/Rent) -> Category | Size (sqft/Marla) | Area -> Budget -> Search; same filters deep-linkable via hash query
+- Commit pushed to origin/main (Vercel auto-deploy)
