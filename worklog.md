@@ -1327,3 +1327,18 @@ Work Log:
 Stage Summary:
 - Purpose filter shipped at the exact spot the owner circled: hero search card now has Any/Buy/Rent above Category; requirement form matches; listings page renders rent-scale prices correctly
 - Commit c67dd83 pushed to origin/main (Vercel auto-deploy)
+
+---
+Task ID: 61
+Agent: Z.ai Code (main session)
+Task: Purpose control refinement — Buy/Rent only, no Any; remove For Rent from category dropdowns (user feedback + screenshot)
+
+Work Log:
+- User screenshot circled the hero "Any" segment: removed it. HeroPurpose is now "SALE"|"RENT" with default SALE (Buy); grid-cols-3 -> grid-cols-2; Sparkles import kept (still used in trust row)
+- Requirement form matched: RequirementPurpose "BUY"|"RENT", default/reset BUY, purposeWord simplified to buy|rent, grid-cols-2
+- "for-rent" category filtered out of all three public category dropdowns (hero, properties-view, requirement-form CATEGORIES) with inline .filter(c => c.slug !== "for-rent") + comment; Category table/DB and home browse cards untouched; listings STATUS_TABS (All/For Sale/For Rent) kept as the purpose mechanism on the listings page
+- agent-browser verified: hero shows Buy(active)/Rent only; hero + listings category dropdowns list 7 options with NO "For Rent"; hero Rent -> Search still lands on listings with 3 rent listings; form purpose = Buy/Rent only; bun run lint 0 errors
+
+Stage Summary:
+- Purpose switch is now a clean two-way Buy/Rent (default Buy) at the circled spot; "For Rent" no longer duplicates as a category option anywhere on the public site
+- Commit pushed to origin/main (Vercel auto-deploy)
