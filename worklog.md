@@ -1310,3 +1310,20 @@ Stage Summary:
 - Site now ships full light/dark/system theming: toggle in header + mobile sheet, default = system, choice persisted; dark theme = soft charcoal-emerald (not pitch black) per owner feedback; light theme pixel-identical to before
 - Admin panel fully themed; new admin password delivered in chat (8WDsPtxnpP$7DF) — owner advised to change it in Admin → Settings
 - Ops notes: container rebuild lost local Task 56/57 commits (recovered from origin); .env self-heal (dev.sh) worked as designed on this boot after backups were recreated
+
+---
+Task ID: 60
+Agent: Z.ai Code (main session)
+Task: Purpose (Buy/Rent) filter at the hero "Any category" spot (user screenshot request)
+
+Work Log:
+- Identified the screenshot as the home hero search card (dark teal bg-mesh); hero had Category/Area/Budget but no purpose selector, unlike the properties page which already has All/For Sale/For Rent tabs
+- home-view.tsx: HERO_RENT_BUDGETS monthly scale (25k-5 Lakh/mo) + HeroPurpose type + PURPOSE_TABS (Any/Sparkles, Buy/HomeIcon, Rent/KeyRound); heroPurpose state default ALL; switchHeroPurpose resets budget to "0" when the picked value is off the new scale; heroSearch now passes status: heroPurpose (API /api/properties already supported status=SALE|RENT); segmented control rendered at top of gradient-border-glass card (grid-cols-3, h-9, brand-gradient active pill, aria-pressed + role=group)
+- requirement-form.tsx: purpose state BUY/RENT/ANY + PURPOSE_OPTIONS + RENT_BUDGETS (15k-2.5 Lakh/mo); budget select maps over purpose-aware list with same reset guard; auto-brief now reads "I'm looking to buy/rent a X in Y, rent up to / budget around Z. Please call me back." (LeadInput unchanged - purpose woven into message, zero API risk); segmented Buy/Rent/Any row with Label, bg-muted track + bg-card active segment (properties STATUS_TABS pattern)
+- properties-view.tsx: PRICE_STEPS extended with 25,000/50,000/75,000/1 Lakh/1.5 Lakh/2.5 Lakh/5 Lakh tier so hero rent max-price lands on a real option (previously blank SelectValue trigger)
+- agent-browser E2E (light + dark): hero Rent click switches budget combobox to "Monthly rent budget: Any rent" in place; Search lands on Browse listings with For Rent tab active; 50k cap shows "Max: 50,000" in Max select + "Max 50,000" chip + correct empty state (0 rents <= 50k); contact form purpose row + "Any rent" budget verified in dark
+- bun run lint: 0 errors 0 warnings
+
+Stage Summary:
+- Purpose filter shipped at the exact spot the owner circled: hero search card now has Any/Buy/Rent above Category; requirement form matches; listings page renders rent-scale prices correctly
+- Commit c67dd83 pushed to origin/main (Vercel auto-deploy)
