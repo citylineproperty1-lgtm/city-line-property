@@ -1342,3 +1342,19 @@ Work Log:
 Stage Summary:
 - Purpose switch is now a clean two-way Buy/Rent (default Buy) at the circled spot; "For Rent" no longer duplicates as a category option anywhere on the public site
 - Commit pushed to origin/main (Vercel auto-deploy)
+
+---
+Task ID: 62
+Agent: Z.ai Code (main session)
+Task: Rent purpose hides plot categories (user request)
+
+Work Log:
+- Added PLOT_CATEGORY_SLUGS (residential-plots, commercial-plots) to src/lib/types.ts
+- Purpose-aware category dropdowns: hero filters plots when heroPurpose=RENT; properties-view filters plots when f.status=RENT; requirement-form filters plots when purpose=RENT (Buy shows all 6)
+- Stale-selection guards: switchHeroPurpose / listings STATUS_TABS onClick / form switchPurpose reset a selected plot category (or type filter) to ALL when switching to Rent, so the SelectValue never shows an option that's no longer in the list
+- real-map.tsx map container div got `relative` class to clear the Leaflet scroll-offset warning (the "1 Issue" dev badge; dev-only, prod unaffected)
+- agent-browser E2E: hero Rent -> dropdown = Any/Houses/Apartments/Commercial Halls/Flat-Studio (no plots); Buy -> plots return (7 options); Buy+Residential Plots -> switch Rent -> auto-reset to "Any category"; listings For Rent tab -> no plot options; form Rent -> no plot options + "Monthly rent budget" label intact; lint 0 errors
+
+Stage Summary:
+- Category choices now always make sense for the selected purpose across hero, listings and requirement form; Leaflet dev warning cleared
+- Commit pushed to origin/main (Vercel auto-deploy)
