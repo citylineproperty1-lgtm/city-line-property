@@ -245,11 +245,13 @@ export function PropertiesView() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Any category</SelectItem>
-                {cats.map((c) => (
-                  <SelectItem key={c.slug} value={c.slug}>
-                    {c.name}
-                  </SelectItem>
-                ))}
+                {cats
+                  .filter((c) => c.slug !== "for-rent") // rentals are picked via the For Rent tab
+                  .map((c) => (
+                    <SelectItem key={c.slug} value={c.slug}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
 

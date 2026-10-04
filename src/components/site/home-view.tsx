@@ -195,12 +195,11 @@ const HERO_BUDGETS = [
   { value: "100000000", label: "Up to 10 Crore" },
 ];
 
-/* Hero purpose filter — Buy / Rent / Any (drives the status filter on the
+/* Hero purpose filter — Buy / Rent only (drives the status filter on the
    listings page; rent switches the budget scale to monthly figures). */
-type HeroPurpose = "ALL" | "SALE" | "RENT";
+type HeroPurpose = "SALE" | "RENT";
 
 const PURPOSE_TABS: { value: HeroPurpose; label: string; icon: LucideIcon }[] = [
-  { value: "ALL", label: "Any", icon: Sparkles },
   { value: "SALE", label: "Buy", icon: HomeIcon },
   { value: "RENT", label: "Rent", icon: KeyRound },
 ];
@@ -284,7 +283,7 @@ export function HomeView() {
   const [heroType, setHeroType] = useState("ALL");
   const [heroArea, setHeroArea] = useState("ALL");
   const [heroBudget, setHeroBudget] = useState("0");
-  const [heroPurpose, setHeroPurpose] = useState<HeroPurpose>("ALL");
+  const [heroPurpose, setHeroPurpose] = useState<HeroPurpose>("SALE");
 
   /* Budget scales differ between sale (one-off) and rent (per month) — when
      the picked value doesn't exist on the new scale, fall back to "any". */
@@ -391,9 +390,9 @@ export function HomeView() {
                 transition={{ delay: 0.75, duration: 0.55, ease: "easeOut" }}
                 className="gradient-border-glass mt-8 rounded-3xl p-3 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.35)]"
               >
-                {/* Purpose — Buy / Rent / Any */}
+                {/* Purpose — Buy / Rent */}
                 <div
-                  className="mb-2 grid grid-cols-3 gap-1 rounded-2xl bg-muted/70 p-1"
+                  className="mb-2 grid grid-cols-2 gap-1 rounded-2xl bg-muted/70 p-1"
                   role="group"
                   aria-label="Purpose — buy or rent"
                 >
@@ -422,11 +421,13 @@ export function HomeView() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ALL">Any category</SelectItem>
-                      {cats.map((c) => (
-                        <SelectItem key={c.slug} value={c.slug}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
+                      {cats
+                        .filter((c) => c.slug !== "for-rent") // rentals are picked via the Rent purpose switch
+                        .map((c) => (
+                          <SelectItem key={c.slug} value={c.slug}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <Select value={heroArea} onValueChange={setHeroArea}>

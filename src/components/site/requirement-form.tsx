@@ -45,12 +45,11 @@ const RENT_BUDGETS: { value: string; label: string }[] = [
   { value: "250000", label: "2.5 Lakh / mo" },
 ];
 
-type RequirementPurpose = "BUY" | "RENT" | "ANY";
+type RequirementPurpose = "BUY" | "RENT";
 
 const PURPOSE_OPTIONS: { value: RequirementPurpose; label: string }[] = [
   { value: "BUY", label: "Buy" },
   { value: "RENT", label: "Rent" },
-  { value: "ANY", label: "Any" },
 ];
 
 const PHONE_RE = /^(\+?\d[\d\s-]{7,15})$/;
@@ -67,7 +66,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("ALL");
-  const [purpose, setPurpose] = useState<RequirementPurpose>("ANY");
+  const [purpose, setPurpose] = useState<RequirementPurpose>("BUY");
   const [area, setArea] = useState("ALL");
   const [budget, setBudget] = useState("0");
   const [message, setMessage] = useState("");
@@ -89,7 +88,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     setPhone("");
     setEmail("");
     setCategory("ALL");
-    setPurpose("ANY");
+    setPurpose("BUY");
     setArea("ALL");
     setBudget("0");
     setMessage("");
@@ -111,7 +110,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     }
 
     const budgetNum = Number(budget);
-    const purposeWord = purpose === "BUY" ? "buy" : purpose === "RENT" ? "rent" : "buy or rent";
+    const purposeWord = purpose === "BUY" ? "buy" : "rent";
     const budgetLabel = budgets.find((b) => b.value === budget)?.label;
     const brief =
       message.trim() ||
@@ -247,7 +246,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Any category</SelectItem>
-              {CATEGORIES.map((c) => (
+              {CATEGORIES.filter((c) => c.slug !== "for-rent").map((c) => (
                 <SelectItem key={c.slug} value={c.slug}>
                   {c.name}
                 </SelectItem>
@@ -276,7 +275,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       <div className="space-y-1.5">
         <Label className="text-[13px] text-muted-foreground">Purpose</Label>
         <div
-          className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1"
+          className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1"
           role="group"
           aria-label="Purpose — buy or rent"
         >
