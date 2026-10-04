@@ -19,6 +19,7 @@ import { RequirementForm } from "@/components/site/requirement-form";
 import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
 import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
+import { cn } from "@/lib/utils";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
   CATEGORIES,
@@ -51,6 +52,7 @@ import {
   BedDouble,
   Sparkles,
   ArrowRight,
+  type LucideIcon,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -193,6 +195,28 @@ const HERO_BUDGETS = [
   { value: "100000000", label: "Up to 10 Crore" },
 ];
 
+/* Hero purpose filter — Buy / Rent / Any (drives the status filter on the
+   listings page; rent switches the budget scale to monthly figures). */
+type HeroPurpose = "ALL" | "SALE" | "RENT";
+
+const PURPOSE_TABS: { value: HeroPurpose; label: string; icon: LucideIcon }[] = [
+  { value: "ALL", label: "Any", icon: Sparkles },
+  { value: "SALE", label: "Buy", icon: HomeIcon },
+  { value: "RENT", label: "Rent", icon: KeyRound },
+];
+
+/* Monthly rent scale for the hero budget dropdown (Etihad Town rentals). */
+const HERO_RENT_BUDGETS = [
+  { value: "0", label: "Any rent" },
+  { value: "25000", label: "Up to 25,000 / mo" },
+  { value: "50000", label: "Up to 50,000 / mo" },
+  { value: "75000", label: "Up to 75,000 / mo" },
+  { value: "100000", label: "Up to 1 Lakh / mo" },
+  { value: "150000", label: "Up to 1.5 Lakh / mo" },
+  { value: "250000", label: "Up to 2.5 Lakh / mo" },
+  { value: "500000", label: "Up to 5 Lakh / mo" },
+];
+
 const FOUNDED_YEAR = 2017;
 
 export function HomeView() {
@@ -260,12 +284,23 @@ export function HomeView() {
   const [heroType, setHeroType] = useState("ALL");
   const [heroArea, setHeroArea] = useState("ALL");
   const [heroBudget, setHeroBudget] = useState("0");
+  const [heroPurpose, setHeroPurpose] = useState<HeroPurpose>("ALL");
+
+  /* Budget scales differ between sale (one-off) and rent (per month) — when
+     the picked value doesn't exist on the new scale, fall back to "any". */
+  const switchHeroPurpose = (next: HeroPurpose) => {
+    setHeroPurpose(next);
+    const list = next === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
+    if (!list.some((b) => b.value === heroBudget)) setHeroBudget("0");
+  };
+
+  const heroBudgets = heroPurpose === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
 
   const heroSearch = () => {
     setFilters({
       search: heroArea !== "ALL" ? heroArea : "",
       type: heroType,
-      status: "ALL",
+      status: heroPurpose,
       beds: 0,
       minPrice: null,
       maxPrice: Number(heroBudget) > 0 ? Number(heroBudget) : null,
@@ -356,6 +391,30 @@ export function HomeView() {
                 transition={{ delay: 0.75, duration: 0.55, ease: "easeOut" }}
                 className="gradient-border-glass mt-8 rounded-3xl p-3 shadow-[0_24px_60px_-30px_rgba(15,23,42,0.35)]"
               >
+                {/* Purpose — Buy / Rent / Any */}
+                <div
+                  className="mb-2 grid grid-cols-3 gap-1 rounded-2xl bg-muted/70 p-1"
+                  role="group"
+                  aria-label="Purpose — buy or rent"
+                >
+                  {PURPOSE_TABS.map((t) => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => switchHeroPurpose(t.value)}
+                      className={cn(
+                        "flex h-9 items-center justify-center gap-1.5 rounded-xl text-[13px] font-semibold transition-all",
+                        heroPurpose === t.value
+                          ? "brand-gradient text-white shadow-[0_6px_16px_-8px_rgba(15,118,110,0.9)]"
+                          : "text-muted-foreground hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+                      )}
+                      aria-pressed={heroPurpose === t.value}
+                    >
+                      <t.icon className="h-3.5 w-3.5" aria-hidden />
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Select value={heroType} onValueChange={setHeroType}>
                     <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Category">
@@ -386,11 +445,14 @@ export function HomeView() {
                 </div>
                 <div className="mt-2 flex gap-2">
                   <Select value={heroBudget} onValueChange={setHeroBudget}>
-                    <SelectTrigger className="h-11 flex-1 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Budget">
+                    <SelectTrigger
+                      className="h-11 flex-1 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0"
+                      aria-label={heroPurpose === "RENT" ? "Monthly rent budget" : "Budget"}
+                    >
                       <SelectValue placeholder="Budget" />
                     </SelectTrigger>
                     <SelectContent>
-                      {HERO_BUDGETS.map((b) => (
+                      {heroBudgets.map((b) => (
                         <SelectItem key={b.value} value={b.value}>
                           {b.label}
                         </SelectItem>

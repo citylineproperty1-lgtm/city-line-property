@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { CATEGORIES, type LeadInput } from "@/lib/types";
 import { AREAS, waLink } from "@/lib/business";
+import { cn } from "@/lib/utils";
 import { Loader2, Send, CheckCircle2, MessageCircle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +32,27 @@ const BUDGETS: { value: string; label: string }[] = [
   { value: "100000000", label: "10 Crore" },
 ];
 
+/* Monthly rent scale — shown when purpose is Rent (the buy scale above
+   doesn't make sense for monthly rentals). */
+const RENT_BUDGETS: { value: string; label: string }[] = [
+  { value: "0", label: "Any rent" },
+  { value: "15000", label: "15,000 / mo" },
+  { value: "25000", label: "25,000 / mo" },
+  { value: "50000", label: "50,000 / mo" },
+  { value: "75000", label: "75,000 / mo" },
+  { value: "100000", label: "1 Lakh / mo" },
+  { value: "150000", label: "1.5 Lakh / mo" },
+  { value: "250000", label: "2.5 Lakh / mo" },
+];
+
+type RequirementPurpose = "BUY" | "RENT" | "ANY";
+
+const PURPOSE_OPTIONS: { value: RequirementPurpose; label: string }[] = [
+  { value: "BUY", label: "Buy" },
+  { value: "RENT", label: "Rent" },
+  { value: "ANY", label: "Any" },
+];
+
 const PHONE_RE = /^(\+?\d[\d\s-]{7,15})$/;
 
 /**
@@ -45,6 +67,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState("ALL");
+  const [purpose, setPurpose] = useState<RequirementPurpose>("ANY");
   const [area, setArea] = useState("ALL");
   const [budget, setBudget] = useState("0");
   const [message, setMessage] = useState("");
@@ -52,11 +75,21 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
   const [error, setError] = useState<string | null>(null);
   const [waLinkOut, setWaLinkOut] = useState<string | null>(null);
 
+  /* Rent vs buy budgets live on different scales — reset the budget when the
+     picked value doesn't exist on the newly selected scale. */
+  const budgets = purpose === "RENT" ? RENT_BUDGETS : BUDGETS;
+  const switchPurpose = (next: RequirementPurpose) => {
+    setPurpose(next);
+    const list = next === "RENT" ? RENT_BUDGETS : BUDGETS;
+    if (!list.some((b) => b.value === budget)) setBudget("0");
+  };
+
   const reset = () => {
     setName("");
     setPhone("");
     setEmail("");
     setCategory("ALL");
+    setPurpose("ANY");
     setArea("ALL");
     setBudget("0");
     setMessage("");
@@ -78,11 +111,13 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     }
 
     const budgetNum = Number(budget);
+    const purposeWord = purpose === "BUY" ? "buy" : purpose === "RENT" ? "rent" : "buy or rent";
+    const budgetLabel = budgets.find((b) => b.value === budget)?.label;
     const brief =
       message.trim() ||
-      `I'm looking for ${category === "ALL" ? "property" : CATEGORIES.find((c) => c.slug === category)?.name.toLowerCase() ?? category}` +
+      `I'm looking to ${purposeWord} ${category === "ALL" ? "property" : CATEGORIES.find((c) => c.slug === category)?.name.toLowerCase() ?? category}` +
         `${area !== "ALL" ? ` in ${area}` : ""}` +
-        `${budgetNum > 0 ? `, budget around ${BUDGETS.find((b) => b.value === budget)?.label}` : ""}. Please call me back.`;
+        `${budgetNum > 0 ? (purpose === "RENT" ? `, rent up to ${budgetLabel}` : `, budget around ${budgetLabel}`) : ""}. Please call me back.`;
 
     setSending(true);
     try {
@@ -239,13 +274,42 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       </div>
 
       <div className="space-y-1.5">
+        <Label className="text-[13px] text-muted-foreground">Purpose</Label>
+        <div
+          className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1"
+          role="group"
+          aria-label="Purpose — buy or rent"
+        >
+          {PURPOSE_OPTIONS.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => switchPurpose(t.value)}
+              className={cn(
+                "h-9 rounded-lg text-[13px] font-medium transition-all",
+                purpose === t.value
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-pressed={purpose === t.value}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
         <Label className="text-[13px] text-muted-foreground">Budget</Label>
         <Select value={budget} onValueChange={setBudget}>
-          <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Budget">
+          <SelectTrigger
+            className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0"
+            aria-label={purpose === "RENT" ? "Monthly rent budget" : "Budget"}
+          >
             <SelectValue placeholder="Your budget" />
           </SelectTrigger>
           <SelectContent>
-            {BUDGETS.map((b) => (
+            {budgets.map((b) => (
               <SelectItem key={b.value} value={b.value}>
                 {b.label}
               </SelectItem>

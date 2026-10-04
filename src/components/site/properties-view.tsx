@@ -21,6 +21,14 @@ import { cn } from "@/lib/utils";
 
 const PRICE_STEPS = [
   { value: "0", label: "Any" },
+  // Monthly rent scale (hero Rent filter lands here)
+  { value: "25000", label: "25,000" },
+  { value: "50000", label: "50,000" },
+  { value: "75000", label: "75,000" },
+  { value: "100000", label: "1 Lakh" },
+  { value: "150000", label: "1.5 Lakh" },
+  { value: "250000", label: "2.5 Lakh" },
+  { value: "500000", label: "5 Lakh" },
   { value: "1000000", label: "10 Lakh" },
   { value: "2500000", label: "25 Lakh" },
   { value: "5000000", label: "50 Lakh" },
