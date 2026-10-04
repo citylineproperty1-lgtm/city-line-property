@@ -171,11 +171,11 @@ export function AdminTeam({ api }: { api: AdminApi }) {
         <AdminCard className="p-4 sm:p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900">
-                <Users className="h-4 w-4 text-[#C9A227]" />
+              <h2 className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+                <Users className="h-4 w-4 text-[#C9A227] dark:text-[#E3C34A]" />
                 Team
               </h2>
-              <p className="mt-0.5 text-[12.5px] text-neutral-500">
+              <p className="mt-0.5 text-[12.5px] text-neutral-500 dark:text-neutral-400">
                 {loaded
                   ? `${agents.length} member(s) · shown on About, listing cards and agent profiles`
                   : "Loading team…"}
@@ -187,7 +187,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
             </Button>
           </div>
           {loadError && (
-            <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-[12.5px] font-medium text-red-600">
+            <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-[12.5px] font-medium text-red-600 dark:bg-red-950/40 dark:text-red-400">
               {loadError}
             </p>
           )}
@@ -203,9 +203,9 @@ export function AdminTeam({ api }: { api: AdminApi }) {
         </div>
       ) : agents.length === 0 ? (
         <AdminCard className="p-10 text-center">
-          <UserRound className="mx-auto h-10 w-10 text-neutral-300" />
-          <p className="mt-3 text-[14.5px] font-semibold text-neutral-900">No team members yet</p>
-          <p className="mt-1 text-[13px] text-neutral-500">
+          <UserRound className="mx-auto h-10 w-10 text-neutral-300 dark:text-neutral-600" />
+          <p className="mt-3 text-[14.5px] font-semibold text-neutral-900 dark:text-neutral-100">No team members yet</p>
+          <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
             Add your first member — they appear instantly on the public site.
           </p>
         </AdminCard>
@@ -221,17 +221,17 @@ export function AdminTeam({ api }: { api: AdminApi }) {
               <AdminCard className="flex h-full flex-col p-5">
                 <div className="flex items-start gap-3.5">
                   <span
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white ring-4 ring-white"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[15px] font-bold text-white ring-4 ring-card"
                     style={{ backgroundColor: a.accent, boxShadow: `0 0 0 1px ${a.accent}55` }}
                   >
                     {a.initials}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[15px] font-semibold tracking-tight text-neutral-900">
+                    <p className="truncate text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                       {a.name}
                     </p>
-                    <p className="truncate text-[12.5px] font-medium text-[#8A7119]">{a.title}</p>
-                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-neutral-500">
+                    <p className="truncate text-[12.5px] font-medium text-[#8A7119] dark:text-[#E3C34A]">{a.title}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-neutral-500 dark:text-neutral-400">
                       <span className="truncate">{a.email}</span>
                       {a.phone && (
                         <span className="inline-flex items-center gap-1">
@@ -244,11 +244,11 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                 </div>
 
                 {a.bio && (
-                  <p className="mt-3 line-clamp-3 text-[12.5px] leading-relaxed text-neutral-500">{a.bio}</p>
+                  <p className="mt-3 line-clamp-3 text-[12.5px] leading-relaxed text-neutral-500 dark:text-neutral-400">{a.bio}</p>
                 )}
 
                 <div className="mt-auto flex items-center justify-between gap-2 pt-4">
-                  <span className="rounded-full bg-[#C9A227]/12 px-2.5 py-1 text-[11px] font-bold text-[#8A7119]">
+                  <span className="rounded-full bg-[#C9A227]/12 px-2.5 py-1 text-[11px] font-bold text-[#8A7119] dark:text-[#E3C34A]">
                     {a.listings} listing{a.listings === 1 ? "" : "s"}
                   </span>
                   <div className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                       size="sm"
                       variant="outline"
                       onClick={() => setDeleteTarget(a)}
-                      className="h-8 rounded-full border-red-200 px-2.5 text-red-500 hover:bg-red-50 hover:text-red-600"
+                      className="h-8 rounded-full border-red-200 px-2.5 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                       aria-label={`Delete ${a.name}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -293,7 +293,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
           <div className="grid gap-3.5 py-1">
             <div className="grid gap-3.5 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label htmlFor="agent-name" className="text-[12px] font-semibold text-neutral-600">Name *</Label>
+                <Label htmlFor="agent-name" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Name *</Label>
                 <Input
                   id="agent-name"
                   value={form.name}
@@ -303,7 +303,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="agent-title" className="text-[12px] font-semibold text-neutral-600">Title</Label>
+                <Label htmlFor="agent-title" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Title</Label>
                 <Input
                   id="agent-title"
                   value={form.title}
@@ -315,7 +315,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
             </div>
             <div className="grid gap-3.5 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label htmlFor="agent-email" className="text-[12px] font-semibold text-neutral-600">Email *</Label>
+                <Label htmlFor="agent-email" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Email *</Label>
                 <Input
                   id="agent-email"
                   type="email"
@@ -326,7 +326,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="agent-phone" className="text-[12px] font-semibold text-neutral-600">Phone</Label>
+                <Label htmlFor="agent-phone" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Phone</Label>
                 <Input
                   id="agent-phone"
                   value={form.phone}
@@ -338,7 +338,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
             </div>
             <div className="grid gap-3.5 sm:grid-cols-[120px_1fr]">
               <div className="grid gap-1.5">
-                <Label htmlFor="agent-initials" className="text-[12px] font-semibold text-neutral-600">Initials</Label>
+                <Label htmlFor="agent-initials" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Initials</Label>
                 <Input
                   id="agent-initials"
                   value={form.initials}
@@ -349,7 +349,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label className="text-[12px] font-semibold text-neutral-600">Avatar color</Label>
+                <Label className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Avatar color</Label>
                 <div className="flex h-10 items-center gap-1.5">
                   {ACCENTS.map((c) => (
                     <button
@@ -358,7 +358,11 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                       onClick={() => setForm((f) => ({ ...f, accent: c }))}
                       aria-label={`Accent ${c}`}
                       aria-pressed={form.accent === c}
-                      className={`h-6 w-6 rounded-full transition-transform ${form.accent === c ? "scale-110 ring-2 ring-neutral-900 ring-offset-2" : "hover:scale-105"}`}
+                      className={`h-6 w-6 rounded-full transition-transform ${
+                        form.accent === c
+                          ? "scale-110 ring-2 ring-neutral-900 ring-offset-2 dark:ring-neutral-100 dark:ring-offset-card"
+                          : "hover:scale-105"
+                      }`}
                       style={{ backgroundColor: c }}
                     />
                   ))}
@@ -366,7 +370,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
               </div>
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="agent-bio" className="text-[12px] font-semibold text-neutral-600">Bio</Label>
+              <Label htmlFor="agent-bio" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">Bio</Label>
               <Textarea
                 id="agent-bio"
                 value={form.bio}
@@ -376,7 +380,7 @@ export function AdminTeam({ api }: { api: AdminApi }) {
               />
             </div>
             {/* live preview */}
-            <div className="flex items-center gap-3 rounded-2xl border border-black/[0.06] bg-[#FAF8F2] p-3">
+            <div className="flex items-center gap-3 rounded-2xl border border-border bg-[#FAF8F2] p-3 dark:bg-muted">
               <span
                 className="flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-bold text-white"
                 style={{ backgroundColor: form.accent }}
@@ -384,8 +388,8 @@ export function AdminTeam({ api }: { api: AdminApi }) {
                 {(form.initials || form.name.split(" ").map((p) => p[0]).slice(0, 2).join("") || "CL").toUpperCase().slice(0, 2)}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-[13px] font-semibold text-neutral-900">{form.name || "Preview name"}</p>
-                <p className="truncate text-[11.5px] text-[#8A7119]">{form.title || "Title"}</p>
+                <p className="truncate text-[13px] font-semibold text-neutral-900 dark:text-neutral-100">{form.name || "Preview name"}</p>
+                <p className="truncate text-[11.5px] text-[#8A7119] dark:text-[#E3C34A]">{form.title || "Title"}</p>
               </div>
             </div>
           </div>

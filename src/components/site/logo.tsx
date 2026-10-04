@@ -74,7 +74,7 @@ export function Logo({
             className={cn(
               "font-extrabold tracking-tight whitespace-nowrap",
               d.word,
-              tone === "light" ? "text-[#0C1210]" : "text-white"
+              tone === "light" ? "text-foreground" : "text-white"
             )}
           >
             CITY LINE PROPERTY
@@ -84,7 +84,7 @@ export function Logo({
               className={cn(
                 "mt-1 font-semibold uppercase whitespace-nowrap",
                 d.tag,
-                tone === "light" ? "text-[#0B6B5D]/80" : "text-[#7FE0CD]"
+                tone === "light" ? "text-accent-foreground/80" : "text-[#7FE0CD]"
               )}
             >
               {BUSINESS.taglineUpper}

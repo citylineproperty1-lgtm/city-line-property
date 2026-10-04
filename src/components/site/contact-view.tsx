@@ -53,13 +53,13 @@ export function ContactView() {
   return (
     <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
           Contact
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-neutral-900 sm:text-5xl">
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
           Let&rsquo;s talk <span className="text-gradient-animated">property.</span>
         </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-neutral-500">
+        <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
           Buying, selling, renting or just want to know what your file is worth — post
           your requirement and a real person from the City Line office (never a call
           centre) will call you back.
@@ -72,10 +72,10 @@ export function ContactView() {
           {...fadeUp}
           className="gradient-border rounded-3xl p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.35)] sm:p-8"
         >
-          <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Post your requirement — we call you back
           </h2>
-          <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-400">
+          <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
             Free and non-binding. On the next screen you can also send the same brief
             straight to our WhatsApp.
           </p>
@@ -86,16 +86,16 @@ export function ContactView() {
 
         {/* Info cards — real office details */}
         <motion.div {...fadeUp} className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-[#0F766E]/20 bg-[#E7F4F0]/60 p-5 shadow-sm">
+          <div className="rounded-2xl border border-primary/20 bg-accent/60 p-5 shadow-sm">
             <div className="flex items-center gap-3">
               <span className="brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
                 <MapPin className="h-4.5 w-4.5" />
               </span>
-              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground">
                 Visit the office
               </h3>
             </div>
-            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-muted-foreground">
               {BUSINESS.officeAddress}
             </p>
             {/* Embedded Google Map — physical proof of the office location */}
@@ -104,14 +104,14 @@ export function ContactView() {
               src={`https://www.google.com/maps?q=${OFFICE_COORD.lat},${OFFICE_COORD.lng}&z=16&hl=en&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              className="mt-4 h-52 w-full rounded-xl border border-[#0F766E]/15 bg-neutral-100"
+              className="mt-4 h-52 w-full rounded-xl border border-primary/15 bg-muted"
             />
             <div className="mt-3 ml-[52px] flex flex-wrap gap-3">
               <a
                 href="https://maps.google.com/?q=Etihad+Town+Phase+1+Lahore"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#0B6B5D] transition-colors hover:text-[#0F766E]"
+                className="inline-flex items-center gap-1 text-[13px] font-semibold text-accent-foreground transition-colors hover:text-primary"
               >
                 <Navigation className="h-3.5 w-3.5" />
                 Get directions →
@@ -119,24 +119,24 @@ export function ContactView() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+          <div className="rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-md">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-foreground">
                 <Phone className="h-4.5 w-4.5" />
               </span>
-              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground">
                 Call or WhatsApp
               </h3>
             </div>
-            <div className="mt-3 space-y-1 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+            <div className="mt-3 space-y-1 pl-[52px] text-[13.5px] leading-relaxed text-muted-foreground">
               <p>
-                <a href={`tel:${BUSINESS.telPrimary}`} className="font-medium text-neutral-700 hover:text-[#0B6B5D]">
+                <a href={`tel:${BUSINESS.telPrimary}`} className="font-medium text-foreground hover:text-accent-foreground">
                   {BUSINESS.phonePrimary}
                 </a>{" "}
                 (WhatsApp)
               </p>
               <p>
-                <a href={`tel:${BUSINESS.telSecondary}`} className="font-medium text-neutral-700 hover:text-[#0B6B5D]">
+                <a href={`tel:${BUSINESS.telSecondary}`} className="font-medium text-foreground hover:text-accent-foreground">
                   {BUSINESS.phoneSecondary}
                 </a>
               </p>
@@ -145,42 +145,42 @@ export function ContactView() {
               href={waLink("Hi City Line Property — I have a question about property in Etihad Town.")}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 ml-[52px] inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#15803D] transition-colors hover:text-[#16A34A]"
+              className="mt-3 ml-[52px] inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#15803D] dark:text-[#4ADE80] transition-colors hover:text-[#16A34A]"
             >
               <MessageCircle className="h-3.5 w-3.5" />
               Chat on WhatsApp →
             </a>
           </div>
 
-          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+          <div className="rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-md">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-foreground">
                 <Mail className="h-4.5 w-4.5" />
               </span>
-              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground">
                 Email us
               </h3>
             </div>
-            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
-              <a href={`mailto:${BUSINESS.email}`} className="break-all font-medium text-neutral-700 hover:text-[#0B6B5D]">
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-muted-foreground">
+              <a href={`mailto:${BUSINESS.email}`} className="break-all font-medium text-foreground hover:text-accent-foreground">
                 {BUSINESS.email}
               </a>
             </p>
           </div>
 
-          <div className="rounded-2xl border border-black/[0.07] bg-white p-5 transition-shadow hover:shadow-md">
+          <div className="rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-md">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-foreground">
                 <Clock className="h-4.5 w-4.5" />
               </span>
-              <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground">
                 Office hours
               </h3>
             </div>
-            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-neutral-500">
+            <p className="mt-3 pl-[52px] text-[13.5px] leading-relaxed text-muted-foreground">
               {BUSINESS.hours}
               <br />
-              <span className="text-neutral-400">Open all 7 days of the week</span>
+              <span className="text-muted-foreground">Open all 7 days of the week</span>
             </p>
           </div>
         </motion.div>
@@ -190,7 +190,7 @@ export function ContactView() {
       <section className="pt-16">
         <motion.h2
           {...fadeUp}
-          className="text-center text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl"
+          className="text-center text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
         >
           Frequently asked questions
         </motion.h2>
@@ -200,12 +200,12 @@ export function ContactView() {
               <AccordionItem
                 key={i}
                 value={`faq-${i}`}
-                className="rounded-2xl border border-black/[0.07] bg-white px-5 shadow-none last:border-b"
+                className="rounded-2xl border border-border bg-card px-5 shadow-none last:border-b"
               >
-                <AccordionTrigger className="py-4 text-left text-[14.5px] font-medium text-neutral-800 hover:no-underline">
+                <AccordionTrigger className="py-4 text-left text-[14.5px] font-medium text-foreground hover:no-underline">
                   {f.q}
                 </AccordionTrigger>
-                <AccordionContent className="pb-5 text-[13.5px] leading-relaxed text-neutral-500">
+                <AccordionContent className="pb-5 text-[13.5px] leading-relaxed text-muted-foreground">
                   {f.a}
                 </AccordionContent>
               </AccordionItem>
@@ -216,7 +216,7 @@ export function ContactView() {
 
       {/* Bottom CTA */}
       <motion.div {...fadeUp} className="mt-14 flex flex-col items-center text-center">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
           Prefer to talk first?
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -229,7 +229,7 @@ export function ContactView() {
           <Button
             asChild
             variant="outline"
-            className="h-12 rounded-full border-[#22C55E]/40 bg-white px-7 text-sm font-semibold text-[#15803D] hover:bg-[#22C55E]/10"
+            className="h-12 rounded-full border-[#22C55E]/40 bg-card px-7 text-sm font-semibold text-[#15803D] dark:text-[#4ADE80] hover:bg-[#22C55E]/10"
           >
             <a
               href={waLink("Hi City Line Property — I'd like to discuss a property requirement.")}
@@ -241,7 +241,7 @@ export function ContactView() {
             </a>
           </Button>
         </div>
-        <p className="mt-4 text-[12.5px] text-neutral-400">
+        <p className="mt-4 text-[12.5px] text-muted-foreground">
           {BUSINESS.hours} · {BUSINESS.officeAddress}
         </p>
       </motion.div>

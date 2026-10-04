@@ -153,13 +153,13 @@ export function PropertiesView() {
       {/* Heading */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
             Etihad Town &amp; enclaves
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Browse listings
           </h1>
-          <p className="mt-2 text-[15px] text-neutral-500">
+          <p className="mt-2 text-[15px] text-muted-foreground">
             {loading
               ? "Finding the right files…"
               : `${total} ${total === 1 ? "listing" : "listings"} available${
@@ -169,9 +169,9 @@ export function PropertiesView() {
         </div>
         {/* Sort */}
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-neutral-400" />
+          <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           <Select value={f.sort} onValueChange={(v) => setFilters({ sort: v })}>
-            <SelectTrigger className="h-10 w-[190px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+            <SelectTrigger className="h-10 w-[190px] rounded-full border-border bg-card text-[13px] focus:ring-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -186,23 +186,23 @@ export function PropertiesView() {
       </div>
 
       {/* Filter bar */}
-      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-black/[0.07] bg-white/90 p-3 shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] backdrop-blur-xl">
+      <div className="sticky top-16 z-30 mt-6 rounded-2xl border border-border bg-card/90 p-3 shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           {/* search */}
           <form onSubmit={submitSearch} className="relative flex-1">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={f.search}
               onChange={(e) => setFilters({ search: e.target.value })}
               placeholder="Search by area, society or keyword…"
-              className="h-11 rounded-full border-neutral-200 bg-neutral-50 pl-11 pr-10 text-sm focus-visible:ring-[#0F766E]/40"
+              className="h-11 rounded-full border-border bg-muted pl-11 pr-10 text-sm focus-visible:ring-ring/40"
               aria-label="Search listings"
             />
             {f.search && (
               <button
                 type="button"
                 onClick={() => setFilters({ search: "" })}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:bg-neutral-200/60 hover:text-neutral-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-black/5 dark:hover:bg-white/10 hover:text-foreground"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5" />
@@ -212,7 +212,7 @@ export function PropertiesView() {
 
           <div className="flex flex-wrap items-center gap-2">
             {/* status segmented */}
-            <div className="flex rounded-full bg-neutral-100 p-1">
+            <div className="flex rounded-full bg-muted p-1">
               {STATUS_TABS.map((t) => (
                 <button
                   key={t.value}
@@ -220,8 +220,8 @@ export function PropertiesView() {
                   className={cn(
                     "rounded-full px-4 py-1.5 text-[13px] font-medium transition-all",
                     f.status === t.value
-                      ? "bg-white text-neutral-900 shadow-sm"
-                      : "text-neutral-500 hover:text-neutral-800"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                   aria-pressed={f.status === t.value}
                 >
@@ -232,7 +232,7 @@ export function PropertiesView() {
 
             {/* category */}
             <Select value={f.type} onValueChange={(v) => setFilters({ type: v })}>
-              <SelectTrigger className="h-11 w-[150px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[150px] rounded-full border-border bg-card text-[13px] focus:ring-0">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -247,7 +247,7 @@ export function PropertiesView() {
 
             {/* area */}
             <Select value={activeArea} onValueChange={(v) => setFilters({ search: v === "ALL" ? "" : v })}>
-              <SelectTrigger className="h-11 w-[160px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[160px] rounded-full border-border bg-card text-[13px] focus:ring-0">
                 <SelectValue placeholder="Area" />
               </SelectTrigger>
               <SelectContent>
@@ -264,7 +264,7 @@ export function PropertiesView() {
               value={String(f.beds)}
               onValueChange={(v) => setFilters({ beds: Number(v) })}
             >
-              <SelectTrigger className="h-11 w-[110px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[110px] rounded-full border-border bg-card text-[13px] focus:ring-0">
                 <SelectValue placeholder="Beds" />
               </SelectTrigger>
               <SelectContent>
@@ -281,7 +281,7 @@ export function PropertiesView() {
               value={f.minPrice ? String(f.minPrice) : "0"}
               onValueChange={(v) => setFilters({ minPrice: Number(v) || null })}
             >
-              <SelectTrigger className="h-11 w-[120px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[120px] rounded-full border-border bg-card text-[13px] focus:ring-0">
                 <SelectValue placeholder="Min price" />
               </SelectTrigger>
               <SelectContent>
@@ -297,7 +297,7 @@ export function PropertiesView() {
               value={f.maxPrice ? String(f.maxPrice) : "0"}
               onValueChange={(v) => setFilters({ maxPrice: Number(v) || null })}
             >
-              <SelectTrigger className="h-11 w-[120px] rounded-full border-neutral-200 bg-white text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[120px] rounded-full border-border bg-card text-[13px] focus:ring-0">
                 <SelectValue placeholder="Max price" />
               </SelectTrigger>
               <SelectContent>
@@ -313,16 +313,16 @@ export function PropertiesView() {
 
         {/* active chips */}
         {chips.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-neutral-100 pt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3">
             {chips.map((c) => (
               <span
                 key={c.label}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#E7F4F0] py-1 pl-3 pr-1.5 text-[12px] font-medium text-[#0B6B5D] ring-1 ring-[#0F766E]/20"
+                className="inline-flex items-center gap-1.5 rounded-full bg-accent py-1 pl-3 pr-1.5 text-[12px] font-medium text-accent-foreground ring-1 ring-ring/20"
               >
                 {c.label}
                 <button
                   onClick={c.clear}
-                  className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#0F766E]/10 transition-colors hover:bg-[#0F766E]/25"
+                  className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-primary/10 transition-colors hover:bg-primary/25"
                   aria-label={`Remove filter ${c.label}`}
                 >
                   <X className="h-3 w-3" />
@@ -331,7 +331,7 @@ export function PropertiesView() {
             ))}
             <button
               onClick={resetFilters}
-              className="ml-1 inline-flex items-center gap-1 text-[12px] font-medium text-neutral-400 transition-colors hover:text-neutral-700"
+              className="ml-1 inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3" />
               Reset all
@@ -342,9 +342,9 @@ export function PropertiesView() {
 
       {/* Results */}
       {error ? (
-        <div className="mt-10 flex flex-col items-center rounded-2xl border border-black/[0.07] bg-white py-16 text-center">
-          <SearchX className="h-10 w-10 text-neutral-300" />
-          <p className="mt-4 text-[15px] font-medium text-neutral-700">{error}</p>
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-border bg-card py-16 text-center">
+          <SearchX className="h-10 w-10 text-muted-foreground" />
+          <p className="mt-4 text-[15px] font-medium text-foreground">{error}</p>
           <Button onClick={load} variant="outline" className="mt-5 h-10 rounded-full text-sm">
             Try again
           </Button>
@@ -359,15 +359,15 @@ export function PropertiesView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-[#0F766E]/30 bg-[#E7F4F0]/40 py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-primary/30 bg-accent/40 py-20 text-center"
         >
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/[0.06]">
-            <SearchX className="h-6 w-6 text-neutral-400" />
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
+            <SearchX className="h-6 w-6 text-muted-foreground" />
           </span>
-          <h3 className="mt-5 text-lg font-semibold tracking-tight text-neutral-900">
+          <h3 className="mt-5 text-lg font-semibold tracking-tight text-foreground">
             No matches in our five areas
           </h3>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
             Try widening your price range, removing a filter, or searching another
             area — or just tell us what you need and we&rsquo;ll hunt it down for you.
           </p>
@@ -384,7 +384,7 @@ export function PropertiesView() {
                 useAppStore.getState().navigate({ name: "contact" });
               }}
               variant="outline"
-              className="h-11 rounded-full border-neutral-200 bg-white px-6 text-sm font-medium"
+              className="h-11 rounded-full border-border bg-card px-6 text-sm font-medium"
             >
               Post a requirement
             </Button>
@@ -401,14 +401,14 @@ export function PropertiesView() {
           {/* Load more */}
           {properties.length < total && (
             <div className="mt-10 flex flex-col items-center gap-3">
-              <p className="text-[12.5px] text-neutral-400">
+              <p className="text-[12.5px] text-muted-foreground">
                 Showing {properties.length} of {total}
               </p>
               <Button
                 onClick={loadMore}
                 disabled={loadingMore}
                 variant="outline"
-                className="h-11 rounded-full border-neutral-200 bg-white px-8 text-sm font-medium hover:bg-neutral-50"
+                className="h-11 rounded-full border-border bg-card px-8 text-sm font-medium hover:bg-accent"
               >
                 {loadingMore ? (
                   <>

@@ -209,8 +209,8 @@ export function AdminCategories({ api }: { api: AdminApi }) {
         <AdminCard className="p-4 sm:p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="text-[15px] font-semibold text-neutral-900">Listing categories</h3>
-              <p className="mt-0.5 text-[12px] text-neutral-400">
+              <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Listing categories</h3>
+              <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">
                 Categories power the homepage tiles and inventory filters. Deleting is blocked while
                 listings still use a category.
               </p>
@@ -253,14 +253,14 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                         <IconByName name={c.icon} className="h-5 w-5" />
                       </span>
                       <div>
-                        <p className="text-[14px] font-semibold text-neutral-900">{c.name}</p>
-                        <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-neutral-400">
+                        <p className="text-[14px] font-semibold text-neutral-900 dark:text-neutral-100">{c.name}</p>
+                        <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
                           <span
-                            className="h-2.5 w-2.5 rounded-full border border-black/10"
+                            className="h-2.5 w-2.5 rounded-full border border-border"
                             style={{ backgroundColor: c.color }}
                             aria-hidden
                           />
-                          <code className="rounded bg-black/[0.04] px-1.5 py-px text-[10.5px]">{c.slug}</code>
+                          <code className="rounded bg-muted px-1.5 py-px text-[10.5px]">{c.slug}</code>
                           <span>· #{c.sortOrder}</span>
                         </p>
                       </div>
@@ -271,7 +271,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => openEdit(c)}
                         aria-label={`Edit ${c.name}`}
-                        className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-black/[0.05] hover:text-neutral-800"
+                        className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-black/[0.05] hover:text-neutral-800 dark:text-neutral-500 dark:hover:bg-white/10 dark:hover:text-neutral-200"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
@@ -280,24 +280,24 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => setDeleteTarget(c)}
                         aria-label={`Delete ${c.name}`}
-                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
+                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D] dark:text-neutral-600"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
                   {c.description && (
-                    <p className="mt-3 line-clamp-2 text-[12.5px] leading-relaxed text-neutral-500">
+                    <p className="mt-3 line-clamp-2 text-[12.5px] leading-relaxed text-neutral-500 dark:text-neutral-400">
                       {c.description}
                     </p>
                   )}
                   <div className="mt-auto pt-3">
                     {c.inUse > 0 ? (
-                      <span className="inline-flex items-center rounded-full bg-black/[0.04] px-2.5 py-1 text-[11px] font-semibold text-neutral-500">
+                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400">
                         Used by {c.inUse} listing{c.inUse === 1 ? "" : "s"}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-full bg-[#34C759]/10 px-2.5 py-1 text-[11px] font-semibold text-[#1E8E3E]">
+                      <span className="inline-flex items-center rounded-full bg-[#34C759]/10 px-2.5 py-1 text-[11px] font-semibold text-[#1E8E3E] dark:text-[#4ADE80]">
                         Unused — safe to delete
                       </span>
                     )}
@@ -311,12 +311,12 @@ export function AdminCategories({ api }: { api: AdminApi }) {
 
       {/* Add / edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border-black/[0.06] sm:max-w-md">
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border-border sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[16px] font-semibold tracking-tight text-neutral-900">
+            <DialogTitle className="text-[16px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               {editing ? `Edit "${editing.name}"` : "New category"}
             </DialogTitle>
-            <DialogDescription className="text-[12.5px] text-neutral-400">
+            <DialogDescription className="text-[12.5px] text-neutral-400 dark:text-neutral-500">
               {editing
                 ? "Rename or recolor — listings keep their slug link automatically."
                 : "The slug is generated from the name. Pick any lucide icon name."}
@@ -325,7 +325,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
 
           <div className="space-y-4 py-1">
             <div className="space-y-1.5">
-              <Label htmlFor="cat-name" className="text-[12px] text-neutral-500">
+              <Label htmlFor="cat-name" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Name *
               </Label>
               <Input
@@ -333,12 +333,12 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="Farm Houses"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
               />
             </div>
             <div className="grid grid-cols-[1fr_auto] gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="cat-icon" className="text-[12px] text-neutral-500">
+                <Label htmlFor="cat-icon" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                   Icon (lucide name)
                 </Label>
                 <Input
@@ -346,19 +346,19 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                   value={form.icon}
                   onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))}
                   placeholder="Building2"
-                  className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border font-mono text-[12.5px] focus-visible:ring-ring/35"
                 />
-                <p className="text-[10.5px] leading-tight text-neutral-400">
+                <p className="text-[10.5px] leading-tight text-neutral-400 dark:text-neutral-500">
                   Try: LandPlot, Store, Home, Building2, Warehouse, BedDouble, KeyRound, Hotel, Trees…
                 </p>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="cat-color" className="text-[12px] text-neutral-500">
+                <Label htmlFor="cat-color" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                   Color
                 </Label>
                 <div className="flex h-10 items-center gap-2">
                   <span
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-black/[0.08]"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border"
                     style={{ backgroundColor: `${form.color}1A`, color: form.color }}
                     aria-hidden
                   >
@@ -369,14 +369,14 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                     type="color"
                     value={form.color}
                     onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
-                    className="h-10 w-12 cursor-pointer rounded-xl border border-black/[0.08] bg-white p-1"
+                    className="h-10 w-12 cursor-pointer rounded-xl border border-border bg-card p-1"
                     aria-label="Category color"
                   />
                 </div>
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="cat-desc" className="text-[12px] text-neutral-500">
+              <Label htmlFor="cat-desc" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Description
               </Label>
               <Textarea
@@ -385,11 +385,11 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="Short blurb shown on the homepage tile"
-                className="resize-none rounded-xl border-black/[0.09] text-[13px] focus-visible:ring-[#0F766E]/35"
+                className="resize-none rounded-xl border-border text-[13px] focus-visible:ring-ring/35"
               />
             </div>
             <div className="w-32 space-y-1.5">
-              <Label htmlFor="cat-order" className="text-[12px] text-neutral-500">
+              <Label htmlFor="cat-order" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Sort order
               </Label>
               <Input
@@ -397,7 +397,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
                 type="number"
                 value={form.sortOrder}
                 onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))}
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#0F766E]/35"
+                className="h-10 rounded-xl border-border text-[13.5px] tabular-nums focus-visible:ring-ring/35"
               />
             </div>
           </div>
@@ -407,7 +407,7 @@ export function AdminCategories({ api }: { api: AdminApi }) {
               variant="outline"
               onClick={() => setDialogOpen(false)}
               disabled={saving}
-              className="rounded-xl border-black/[0.09]"
+              className="rounded-xl border-border"
             >
               Cancel
             </Button>
@@ -424,19 +424,19 @@ export function AdminCategories({ api }: { api: AdminApi }) {
 
       {/* Delete confirm */}
       <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="rounded-3xl border-black/[0.06]">
+        <AlertDialogContent className="rounded-3xl border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-neutral-900">
+            <AlertDialogTitle className="text-neutral-900 dark:text-neutral-100">
               Delete category &ldquo;{deleteTarget?.name}&rdquo;?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[13.5px] text-neutral-500">
+            <AlertDialogDescription className="text-[13.5px] text-neutral-500 dark:text-neutral-400">
               {deleteTarget && deleteTarget.inUse > 0
                 ? `${deleteTarget.inUse} listing(s) still use this category — the server will refuse until they are moved.`
                 : "This category is unused and will be removed immediately."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-black/[0.09]">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl border-border">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => void doDelete()}
               disabled={deleting}

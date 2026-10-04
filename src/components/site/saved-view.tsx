@@ -60,14 +60,14 @@ export function SavedView() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FEECEC]">
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FEECEC] dark:bg-[#E5484D]/15">
           <Heart className="h-5 w-5 fill-[#E5484D] text-[#E5484D]" />
         </span>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Saved properties
           </h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {loading
               ? "Loading your shortlist…"
               : `${properties.length} ${properties.length === 1 ? "home" : "homes"} in your shortlist`}
@@ -77,9 +77,9 @@ export function SavedView() {
 
       {!loading && properties.length > 1 && (
         <div className="mt-6 flex items-center justify-end gap-2">
-          <ArrowUpDown className="h-3.5 w-3.5 text-neutral-400" />
+          <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
           <Select value={sort} onValueChange={(v) => setSort(v as SavedSort)}>
-            <SelectTrigger className="h-10 w-[190px] rounded-full border-neutral-200 text-[13px]">
+            <SelectTrigger className="h-10 w-[190px] rounded-full border-border text-[13px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -103,15 +103,15 @@ export function SavedView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/60 py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border bg-muted/60 py-20 text-center"
         >
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-neutral-200">
-            <Heart className="h-6 w-6 text-neutral-300" />
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
+            <Heart className="h-6 w-6 text-muted-foreground" />
           </span>
-          <h3 className="mt-5 text-lg font-semibold tracking-tight text-neutral-900">
+          <h3 className="mt-5 text-lg font-semibold tracking-tight text-foreground">
             Nothing saved yet
           </h3>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-neutral-500">
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
             Tap the heart on any listing to keep it here — your shortlist stays on
             this device.
           </p>

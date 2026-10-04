@@ -93,8 +93,8 @@ function LeadTimeline({ activities }: { activities?: LeadActivity[] }) {
   const items = (activities ?? []).slice(-3).reverse();
   if (items.length === 0) return null;
   return (
-    <div className="mt-3 border-t border-black/[0.05] pt-3">
-      <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-neutral-400">
+    <div className="mt-3 border-t border-border pt-3">
+      <p className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-500">
         Activity
       </p>
       <ul className="mt-1.5 space-y-1">
@@ -105,11 +105,11 @@ function LeadTimeline({ activities }: { activities?: LeadActivity[] }) {
               style={{ backgroundColor: ACTIVITY_DOT[a.type] ?? "#8E8E93" }}
               aria-hidden
             />
-            <span className="min-w-0 flex-1 truncate text-neutral-600" title={a.detail}>
+            <span className="min-w-0 flex-1 truncate text-neutral-600 dark:text-neutral-300" title={a.detail}>
               {a.detail}
             </span>
             <time
-              className="shrink-0 text-[10.5px] tabular-nums text-neutral-400"
+              className="shrink-0 text-[10.5px] tabular-nums text-neutral-400 dark:text-neutral-500"
               dateTime={a.at}
               title={new Date(a.at).toLocaleString()}
             >
@@ -392,19 +392,19 @@ export function AdminLeads({ api }: { api: AdminApi }) {
             />
             <div className="flex items-center gap-2">
               <div className="relative lg:w-72">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
                 <Input
                   value={qInput}
                   onChange={(e) => setQInput(e.target.value)}
                   placeholder="Search name, phone, message…"
                   aria-label="Search leads"
-                  className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border pl-9 text-[13.5px] focus-visible:ring-ring/35"
                 />
               </div>
               <Button
                 variant="outline"
                 onClick={exportCsv}
-                className="h-10 shrink-0 rounded-xl border-black/[0.09] px-3 text-[12.5px] font-semibold text-neutral-600 hover:bg-neutral-50"
+                className="h-10 shrink-0 rounded-xl border-border px-3 text-[12.5px] font-semibold text-neutral-600 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-white/10"
                 aria-label="Export leads to CSV"
               >
                 <Download className="h-4 w-4" />
@@ -412,13 +412,13 @@ export function AdminLeads({ api }: { api: AdminApi }) {
               </Button>
             </div>
           </div>
-          <p className="mt-2.5 text-[11.5px] text-neutral-400">
+          <p className="mt-2.5 text-[11.5px] text-neutral-400 dark:text-neutral-500">
             {loading ? "Loading leads…" : `${filtered.length} of ${leads.length} leads shown`}
           </p>
           {/* Follow-up due filter */}
-          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-black/[0.05] pt-2.5">
-            <CalendarClock className="h-3.5 w-3.5 text-[#0F766E]" />
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-border pt-2.5">
+            <CalendarClock className="h-3.5 w-3.5 text-primary" />
+            <span className="mr-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-400 dark:text-neutral-500">
               Follow-ups
             </span>
             {([
@@ -435,7 +435,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-semibold transition-all",
                   due === f.key
                     ? "brand-gradient text-white shadow-sm"
-                    : "bg-black/[0.04] text-neutral-500 hover:bg-[#E7F4F0] hover:text-[#0B6B5D]"
+                    : "bg-muted text-neutral-500 hover:bg-accent hover:text-accent-foreground dark:text-neutral-400"
                 )}
               >
                 {f.label}
@@ -443,7 +443,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   <span
                     className={cn(
                       "rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums",
-                      due === f.key ? "bg-white/25 text-white" : f.hot ? "bg-[#FF3B30] text-white" : "bg-white text-neutral-500"
+                      due === f.key ? "bg-white/25 text-white" : f.hot ? "bg-[#FF3B30] text-white" : "bg-white text-neutral-500 dark:bg-white/10 dark:text-neutral-300"
                     )}
                   >
                     {f.badge}
@@ -471,13 +471,13 @@ export function AdminLeads({ api }: { api: AdminApi }) {
         ) : filtered.length === 0 ? (
           <AdminCard>
             <div className="flex flex-col items-center py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/[0.04]">
-                <Inbox className="h-5 w-5 text-neutral-300" />
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
+                <Inbox className="h-5 w-5 text-neutral-300 dark:text-neutral-600" />
               </span>
-              <p className="mt-3 text-[14px] font-semibold text-neutral-700">
+              <p className="mt-3 text-[14px] font-semibold text-neutral-700 dark:text-neutral-300">
                 {pipeline === "ALL" && !q ? "No leads yet" : "Nothing here"}
               </p>
-              <p className="mt-1 max-w-xs text-[12.5px] text-neutral-400">
+              <p className="mt-1 max-w-xs text-[12.5px] text-neutral-400 dark:text-neutral-500">
                 {pipeline === "ALL" && !q
                   ? "Requirement forms, listing inquiries and contact messages will land in this inbox."
                   : "No leads match this pipeline stage or search — try another filter."}
@@ -500,7 +500,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">
+                        <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                           {lead.name}
                         </h3>
                         <StatusChip status={lead.status} />
@@ -513,24 +513,24 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                             {dueLabel(lead.followUpAt)}
                           </span>
                         )}
-                        <span className="rounded-full bg-black/[0.05] px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-neutral-500">
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                           {SOURCE_LABELS[lead.source] ?? lead.source}
                         </span>
                       </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-neutral-500">
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-neutral-500 dark:text-neutral-400">
                         <a
                           href={`tel:${lead.phone.replace(/\s/g, "")}`}
-                          className="flex items-center gap-1.5 font-medium text-neutral-700 transition-colors hover:text-neutral-950"
+                          className="flex items-center gap-1.5 font-medium text-neutral-700 transition-colors hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-neutral-50"
                         >
-                          <Phone className="h-3.5 w-3.5 text-neutral-400" />
+                          <Phone className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500" />
                           {lead.phone}
                         </a>
                         {lead.email && (
                           <a
                             href={`mailto:${lead.email}`}
-                            className="flex items-center gap-1.5 transition-colors hover:text-neutral-900"
+                            className="flex items-center gap-1.5 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
                           >
-                            <Mail className="h-3.5 w-3.5 text-neutral-400" />
+                            <Mail className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500" />
                             {lead.email}
                           </a>
                         )}
@@ -543,7 +543,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => void resend(lead)}
                         disabled={busyId === lead.id}
-                        className="h-8 rounded-full border border-black/[0.08] px-3 text-[11.5px] font-semibold text-neutral-600 hover:bg-[#E7F4F0] hover:text-[#0B6B5D]"
+                        className="h-8 rounded-full border border-border px-3 text-[11.5px] font-semibold text-neutral-600 hover:bg-accent hover:text-accent-foreground dark:text-neutral-300"
                       >
                         {busyId === lead.id ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -557,7 +557,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => setDeleteTarget(lead)}
                         aria-label={`Delete lead from ${lead.name}`}
-                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
+                        className="h-8 w-8 rounded-lg text-neutral-300 hover:bg-[#E5484D]/10 hover:text-[#E5484D] dark:text-neutral-600"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -574,40 +574,40 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   {/* Row 2: interest */}
                   <div className="mt-3 flex flex-wrap gap-1.5 text-[11.5px]">
                     {lead.category && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-black/[0.04] px-2.5 py-1 font-medium text-neutral-600">
-                        <Building2 className="h-3 w-3 text-neutral-400" />
+                      <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-medium text-neutral-600 dark:text-neutral-300">
+                        <Building2 className="h-3 w-3 text-neutral-400 dark:text-neutral-500" />
                         {lead.category}
                       </span>
                     )}
                     {lead.area && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-black/[0.04] px-2.5 py-1 font-medium text-neutral-600">
-                        <MapPin className="h-3 w-3 text-neutral-400" />
+                      <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 font-medium text-neutral-600 dark:text-neutral-300">
+                        <MapPin className="h-3 w-3 text-neutral-400 dark:text-neutral-500" />
                         {lead.area}
                       </span>
                     )}
                     {lead.budget != null && lead.budget > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 font-semibold text-[#0B6B5D]">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 font-semibold text-accent-foreground">
                         <CircleDollarSign className="h-3 w-3" />
                         Budget ~ {formatPKR(lead.budget)}
                       </span>
                     )}
                     {lead.property && (
-                      <span className="inline-flex max-w-60 items-center gap-1 truncate rounded-full bg-black/[0.04] px-2.5 py-1 font-medium text-neutral-600">
-                        <Building2 className="h-3 w-3 shrink-0 text-neutral-400" />
+                      <span className="inline-flex max-w-60 items-center gap-1 truncate rounded-full bg-muted px-2.5 py-1 font-medium text-neutral-600 dark:text-neutral-300">
+                        <Building2 className="h-3 w-3 shrink-0 text-neutral-400 dark:text-neutral-500" />
                         <span className="truncate">{lead.property.title}</span>
                       </span>
                     )}
                   </div>
 
                   {/* Row 3: message */}
-                  <blockquote className="mt-3 rounded-2xl border-l-[3px] border-[#0F766E]/40 bg-neutral-50/70 px-3.5 py-2.5 text-[13px] leading-relaxed text-neutral-600">
-                    <Quote className="mb-1 h-3.5 w-3.5 text-[#0F766E]/60" />
+                  <blockquote className="mt-3 rounded-2xl border-l-[3px] border-primary/40 bg-neutral-50/70 px-3.5 py-2.5 text-[13px] leading-relaxed text-neutral-600 dark:bg-muted/70 dark:text-neutral-300">
+                    <Quote className="mb-1 h-3.5 w-3.5 text-primary/60" />
                     {lead.message}
                   </blockquote>
 
                   {/* Row 3.5: follow-up reminder */}
-                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-[#E7F4F0]/60 px-3 py-2">
-                    <CalendarClock className="h-3.5 w-3.5 shrink-0 text-[#0B6B5D]" />
+                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-accent/60 px-3 py-2">
+                    <CalendarClock className="h-3.5 w-3.5 shrink-0 text-accent-foreground" />
                     {lead.followUpAt ? (
                       <span
                         className={`rounded-full px-2.5 py-1 text-[10.5px] font-bold ${DUE_CHIP[dueState(lead.followUpAt) ?? "later"]}`}
@@ -615,7 +615,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         {dueLabel(lead.followUpAt)}
                       </span>
                     ) : (
-                      <span className="text-[11.5px] font-medium text-neutral-400">No reminder set</span>
+                      <span className="text-[11.5px] font-medium text-neutral-400 dark:text-neutral-500">No reminder set</span>
                     )}
                     <span className="flex flex-wrap items-center gap-1">
                       {[1, 3, 7].map((d) => (
@@ -624,7 +624,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           onClick={() => void remindInDays(lead, d)}
                           disabled={busyId === lead.id}
                           title={`Remind me in ${d} day${d > 1 ? "s" : ""}`}
-                          className="rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-[#0B6B5D] ring-1 ring-[#0F766E]/30 transition-all hover:bg-[#E7F4F0] disabled:opacity-50"
+                          className="rounded-full bg-card px-2.5 py-1 text-[10.5px] font-semibold text-accent-foreground ring-1 ring-primary/30 transition-all hover:bg-accent disabled:opacity-50"
                         >
                           +{d}d
                         </button>
@@ -637,7 +637,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           variant="ghost"
                           onClick={() => void setFollowUp(lead, null, true)}
                           disabled={busyId === lead.id}
-                          className="h-7 rounded-full bg-white px-2.5 text-[10.5px] font-semibold text-[#1E8E3E] ring-1 ring-[#34C759]/35 hover:bg-[#34C759]/10"
+                          className="h-7 rounded-full bg-card px-2.5 text-[10.5px] font-semibold text-[#1E8E3E] ring-1 ring-[#34C759]/35 hover:bg-[#34C759]/10 dark:text-[#4ADE80]"
                         >
                           <CheckCheck className="h-3 w-3" />
                           Done
@@ -647,7 +647,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                           disabled={busyId === lead.id}
                           title="Clear reminder"
                           aria-label={`Clear reminder for ${lead.name}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-full text-neutral-300 transition-colors hover:bg-black/[0.05] hover:text-neutral-500 disabled:opacity-50"
+                          className="flex h-7 w-7 items-center justify-center rounded-full text-neutral-300 transition-colors hover:bg-black/[0.05] hover:text-neutral-500 disabled:opacity-50 dark:text-neutral-600 dark:hover:bg-white/10 dark:hover:text-neutral-400"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -657,21 +657,21 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                       <button
                         onClick={() => void setFollowUp(lead, null, true)}
                         disabled={busyId === lead.id}
-                        className="ml-auto flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10.5px] font-semibold text-neutral-500 ring-1 ring-black/[0.08] transition-all hover:text-[#1E8E3E] disabled:opacity-50"
+                        className="ml-auto flex items-center gap-1 rounded-full bg-card px-2.5 py-1 text-[10.5px] font-semibold text-neutral-500 ring-1 ring-border transition-all hover:text-[#1E8E3E] disabled:opacity-50 dark:text-neutral-400 dark:hover:text-[#4ADE80]"
                       >
                         <BellPlus className="h-3 w-3" />
                         Mark contacted now
                       </button>
                     )}
                     {lead.lastContactedAt && (
-                      <span className="text-[10.5px] font-medium text-neutral-400">
+                      <span className="text-[10.5px] font-medium text-neutral-400 dark:text-neutral-500">
                         · contacted {timeAgo(lead.lastContactedAt)}
                       </span>
                     )}
                   </div>
 
                   {/* Row 4: pipeline + actions */}
-                  <div className="mt-3.5 flex flex-col gap-3 border-t border-black/[0.05] pt-3.5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-3.5 flex flex-col gap-3 border-t border-border pt-3.5 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-wrap items-center gap-2">
                       <Select
                         value={lead.status}
@@ -704,12 +704,12 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         size="sm"
                         onClick={() => openChat(lead)}
                         variant="outline"
-                        className="h-8 rounded-full border-black/[0.09] px-3.5 text-[12px] font-semibold text-[#1E8E3E] hover:bg-[#34C759]/10"
+                        className="h-8 rounded-full border-border px-3.5 text-[12px] font-semibold text-[#1E8E3E] hover:bg-[#34C759]/10 dark:text-[#4ADE80]"
                       >
                         <Phone className="h-3.5 w-3.5" /> Open customer chat
                       </Button>
                       <time
-                        className="flex items-center gap-1 text-[11px] text-neutral-400"
+                        className="flex items-center gap-1 text-[11px] text-neutral-400 dark:text-neutral-500"
                         dateTime={lead.createdAt}
                         title={new Date(lead.createdAt).toLocaleString()}
                       >
@@ -722,7 +722,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                   {/* Row 5: notes */}
                   <div className="mt-3">
                     <div className="relative">
-                      <NotebookPen className="absolute left-3 top-3 h-3.5 w-3.5 text-neutral-400" />
+                      <NotebookPen className="absolute left-3 top-3 h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500" />
                       <Textarea
                         rows={2}
                         value={notesValue}
@@ -731,7 +731,7 @@ export function AdminLeads({ api }: { api: AdminApi }) {
                         }
                         placeholder="Internal notes — call outcomes, viewing times, offers…"
                         aria-label={`Notes for ${lead.name}`}
-                        className="resize-none rounded-xl border-black/[0.08] pl-9 text-[12.5px] focus-visible:ring-[#0F766E]/35"
+                        className="resize-none rounded-xl border-border pl-9 text-[12.5px] focus-visible:ring-ring/35"
                       />
                     </div>
                     {notesDirty && (
@@ -763,16 +763,16 @@ export function AdminLeads({ api }: { api: AdminApi }) {
 
       {/* Delete confirm */}
       <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="rounded-3xl border-black/[0.06]">
+        <AlertDialogContent className="rounded-3xl border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-neutral-900">Delete this lead?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[13.5px] text-neutral-500">
+            <AlertDialogTitle className="text-neutral-900 dark:text-neutral-100">Delete this lead?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13.5px] text-neutral-500 dark:text-neutral-400">
               {deleteTarget?.name} ({deleteTarget?.phone}) will be removed from the CRM. This cannot
               be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-black/[0.09]">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl border-border">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => void doDelete()}
               disabled={busyId === deleteTarget?.id}

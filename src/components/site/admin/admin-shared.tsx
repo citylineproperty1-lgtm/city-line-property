@@ -44,9 +44,17 @@ export const BRAND_BTN =
 
 /** Emerald outline action (logout, secondary CTAs). */
 export const BRAND_OUTLINE =
-  "border border-[#0F766E]/35 bg-white text-[#0B6B5D] hover:bg-[#E7F4F0]";
+  "border border-primary/35 bg-card text-accent-foreground hover:bg-accent";
 
-export const BRAND_TEXT = "text-[#0B6B5D]";
+export const BRAND_TEXT = "text-accent-foreground";
+
+/** Gold outline action (Digest / Team section CTAs). */
+export const GOLD_OUTLINE =
+  "border border-[#C9A227]/45 bg-card text-[#8A7119] hover:bg-[#C9A227]/10 dark:text-[#E3C34A]";
+
+/** Gold gradient primary action (Digest / Team sections) — white text on gold. */
+export const GOLD_BTN =
+  "bg-[linear-gradient(180deg,#DCB94F_0%,#C9A227_100%)] text-white shadow-[0_4px_14px_rgba(201,162,39,0.35)] hover:brightness-[1.06] border-0";
 
 /** White rounded-2xl card with hairline border. */
 export function AdminCard({
@@ -59,7 +67,7 @@ export function AdminCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-6",
+        "rounded-2xl border border-border bg-card p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-6",
         className
       )}
     >
@@ -70,7 +78,7 @@ export function AdminCard({
 
 /** Styled overflow scrollbar for long lists. */
 export const SCROLLBAR_CLS =
-  "[scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/15 [&::-webkit-scrollbar-track]:bg-transparent";
+  "[scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/15 dark:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-track]:bg-transparent";
 
 /* ---------------------------- Segmented control --------------------------- */
 
@@ -99,7 +107,7 @@ export function Segmented<T extends string>({
     <div
       role="tablist"
       className={cn(
-        "inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full bg-black/[0.055] p-1",
+        "inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full bg-black/[0.055] p-1 dark:bg-white/10",
         SCROLLBAR_CLS,
         className
       )}
@@ -114,13 +122,15 @@ export function Segmented<T extends string>({
             onClick={() => onChange(o.value)}
             className={cn(
               "relative shrink-0 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors",
-              active ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-800"
+              active
+                ? "text-neutral-900 dark:text-neutral-100"
+                : "text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
             )}
           >
             {active && (
               <motion.span
                 layoutId={layoutId}
-                className="absolute inset-0 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,0.12)]"
+                className="absolute inset-0 rounded-full bg-card shadow-[0_1px_4px_rgba(0,0,0,0.12)]"
                 transition={{ type: "spring", bounce: 0.22, duration: 0.5 }}
               />
             )}
@@ -137,7 +147,9 @@ export function Segmented<T extends string>({
                 <span
                   className={cn(
                     "rounded-full px-1.5 py-px text-[10px] font-bold tabular-nums",
-                    active ? "bg-[#0F766E] text-white" : "bg-black/[0.07] text-neutral-500"
+                    active
+                      ? "bg-primary text-white"
+                      : "bg-black/[0.07] text-neutral-500 dark:bg-white/10 dark:text-neutral-400"
                   )}
                 >
                   {o.badge}
@@ -174,17 +186,17 @@ export function StatCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut", delay }}
       className={cn(
-        "rounded-2xl border bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-5",
+        "rounded-2xl border bg-card p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-5",
         highlight
-          ? "border-[#0F766E]/35 bg-[linear-gradient(180deg,rgba(15,118,110,0.10),rgba(255,255,255,1))]"
-          : "border-black/[0.08]"
+          ? "border-primary/35 bg-[linear-gradient(180deg,rgba(15,118,110,0.10),rgba(255,255,255,1))] dark:border-primary/35 dark:bg-[linear-gradient(180deg,rgba(45,212,191,0.12),rgba(18,23,21,1))]"
+          : "border-border"
       )}
     >
       <div className="flex items-start justify-between gap-2">
         <p
           className={cn(
             "text-[22px] font-semibold leading-none tracking-tight tabular-nums sm:text-2xl",
-            highlight ? "text-[#0B6B5D]" : "text-neutral-900"
+            highlight ? "text-accent-foreground" : "text-neutral-900 dark:text-neutral-100"
           )}
         >
           {value}
@@ -192,14 +204,14 @@ export function StatCard({
         <span
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
-            highlight ? "bg-[#E7F4F0] text-[#0B6B5D]" : "bg-black/[0.045] text-[#0F766E]"
+            highlight ? "bg-accent text-accent-foreground" : "bg-black/[0.045] text-[#0F766E] dark:bg-white/10 dark:text-primary"
           )}
         >
           <Icon className="h-4 w-4" />
         </span>
       </div>
-      <p className="mt-2 text-[12px] font-medium text-neutral-500">{label}</p>
-      {hint && <div className="mt-1 text-[11px] leading-tight text-neutral-400">{hint}</div>}
+      <p className="mt-2 text-[12px] font-medium text-neutral-500 dark:text-neutral-400">{label}</p>
+      {hint && <div className="mt-1 text-[11px] leading-tight text-neutral-400 dark:text-neutral-500">{hint}</div>}
     </motion.div>
   );
 }
@@ -213,7 +225,7 @@ export const LEAD_STATUS_META: Record<
   NEW: {
     label: "New",
     color: "#0F766E",
-    chip: "bg-[#E7F4F0] text-[#0B6B5D] border-[#0F766E]/30",
+    chip: "bg-accent text-accent-foreground border-primary/30",
   },
   CONTACTED: {
     label: "Contacted",
@@ -233,12 +245,12 @@ export const LEAD_STATUS_META: Record<
   WON: {
     label: "Won",
     color: "#34C759",
-    chip: "bg-[#34C759]/12 text-[#1E8E3E] border-[#34C759]/30",
+    chip: "bg-[#34C759]/12 text-[#1E8E3E] dark:text-[#4ADE80] border-[#34C759]/30",
   },
   LOST: {
     label: "Lost",
     color: "#8E8E93",
-    chip: "bg-black/[0.05] text-neutral-500 border-black/10",
+    chip: "bg-muted text-muted-foreground border-border",
   },
 };
 
@@ -250,7 +262,10 @@ export const WA_META: Record<string, { label: string; dot: string }> = {
 };
 
 export const LISTING_STATE_META: Record<string, { label: string; chip: string }> = {
-  AVAILABLE: { label: "Available", chip: "bg-[#34C759]/12 text-[#1E8E3E] border-[#34C759]/30" },
+  AVAILABLE: {
+    label: "Available",
+    chip: "bg-[#34C759]/12 text-[#1E8E3E] dark:text-[#4ADE80] border-[#34C759]/30",
+  },
   RESERVED: { label: "Reserved", chip: "bg-[#FF9500]/12 text-[#B36B00] border-[#FF9500]/30" },
   SOLD: { label: "Sold", chip: "bg-[#FF3B30]/10 text-[#C0392B] border-[#FF3B30]/25" },
   RENTED: { label: "Rented", chip: "bg-[#30B0C7]/12 text-[#1F7A8A] border-[#30B0C7]/30" },
@@ -287,7 +302,10 @@ export function WaChip({ status, className }: { status: string; className?: stri
   const meta = WA_META[status] ?? WA_META.PENDING;
   return (
     <span
-      className={cn("inline-flex items-center gap-1.5 text-[11px] font-medium text-neutral-500", className)}
+      className={cn(
+        "inline-flex items-center gap-1.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400",
+        className
+      )}
       title={meta.label}
     >
       <span
@@ -359,7 +377,7 @@ export const DUE_CHIP: Record<DueState, string> = {
   overdue: "bg-[#E5484D]/10 text-[#D5303B] ring-1 ring-[#E5484D]/25",
   today: "brand-gradient text-white shadow-sm",
   soon: "bg-[#F59E0B]/12 text-[#B45309] ring-1 ring-[#F59E0B]/30",
-  later: "bg-black/[0.05] text-neutral-500",
+  later: "bg-muted text-muted-foreground",
 };
 
 /** Debounce any value (search inputs etc.). */

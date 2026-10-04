@@ -163,11 +163,11 @@ export function AdminView() {
   };
 
   return (
-    <div className="min-h-[70vh] bg-[#F7F9F8] pb-16">
+    <div className="min-h-[70vh] bg-muted pb-16">
       {session.status === "checking" && (
         <div className="flex min-h-[60vh] items-center justify-center">
-          <div className="flex flex-col items-center gap-3 text-neutral-400">
-            <Loader2 className="h-6 w-6 animate-spin text-[#0F766E]" />
+          <div className="flex flex-col items-center gap-3 text-neutral-400 dark:text-neutral-500">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <p className="text-[12.5px]">Checking your session…</p>
           </div>
         </div>
@@ -178,7 +178,7 @@ export function AdminView() {
       {session.status === "in" && (
         <>
           {/* Panel top bar (sticky below the public site header) */}
-          <header className="sticky top-16 z-30 border-b border-black/[0.06] bg-[#F7F9F8]/90 backdrop-blur">
+          <header className="sticky top-16 z-30 border-b border-border bg-muted/90 backdrop-blur">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
               <div className="flex min-w-0 items-center gap-2.5">
                 <Image
@@ -186,16 +186,16 @@ export function AdminView() {
                   alt="City Line Property logo"
                   width={36}
                   height={36}
-                  className="h-9 w-9 rounded-xl border border-black/[0.06]"
+                  className="h-9 w-9 rounded-xl border border-border"
                 />
                 <div className="min-w-0">
-                  <p className="truncate text-[13.5px] font-semibold leading-tight tracking-tight text-neutral-900">
+                  <p className="truncate text-[13.5px] font-semibold leading-tight tracking-tight text-neutral-900 dark:text-neutral-100">
                     City Line Property
-                    <span className="ml-2 rounded-full bg-[#E7F4F0] px-2 py-0.5 align-middle text-[9.5px] font-bold uppercase tracking-[0.12em] text-[#0B6B5D]">
+                    <span className="ml-2 rounded-full bg-accent px-2 py-0.5 align-middle text-[9.5px] font-bold uppercase tracking-[0.12em] text-accent-foreground">
                       Admin
                     </span>
                   </p>
-                  <p className="truncate text-[11px] text-neutral-400">{session.admin.name}</p>
+                  <p className="truncate text-[11px] text-neutral-400 dark:text-neutral-500">{session.admin.name}</p>
                 </div>
               </div>
               <div className="ml-auto flex items-center gap-2">
@@ -203,7 +203,7 @@ export function AdminView() {
                   size="sm"
                   variant="outline"
                   onClick={() => navigate({ name: "home" })}
-                  className="h-9 rounded-full border-black/[0.09] bg-white px-3 text-[12.5px] font-semibold text-neutral-600 hover:bg-neutral-50 sm:px-4"
+                  className="h-9 rounded-full border-border bg-card px-3 text-[12.5px] font-semibold text-neutral-600 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-white/10 sm:px-4"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">View site</span>
@@ -224,7 +224,7 @@ export function AdminView() {
               className="mx-auto max-w-6xl overflow-x-auto px-4 pb-3 sm:px-6"
               aria-label="Admin sections"
             >
-              <div className="inline-flex min-w-full items-center gap-1 rounded-full bg-black/[0.055] p-1">
+              <div className="inline-flex min-w-full items-center gap-1 rounded-full bg-black/[0.055] p-1 dark:bg-white/10">
                 {TABS.map((t) => {
                   const active = t.value === tab;
                   return (
@@ -234,18 +234,20 @@ export function AdminView() {
                       aria-selected={active}
                       onClick={() => setTab(t.value)}
                       className={`relative flex-1 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors sm:px-5 ${
-                        active ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-800"
+                        active
+                          ? "text-neutral-900 dark:text-neutral-100"
+                          : "text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
                       }`}
                     >
                       {active && (
                         <motion.span
                           layoutId="admin-tab-pill"
-                          className="absolute inset-0 rounded-full bg-white shadow-[0_1px_5px_rgba(0,0,0,0.12)]"
+                          className="absolute inset-0 rounded-full bg-card shadow-[0_1px_5px_rgba(0,0,0,0.12)]"
                           transition={{ type: "spring", bounce: 0.22, duration: 0.5 }}
                         />
                       )}
                       <span className="relative z-10 flex items-center justify-center gap-1.5">
-                        <t.icon className={`h-3.5 w-3.5 ${active ? "text-[#0F766E]" : "text-neutral-400"}`} />
+                        <t.icon className={`h-3.5 w-3.5 ${active ? "text-primary" : "text-neutral-400 dark:text-neutral-500"}`} />
                         {t.label}
                       </span>
                     </button>

@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import type { View } from "@/lib/store";
 import { Logo } from "@/components/site/logo";
 import { WhatsAppIcon } from "@/components/site/whatsapp-button";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const NAV: { label: string; view: View; icon: React.ComponentType<{ className?: string }> }[] = [
   { label: "Home", view: { name: "home" }, icon: Home },
@@ -49,8 +50,8 @@ export function SiteHeader() {
         className={cn(
           "relative mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-full border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:px-4",
           scrolled
-            ? "border-black/10 bg-white/85 shadow-[0_12px_36px_-18px_rgba(15,118,110,0.45)] ring-1 ring-[#0F766E]/15 backdrop-blur-xl saturate-150"
-            : "border-black/5 bg-white/65 backdrop-blur-xl saturate-150"
+            ? "border-black/10 bg-white/85 shadow-[0_12px_36px_-18px_rgba(15,118,110,0.45)] ring-1 ring-[#0F766E]/15 backdrop-blur-xl saturate-150 dark:border-white/10 dark:bg-[#1E2624]/85 dark:ring-[#2DD4BF]/15"
+            : "border-black/5 bg-white/65 backdrop-blur-xl saturate-150 dark:border-white/10 dark:bg-[#1E2624]/65"
         )}
       >
         {/* Logo + 1% commission badge */}
@@ -60,8 +61,8 @@ export function SiteHeader() {
           aria-label="City Line Property — home"
         >
           <Logo size="sm" withWordmark />
-          <span className="hidden items-center gap-1 rounded-full border border-[#0F766E]/20 bg-[#E7F4F0] px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D] sm:inline-flex">
-            <BadgePercent className="h-3 w-3 text-[#0F766E]" aria-hidden />
+          <span className="hidden items-center gap-1 rounded-full border border-[#0F766E]/20 bg-[#E7F4F0] px-2 py-[3px] text-[9px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D] sm:inline-flex dark:border-[#2DD4BF]/20 dark:bg-[#1F4038] dark:text-[#8EE9D5]">
+            <BadgePercent className="h-3 w-3 text-[#0F766E] dark:text-[#2DD4BF]" aria-hidden />
             1% Commission
           </span>
         </button>
@@ -77,14 +78,14 @@ export function SiteHeader() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative rounded-full px-3.5 py-2 text-[13.5px] font-medium transition-colors",
-                  active ? "text-[#0B6B5D]" : "text-[#64707C] hover:text-[#0C1210]"
+                  active ? "text-[#0B6B5D] dark:text-[#8EE9D5]" : "text-[#64707C] hover:text-[#0C1210] dark:text-[#A3B5AE] dark:hover:text-[#F3F6F5]"
                 )}
               >
                 {active && (
                   <motion.span
                     layoutId="nav-active-pill"
                     transition={{ type: "spring", bounce: 0.25, duration: 0.55 }}
-                    className="absolute inset-0 rounded-full bg-[#E7F4F0] ring-1 ring-[#0F766E]/20"
+                    className="absolute inset-0 rounded-full bg-[#E7F4F0] ring-1 ring-[#0F766E]/20 dark:bg-[#1F4038] dark:ring-[#2DD4BF]/20"
                   />
                 )}
                 <span className="relative z-10">{item.label}</span>
@@ -104,14 +105,17 @@ export function SiteHeader() {
             <Phone className="h-4 w-4" />
           </a>
 
+          {/* Theme switcher — Light / Dark / System */}
+          <ThemeToggle />
+
           {/* Saved */}
           <button
             onClick={() => go({ name: "saved" })}
             className={cn(
               "relative flex h-9 w-9 items-center justify-center rounded-full transition-colors",
               view.name === "saved"
-                ? "bg-[#E7F4F0] text-[#0B6B5D]"
-                : "text-[#64707C] hover:bg-white/80 hover:text-[#0C1210]"
+                ? "bg-[#E7F4F0] text-[#0B6B5D] dark:bg-[#1F4038] dark:text-[#8EE9D5]"
+                : "text-[#64707C] hover:bg-black/5 hover:text-[#0C1210] dark:text-[#A3B5AE] dark:hover:bg-white/10 dark:hover:text-[#F3F6F5]"
             )}
             aria-label={`Saved properties (${favorites.length})`}
           >
@@ -153,7 +157,7 @@ export function SiteHeader() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 rounded-full hover:bg-white/80 md:hidden"
+                className="h-9 w-9 rounded-full hover:bg-black/5 dark:hover:bg-white/10 md:hidden"
                 aria-label="Open menu"
               >
                 <Menu className="h-5 w-5" />
@@ -161,7 +165,7 @@ export function SiteHeader() {
             </SheetTrigger>
             <SheetContent
               side="bottom"
-              className="glass-strong rounded-t-3xl border-t border-black/10 px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-0 sm:px-6"
+              className="glass-strong rounded-t-3xl border-t border-black/10 px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-0 sm:px-6 dark:border-white/10"
             >
               <SheetTitle className="sr-only">Menu</SheetTitle>
 
@@ -174,17 +178,25 @@ export function SiteHeader() {
               {/* Grabber */}
               <div
                 aria-hidden
-                className="mx-auto mt-2.5 h-1.5 w-10 rounded-full bg-[rgba(15,23,42,0.18)]"
+                className="mx-auto mt-2.5 h-1.5 w-10 rounded-full bg-[rgba(15,23,42,0.18)] dark:bg-[rgba(255,255,255,0.22)]"
               />
 
               <div className="flex flex-col gap-4 pt-3">
                 {/* Logo + badge */}
                 <div className="flex items-center justify-between">
                   <Logo size="sm" withWordmark />
-                  <span className="inline-flex items-center gap-1 rounded-full border border-[#0F766E]/20 bg-[#E7F4F0] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D]">
-                    <BadgePercent className="h-3 w-3 text-[#0F766E]" aria-hidden />
+                  <span className="inline-flex items-center gap-1 rounded-full border border-[#0F766E]/20 bg-[#E7F4F0] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D] dark:border-[#2DD4BF]/20 dark:bg-[#1F4038] dark:text-[#8EE9D5]">
+                    <BadgePercent className="h-3 w-3 text-[#0F766E] dark:text-[#2DD4BF]" aria-hidden />
                     1% Commission
                   </span>
+                </div>
+
+                {/* Nav + theme row */}
+                <div className="flex items-center justify-between rounded-2xl bg-[#F4F6F5] px-4 py-2.5 dark:bg-[#293430]">
+                  <span className="text-[12px] font-semibold uppercase tracking-[0.1em] text-[#64707C] dark:text-[#A3B5AE]">
+                    Appearance
+                  </span>
+                  <ThemeToggle className="h-8 w-8" />
                 </div>
 
                 {/* Nav */}
@@ -200,12 +212,12 @@ export function SiteHeader() {
                         className={cn(
                           "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-[15px] font-medium transition-colors",
                           active
-                            ? "bg-[#E7F4F0] font-semibold text-[#0B6B5D]"
-                            : "text-[#1F2937] hover:bg-[#F4F6F5]"
+                            ? "bg-[#E7F4F0] font-semibold text-[#0B6B5D] dark:bg-[#1F4038] dark:text-[#8EE9D5]"
+                            : "text-[#1F2937] hover:bg-[#F4F6F5] dark:text-[#E5EAE8] dark:hover:bg-[#1A211E]"
                         )}
                       >
                         <Icon
-                          className={cn("h-4 w-4", active ? "text-[#0F766E]" : "text-[#64707C]")}
+                          className={cn("h-4 w-4", active ? "text-[#0F766E] dark:text-[#2DD4BF]" : "text-[#64707C] dark:text-[#A3B5AE]")}
                         />
                         {item.label}
                       </button>
@@ -213,18 +225,18 @@ export function SiteHeader() {
                   })}
                   <button
                     onClick={() => go({ name: "saved" })}
-                    className="flex items-center justify-between rounded-2xl px-4 py-3 text-left text-[15px] font-medium text-[#1F2937] hover:bg-[#F4F6F5]"
+                    className="flex items-center justify-between rounded-2xl px-4 py-3 text-left text-[15px] font-medium text-[#1F2937] hover:bg-[#F4F6F5] dark:text-[#E5EAE8] dark:hover:bg-[#1A211E]"
                   >
                     <span className="flex items-center gap-3">
                       <Heart
                         className={cn(
                           "h-4 w-4",
-                          favorites.length > 0 ? "fill-[#E5484D] text-[#E5484D]" : "text-[#64707C]"
+                          favorites.length > 0 ? "fill-[#E5484D] text-[#E5484D]" : "text-[#64707C] dark:text-[#A3B5AE]"
                         )}
                       />
                       Saved
                     </span>
-                    <span className="rounded-full bg-[#E7F4F0] px-2 py-0.5 text-[11px] font-semibold text-[#0B6B5D]">
+                    <span className="rounded-full bg-[#E7F4F0] px-2 py-0.5 text-[11px] font-semibold text-[#0B6B5D] dark:bg-[#1F4038] dark:text-[#8EE9D5]">
                       {favorites.length}
                     </span>
                   </button>
@@ -255,7 +267,7 @@ export function SiteHeader() {
                     <WhatsAppIcon className="h-5 w-5" />
                   </a>
                 </div>
-                <p className="text-center text-[11.5px] font-medium text-neutral-400">
+                <p className="text-center text-[11.5px] font-medium text-neutral-400 dark:text-neutral-500">
                   Call or WhatsApp — {BUSINESS.phonePrimary} · {BUSINESS.phoneSecondary}
                 </p>
               </div>

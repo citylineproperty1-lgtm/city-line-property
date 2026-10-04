@@ -220,12 +220,12 @@ export function DetailUnlockGate({
               role="dialog"
               aria-modal="true"
               aria-labelledby="unlock-title"
-              className="relative w-full max-w-md rounded-3xl border border-black/5 bg-white p-6 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.45)] sm:p-7"
+              className="relative w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.45)] sm:p-7"
             >
               {/* Close */}
               <button
                 onClick={decline}
-                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 aria-label="Maybe later"
               >
                 <X className="h-4 w-4" />
@@ -235,23 +235,23 @@ export function DetailUnlockGate({
 
               <h3
                 id="unlock-title"
-                className="mt-4 text-xl font-semibold tracking-tight text-neutral-900 sm:text-[22px]"
+                className="mt-4 text-xl font-semibold tracking-tight text-foreground sm:text-[22px]"
               >
                 Unlock full details
               </h3>
-              <p className="mt-1.5 text-[13.5px] leading-relaxed text-neutral-500">
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">
                 See everything about this listing — complete features, price info
                 &amp; contact. It&apos;s free, no password needed.
               </p>
 
-              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#E7F4F0] px-3 py-1 text-[12px] font-semibold text-[#0B6B5D]">
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[12px] font-semibold text-accent-foreground">
                 <MapPin className="h-3 w-3" aria-hidden />
                 {categoryLabel(property.type)} · {property.district}
               </div>
 
               <form onSubmit={submit} noValidate className="mt-5 space-y-3.5">
                 <div className="space-y-1.5">
-                  <Label htmlFor="unlock-name" className="text-[12.5px] font-medium text-neutral-600">
+                  <Label htmlFor="unlock-name" className="text-[12.5px] font-medium text-muted-foreground">
                     Your name
                   </Label>
                   <Input
@@ -260,11 +260,11 @@ export function DetailUnlockGate({
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Ahmed Raza"
                     autoComplete="name"
-                    className="h-11 rounded-xl border-neutral-200 bg-neutral-50/60 focus-visible:ring-[#0F766E]/30"
+                    className="h-11 rounded-xl border-border bg-muted/60 focus-visible:ring-ring/30"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="unlock-phone" className="text-[12.5px] font-medium text-neutral-600">
+                  <Label htmlFor="unlock-phone" className="text-[12.5px] font-medium text-muted-foreground">
                     Phone number
                   </Label>
                   <Input
@@ -275,7 +275,7 @@ export function DetailUnlockGate({
                     type="tel"
                     inputMode="tel"
                     autoComplete="tel"
-                    className="h-11 rounded-xl border-neutral-200 bg-neutral-50/60 focus-visible:ring-[#0F766E]/30"
+                    className="h-11 rounded-xl border-border bg-muted/60 focus-visible:ring-ring/30"
                   />
                 </div>
 
@@ -298,8 +298,8 @@ export function DetailUnlockGate({
                 </button>
               </form>
 
-              <p className="mt-4 flex items-start gap-1.5 text-[11.5px] leading-relaxed text-neutral-400">
-                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#0F766E]/70" aria-hidden />
+              <p className="mt-4 flex items-start gap-1.5 text-[11.5px] leading-relaxed text-muted-foreground">
+                <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden />
                 We only use this to help with your property search — no spam, ever.
                 Or just call us on 0309 4499940.
               </p>

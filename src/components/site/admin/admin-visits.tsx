@@ -54,10 +54,10 @@ import {
 type VisitFilter = "UPCOMING" | "TODAY" | "PAST" | "ALL";
 
 const VISIT_STATUS_META: Record<string, { label: string; chip: string }> = {
-  PLANNED: { label: "Planned", chip: "bg-[#0F766E]/10 text-[#0B6B5D] border-[#0F766E]/30" },
-  DONE: { label: "Completed", chip: "bg-[#34C759]/12 text-[#1E8E3E] border-[#34C759]/30" },
+  PLANNED: { label: "Planned", chip: "bg-primary/10 text-accent-foreground border-primary/30" },
+  DONE: { label: "Completed", chip: "bg-[#34C759]/12 text-[#1E8E3E] dark:text-[#4ADE80] border-[#34C759]/30" },
   NO_SHOW: { label: "No-show", chip: "bg-[#F59E0B]/12 text-[#B45309] border-[#F59E0B]/30" },
-  CANCELLED: { label: "Cancelled", chip: "bg-black/[0.05] text-neutral-500 border-black/10" },
+  CANCELLED: { label: "Cancelled", chip: "bg-muted text-muted-foreground border-border" },
 };
 
 interface PropertyLite {
@@ -228,8 +228,8 @@ export function AdminVisits({ api }: { api: AdminApi }) {
       {/* Header */}
       <motion.div {...fadeUp} className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight text-neutral-900">Site visits</h1>
-          <p className="mt-0.5 text-[12.5px] text-neutral-500">
+          <h1 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">Site visits</h1>
+          <p className="mt-0.5 text-[12.5px] text-neutral-500 dark:text-neutral-400">
             {plannedCount > 0
               ? `${plannedCount} planned · ${todayCount} today — show up, walk the file, close.`
               : "Book and track property viewings."}
@@ -254,18 +254,18 @@ export function AdminVisits({ api }: { api: AdminApi }) {
           <AdminCard className="mt-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                   Customer name *
                 </label>
                 <Input
                   value={fName}
                   onChange={(e) => setFName(e.target.value)}
                   placeholder="e.g. Ahmed Raza"
-                  className="h-10 rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border text-[13px] focus-visible:ring-ring/35"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                   Phone *
                 </label>
                 <Input
@@ -273,24 +273,24 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                   onChange={(e) => setFPhone(e.target.value)}
                   placeholder="03xx xxxxxxx"
                   inputMode="tel"
-                  className="h-10 rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border text-[13px] focus-visible:ring-ring/35"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                   Date & time *
                 </label>
                 <Input
                   type="datetime-local"
                   value={fWhen}
                   onChange={(e) => setFWhen(e.target.value)}
-                  className="h-10 rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border text-[13px] focus-visible:ring-ring/35"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">Area</label>
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">Area</label>
                 <Select value={fArea} onValueChange={setFArea}>
-                  <SelectTrigger className="h-10 rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35">
+                  <SelectTrigger className="h-10 rounded-xl border-border text-[13px] focus-visible:ring-ring/35">
                     <SelectValue placeholder="Any area" />
                   </SelectTrigger>
                   <SelectContent>
@@ -304,11 +304,11 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                 </Select>
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                   Listing (optional)
                 </label>
                 <Select value={fProperty} onValueChange={setFProperty}>
-                  <SelectTrigger className="h-10 rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35">
+                  <SelectTrigger className="h-10 rounded-xl border-border text-[13px] focus-visible:ring-ring/35">
                     <SelectValue placeholder="No specific listing" />
                   </SelectTrigger>
                   <SelectContent className="max-h-64">
@@ -322,7 +322,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                 </Select>
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500">
+                <label className="mb-1 block text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                   Notes (optional)
                 </label>
                 <Textarea
@@ -330,7 +330,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                   value={fNotes}
                   onChange={(e) => setFNotes(e.target.value)}
                   placeholder="Which files to show, meeting point, budget…"
-                  className="resize-none rounded-xl border-black/[0.08] text-[13px] focus-visible:ring-[#0F766E]/35"
+                  className="resize-none rounded-xl border-border text-[13px] focus-visible:ring-ring/35"
                 />
               </div>
             </div>
@@ -378,9 +378,9 @@ export function AdminVisits({ api }: { api: AdminApi }) {
         {state && filtered.length === 0 && (
           <AdminCard>
             <div className="flex flex-col items-center gap-2 py-8 text-center">
-              <CalendarClock className="h-7 w-7 text-neutral-300" />
-              <p className="text-[13.5px] font-medium text-neutral-600">No visits here yet</p>
-              <p className="max-w-xs text-[12.5px] text-neutral-400">
+              <CalendarClock className="h-7 w-7 text-neutral-300 dark:text-neutral-600" />
+              <p className="text-[13.5px] font-medium text-neutral-600 dark:text-neutral-300">No visits here yet</p>
+              <p className="max-w-xs text-[12.5px] text-neutral-400 dark:text-neutral-500">
                 Book a viewing for a customer — it will show up here with quick status actions.
               </p>
             </div>
@@ -409,19 +409,19 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                       className={cn(
                         "flex shrink-0 flex-row items-center justify-center gap-2 rounded-xl border px-4 py-2.5 sm:w-[104px] sm:flex-col sm:gap-0.5 sm:px-2 sm:py-3",
                         isToday && visit.status === "PLANNED"
-                          ? "border-[#0F766E]/35 bg-[#E7F4F0]"
-                          : "border-black/[0.06] bg-[#F7F9F8]"
+                          ? "border-primary/35 bg-accent"
+                          : "border-border bg-muted"
                       )}
                     >
                       <span
                         className={cn(
                           "text-[15px] font-bold leading-tight tabular-nums",
-                          isToday && visit.status === "PLANNED" ? "text-[#0B6B5D]" : "text-neutral-800"
+                          isToday && visit.status === "PLANNED" ? "text-accent-foreground" : "text-neutral-800 dark:text-neutral-200"
                         )}
                       >
                         {time}
                       </span>
-                      <span className="text-[11px] font-medium text-neutral-500">
+                      <span className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
                         {isToday ? "Today" : day}
                       </span>
                     </div>
@@ -429,7 +429,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                     {/* body */}
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-[14.5px] font-semibold tracking-tight text-neutral-900">
+                        <p className="truncate text-[14.5px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                           {visit.name}
                         </p>
                         <span
@@ -441,7 +441,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           {meta.label}
                         </span>
                       </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-neutral-500">
+                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-neutral-500 dark:text-neutral-400">
                         <span className="inline-flex items-center gap-1">
                           <Phone className="h-3 w-3" />
                           {visit.phone}
@@ -466,7 +466,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           <Button
                             size="sm"
                             onClick={() => void setStatus(visit, "DONE")}
-                            className="h-7.5 rounded-full border border-[#34C759]/30 bg-[#34C759]/10 px-3 text-[11.5px] font-semibold text-[#1E8E3E] hover:bg-[#34C759]/20"
+                            className="h-7.5 rounded-full border border-[#34C759]/30 bg-[#34C759]/10 px-3 text-[11.5px] font-semibold text-[#1E8E3E] hover:bg-[#34C759]/20 dark:text-[#4ADE80]"
                           >
                             <Check className="h-3.5 w-3.5" /> Done
                           </Button>
@@ -484,7 +484,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           <Button
                             size="sm"
                             onClick={() => void setStatus(visit, "CANCELLED")}
-                            className="h-7.5 rounded-full border border-black/10 bg-white px-3 text-[11.5px] font-semibold text-neutral-500 hover:bg-neutral-50"
+                            className="h-7.5 rounded-full border border-border bg-card px-3 text-[11.5px] font-semibold text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-white/10"
                           >
                             <X className="h-3.5 w-3.5" /> Cancel
                           </Button>
@@ -493,7 +493,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           <Button
                             size="sm"
                             onClick={() => void setStatus(visit, "PLANNED")}
-                            className="h-7.5 rounded-full border border-[#0F766E]/30 bg-white px-3 text-[11.5px] font-semibold text-[#0B6B5D] hover:bg-[#E7F4F0]"
+                            className="h-7.5 rounded-full border border-primary/30 bg-card px-3 text-[11.5px] font-semibold text-accent-foreground hover:bg-accent"
                           >
                             <Clock className="h-3.5 w-3.5" /> Re-plan
                           </Button>
@@ -502,7 +502,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           href={waLink(visit.phone)}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-7.5 items-center gap-1.5 rounded-full border border-[#34C759]/30 bg-white px-3 text-[11.5px] font-semibold text-[#1E8E3E] transition-colors hover:bg-[#34C759]/10"
+                          className="inline-flex h-7.5 items-center gap-1.5 rounded-full border border-[#34C759]/30 bg-card px-3 text-[11.5px] font-semibold text-[#1E8E3E] transition-colors hover:bg-[#34C759]/10 dark:text-[#4ADE80]"
                         >
                           WhatsApp
                         </a>
@@ -525,7 +525,7 @@ export function AdminVisits({ api }: { api: AdminApi }) {
                           }
                           placeholder="Visit notes — what was shown, feedback, next step…"
                           aria-label={`Notes for visit of ${visit.name}`}
-                          className="resize-none rounded-xl border-black/[0.08] text-[12.5px] focus-visible:ring-[#0F766E]/35"
+                          className="resize-none rounded-xl border-border text-[12.5px] focus-visible:ring-ring/35"
                         />
                         {notesDirty && (
                           <div className="mt-2 flex justify-end">
@@ -549,16 +549,16 @@ export function AdminVisits({ api }: { api: AdminApi }) {
 
       {/* Delete confirm */}
       <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="rounded-3xl border-black/[0.06]">
+        <AlertDialogContent className="rounded-3xl border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-neutral-900">Delete this visit?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[13.5px] text-neutral-500">
+            <AlertDialogTitle className="text-neutral-900 dark:text-neutral-100">Delete this visit?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[13.5px] text-neutral-500 dark:text-neutral-400">
               The visit for {deleteTarget?.name} ({deleteTarget?.phone}) will be removed. This cannot
               be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-black/[0.09]">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl border-border">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => void doDelete()}
               className="rounded-xl bg-[#E5484D] text-white hover:bg-[#E5484D]/90"

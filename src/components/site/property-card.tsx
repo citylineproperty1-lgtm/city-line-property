@@ -70,7 +70,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
           framer-motion's inline transform on the animated article. */}
       <div className="lift gradient-border overflow-hidden rounded-2xl">
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <Image
           src={property.images[0]}
           alt={property.title}
@@ -85,7 +85,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
             className={cn(
               "rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide backdrop-blur",
               isRent
-                ? "glass-chip border border-white/50 text-[#0B6B5D]"
+                ? "glass-chip border border-white/50 text-accent-foreground"
                 : "brand-gradient text-white"
             )}
           >
@@ -95,7 +95,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
         </div>
         {/* Price — frosted glass chip over the image */}
         <div className="glass-chip absolute bottom-3 left-3 rounded-full border border-white/50 px-3 py-1 shadow-sm">
-          <p className="text-[13.5px] font-bold tracking-tight tabular-nums text-neutral-900">
+          <p className="text-[13.5px] font-bold tracking-tight tabular-nums text-foreground">
             {formatPKR(property.price, isRent)}
           </p>
         </div>
@@ -137,43 +137,43 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       {/* Body */}
       <div className="p-5">
         <CategoryChip type={property.type} />
-        <h3 className="mt-2 line-clamp-1 text-[15px] font-medium text-neutral-800 transition-colors group-hover:text-[#0B6B5D]">
+        <h3 className="mt-2 line-clamp-1 text-[15px] font-medium text-foreground transition-colors group-hover:text-accent-foreground">
           {property.title}
         </h3>
-        <p className="mt-1 flex items-center gap-1 text-[13px] text-neutral-400">
+        <p className="mt-1 flex items-center gap-1 text-[13px] text-muted-foreground">
           <MapPin className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">
             {property.district}, {property.city}
           </span>
         </p>
 
-        <div className="mt-4 flex items-center gap-3 border-t border-neutral-100 pt-3.5 text-[13px] text-neutral-500">
+        <div className="mt-4 flex items-center gap-3 border-t border-border pt-3.5 text-[13px] text-muted-foreground">
           {property.beds > 0 && (
             <span className="flex items-center gap-1.5" title="Bedrooms">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
-                <BedDouble className="h-3.5 w-3.5 text-[#0F766E]" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+                <BedDouble className="h-3.5 w-3.5 text-primary" />
               </span>
               {property.beds}
             </span>
           )}
           {property.baths > 0 && (
             <span className="flex items-center gap-1.5" title="Bathrooms">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
-                <Bath className="h-3.5 w-3.5 text-[#0F766E]" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+                <Bath className="h-3.5 w-3.5 text-primary" />
               </span>
               {property.baths}
             </span>
           )}
           <span className="flex items-center gap-1.5" title="Area (sqft)">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
-              <Ruler className="h-3.5 w-3.5 text-[#0F766E]" />
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+              <Ruler className="h-3.5 w-3.5 text-primary" />
             </span>
             {property.area.toLocaleString()} sqft
           </span>
           {property.parking && (
             <span className="ml-auto hidden items-center gap-1.5 sm:flex" title="Parking">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#E7F4F0]">
-                <Car className="h-3.5 w-3.5 text-[#0F766E]" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+                <Car className="h-3.5 w-3.5 text-primary" />
               </span>
               {property.parking}
             </span>
@@ -187,13 +187,13 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
 
 export function PropertyCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-black/[0.07] bg-white">
-      <div className="aspect-[4/3] animate-pulse bg-neutral-100" />
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="aspect-[4/3] animate-pulse bg-muted" />
       <div className="space-y-3 p-5">
-        <div className="h-5 w-1/2 animate-pulse rounded bg-neutral-100" />
-        <div className="h-4 w-3/4 animate-pulse rounded bg-neutral-100" />
-        <div className="h-3 w-1/2 animate-pulse rounded bg-neutral-100" />
-        <div className="h-8 animate-pulse rounded bg-neutral-50" />
+        <div className="h-5 w-1/2 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+        <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+        <div className="h-8 animate-pulse rounded bg-muted" />
       </div>
     </div>
   );

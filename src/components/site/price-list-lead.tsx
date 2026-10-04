@@ -121,38 +121,38 @@ export function PriceListLead() {
           </div>
 
           {/* Form card */}
-          <div className="rounded-3xl border border-white/50 bg-white p-6 shadow-[0_24px_60px_-24px_rgba(4,26,23,0.5)] sm:p-7">
+          <div className="rounded-3xl border border-white/50 dark:border-white/10 bg-card p-6 shadow-[0_24px_60px_-24px_rgba(4,26,23,0.5)] sm:p-7">
             {done ? (
               <div className="flex h-full min-h-[260px] flex-col items-center justify-center text-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E7F4F0]">
-                  <CheckCircle2 className="h-7 w-7 text-[#0F766E]" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent">
+                  <CheckCircle2 className="h-7 w-7 text-primary" />
                 </span>
-                <p className="mt-4 text-lg font-semibold tracking-tight text-neutral-900">
+                <p className="mt-4 text-lg font-semibold tracking-tight text-foreground">
                   Request received!
                 </p>
-                <p className="mt-1.5 max-w-[260px] text-[13.5px] leading-relaxed text-neutral-500">
+                <p className="mt-1.5 max-w-[260px] text-[13.5px] leading-relaxed text-muted-foreground">
                   We&rsquo;ve saved your number — the latest price list will reach your
                   WhatsApp within working hours.
                 </p>
                 <button
                   onClick={() => setDone(false)}
-                  className="mt-5 text-[13px] font-semibold text-[#0B6B5D] underline decoration-[#0F766E]/30 underline-offset-4 transition-colors hover:decoration-[#0F766E]"
+                  className="mt-5 text-[13px] font-semibold text-accent-foreground underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
                 >
                   Request for someone else
                 </button>
               </div>
             ) : (
               <form onSubmit={submit} className="flex h-full flex-col">
-                <h3 className="text-[17px] font-semibold tracking-tight text-neutral-900">
+                <h3 className="text-[17px] font-semibold tracking-tight text-foreground">
                   Where should we send it?
                 </h3>
-                <p className="mt-1 text-[12.5px] text-neutral-400">
+                <p className="mt-1 text-[12.5px] text-muted-foreground">
                   Takes 10 seconds — we call only if you ask us to.
                 </p>
 
                 <div className="mt-5 space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="pl-name" className="text-[13px] text-neutral-600">
+                    <Label htmlFor="pl-name" className="text-[13px] text-muted-foreground">
                       Your name
                     </Label>
                     <Input
@@ -163,11 +163,11 @@ export function PriceListLead() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Ali Hassan"
-                      className="h-11 rounded-xl border-neutral-200 bg-neutral-50/60 focus-visible:ring-[#0F766E]/30"
+                      className="h-11 rounded-xl border-border bg-muted/60 focus-visible:ring-ring/30"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="pl-phone" className="text-[13px] text-neutral-600">
+                    <Label htmlFor="pl-phone" className="text-[13px] text-muted-foreground">
                       WhatsApp number
                     </Label>
                     <Input
@@ -179,7 +179,7 @@ export function PriceListLead() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="03xx xxxxxxx"
-                      className="h-11 rounded-xl border-neutral-200 bg-neutral-50/60 focus-visible:ring-[#0F766E]/30"
+                      className="h-11 rounded-xl border-border bg-muted/60 focus-visible:ring-ring/30"
                     />
                   </div>
                 </div>
@@ -203,7 +203,7 @@ export function PriceListLead() {
                     </>
                   )}
                 </Button>
-                <p className="mt-3 text-center text-[11.5px] leading-relaxed text-neutral-400">
+                <p className="mt-3 text-center text-[11.5px] leading-relaxed text-muted-foreground">
                   By continuing you agree to be contacted about property in Etihad
                   Town. Your number is never shared with anyone else.
                 </p>

@@ -94,7 +94,7 @@ export function ContactBubble() {
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
             role="dialog"
             aria-label="Contact City Line Property"
-            className="glass-strong w-[288px] overflow-hidden rounded-3xl border border-[#0F766E]/15 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.4)]"
+            className="glass-strong w-[288px] overflow-hidden rounded-3xl border border-primary/15 shadow-[0_24px_60px_-24px_rgba(15,23,42,0.4)]"
           >
             {/* Brand strip */}
             <div className="brand-gradient relative px-4 pb-4 pt-3.5 text-white">
@@ -127,10 +127,10 @@ export function ContactBubble() {
 
             {/* Body */}
             <div className="px-4 pb-4 pt-3.5">
-              <p className="text-[14px] font-semibold text-neutral-900">
+              <p className="text-[14px] font-semibold text-foreground">
                 Need any information?
               </p>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-neutral-500">
+              <p className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">
                 Plots, houses, rent or investment — contact us and we&apos;ll
                 guide you personally.
               </p>
@@ -138,7 +138,7 @@ export function ContactBubble() {
               <div className="mt-3.5 grid grid-cols-2 gap-2">
                 <a
                   href={telLink()}
-                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#0F766E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(15,118,110,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
+                  className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-primary text-[12.5px] font-semibold text-primary-foreground shadow-[0_8px_20px_-8px_rgba(15,118,110,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
                   aria-label={`Call ${BUSINESS.phonePrimary}`}
                 >
                   <Phone className="h-3.5 w-3.5" aria-hidden />
@@ -156,7 +156,7 @@ export function ContactBubble() {
                 </a>
               </div>
 
-              <p className="mt-2.5 text-center text-[10.5px] font-medium text-neutral-400">
+              <p className="mt-2.5 text-center text-[10.5px] font-medium text-muted-foreground">
                 {BUSINESS.hours}
               </p>
             </div>

@@ -109,14 +109,14 @@ export function AreasIndexView() {
     <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       {/* Header */}
       <motion.header {...fadeUp} transition={{ duration: 0.4, ease: "easeOut" }}>
-        <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+        <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
           <MapPin className="h-4 w-4" />
           Area guides
         </p>
-        <h1 className="mt-3 max-w-xl text-3xl font-bold leading-[1.1] tracking-tight text-neutral-900 sm:text-[44px]">
+        <h1 className="mt-3 max-w-xl text-3xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-[44px]">
           Five areas. <span className="text-brand-gradient">Known street by street.</span>
         </h1>
-        <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-neutral-500">
+        <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-muted-foreground">
           We only deal where we can vouch for every file — the Etihad Town pocket
           and its neighbouring enclaves in Lahore. Here is what each one is really
           like, straight from the desk that works there every day.
@@ -148,7 +148,7 @@ export function AreasIndexView() {
                 }
               }}
             >
-              <div className="relative aspect-[16/10] overflow-hidden bg-neutral-100">
+              <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                 <Image
                   src={area.cover}
                   alt={area.name}
@@ -174,38 +174,38 @@ export function AreasIndexView() {
               </div>
 
               <div className="flex flex-1 flex-col p-5">
-                <p className="text-[13px] font-medium leading-relaxed text-neutral-500">
+                <p className="text-[13px] font-medium leading-relaxed text-muted-foreground">
                   {area.tagline}
                 </p>
-                <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-[#F7F9F8] p-3 text-center">
+                <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-muted p-3 text-center">
                   <div>
-                    <p className="text-[15px] font-bold tabular-nums text-neutral-900">{stat.count}</p>
-                    <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">Listings</p>
+                    <p className="text-[15px] font-bold tabular-nums text-foreground">{stat.count}</p>
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Listings</p>
                   </div>
-                  <div className="border-x border-black/[0.06]">
-                    <p className="text-[15px] font-bold tabular-nums text-neutral-900">
+                  <div className="border-x border-border">
+                    <p className="text-[15px] font-bold tabular-nums text-foreground">
                       {stat.saleAvg > 0 ? compactPKR(stat.saleAvg) : "—"}
                     </p>
-                    <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">Avg. sale</p>
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Avg. sale</p>
                   </div>
                   <div>
-                    <p className="text-[15px] font-bold tabular-nums text-neutral-900">
+                    <p className="text-[15px] font-bold tabular-nums text-foreground">
                       {stat.rentAvg > 0 ? compactPKR(stat.rentAvg, true) : "—"}
                     </p>
-                    <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">Avg. rent</p>
+                    <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Avg. rent</p>
                   </div>
                 </div>
                 <div className="mt-3.5 flex flex-wrap gap-1.5">
                   {area.goodFor.map((g) => (
                     <span
                       key={g}
-                      className="rounded-full border border-[#0F766E]/20 bg-[#E7F4F0]/70 px-2.5 py-1 text-[10.5px] font-semibold text-[#0B6B5D]"
+                      className="rounded-full border border-primary/20 bg-accent/70 px-2.5 py-1 text-[10.5px] font-semibold text-accent-foreground"
                     >
                       {g}
                     </span>
                   ))}
                 </div>
-                <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-[12.5px] font-semibold text-[#0B6B5D]">
+                <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-[12.5px] font-semibold text-accent-foreground">
                   Read the area guide
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -292,9 +292,9 @@ export function AreaDetailView({ slug }: { slug: string }) {
   if (!area) {
     return (
       <div className="mx-auto max-w-3xl bg-background px-4 py-16 sm:px-6">
-        <div className="rounded-3xl border border-neutral-200/80 bg-white p-10 text-center">
-          <MapPin className="mx-auto h-8 w-8 text-neutral-300" />
-          <p className="mt-3 text-[14px] text-neutral-500">That area guide doesn&rsquo;t exist.</p>
+        <div className="rounded-3xl border border-border bg-card p-10 text-center">
+          <MapPin className="mx-auto h-8 w-8 text-muted-foreground" />
+          <p className="mt-3 text-[14px] text-muted-foreground">That area guide doesn&rsquo;t exist.</p>
           <Button
             onClick={() => navigate({ name: "areas" })}
             className={`brand-gradient mt-5 rounded-full px-5 text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.65)] hover:opacity-95`}
@@ -337,7 +337,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
     <div className="bg-mesh mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <button
         onClick={() => navigate({ name: "areas" })}
-        className="group mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200/80 bg-white px-4 py-2 text-[13px] font-medium text-neutral-600 transition-all hover:border-[#0F766E]/40 hover:text-[#0B6B5D]"
+        className="group mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[13px] font-medium text-muted-foreground transition-all hover:border-primary/40 hover:text-accent-foreground"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         All areas
@@ -346,36 +346,36 @@ export function AreaDetailView({ slug }: { slug: string }) {
       {/* Hero */}
       <div className="grid items-start gap-8 lg:grid-cols-[1.05fr_1fr]">
         <motion.div {...fadeUp} transition={{ duration: 0.45, ease: "easeOut" }}>
-          <p className="flex flex-wrap items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+          <p className="flex flex-wrap items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
             <MapPin className="h-4 w-4" />
             Area guide · Etihad Town, Lahore
             {area.office && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#0B6B5D] ring-1 ring-[#0F766E]/25">
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-accent-foreground ring-1 ring-ring/25">
                 <Star className="h-3 w-3" />
                 Our office here
               </span>
             )}
           </p>
-          <h1 className="mt-3 text-3xl font-bold leading-[1.08] tracking-tight text-neutral-900 sm:text-[42px]">
+          <h1 className="mt-3 text-3xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-[42px]">
             {area.name}
           </h1>
-          <p className="mt-3 text-[16px] font-medium text-[#0B6B5D]">{area.tagline}</p>
+          <p className="mt-3 text-[16px] font-medium text-accent-foreground">{area.tagline}</p>
 
           {/* Live stat pills */}
           <div className="mt-6 flex flex-wrap gap-2.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-              <Building2 className="h-3.5 w-3.5 text-[#0F766E]" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12.5px] font-semibold text-foreground shadow-sm">
+              <Building2 className="h-3.5 w-3.5 text-primary" />
               {stat.count} live {stat.count === 1 ? "listing" : "listings"}
             </span>
             {stat.saleAvg > 0 && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-                <TrendingUp className="h-3.5 w-3.5 text-[#0F766E]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12.5px] font-semibold text-foreground shadow-sm">
+                <TrendingUp className="h-3.5 w-3.5 text-primary" />
                 Avg. sale {formatPKR(stat.saleAvg)}
               </span>
             )}
             {stat.rentAvg > 0 && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 text-[12.5px] font-semibold text-neutral-700 shadow-sm">
-                <TrendingUp className="h-3.5 w-3.5 text-[#0F766E]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-[12.5px] font-semibold text-foreground shadow-sm">
+                <TrendingUp className="h-3.5 w-3.5 text-primary" />
                 Avg. rent {formatPKR(stat.rentAvg, true)}
               </span>
             )}
@@ -395,7 +395,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 items-center rounded-full border border-neutral-300 bg-white px-5 text-[13.5px] font-semibold text-neutral-700 transition-colors hover:border-[#0F766E]/50 hover:text-[#0B6B5D]"
+              className="inline-flex h-11 items-center rounded-full border border-border bg-card px-5 text-[13.5px] font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-accent-foreground"
             >
               Ask about this area
             </a>
@@ -406,7 +406,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55, ease: "easeOut", delay: 0.08 }}
-          className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-white/70 shadow-[0_28px_70px_-30px_rgba(15,23,42,0.4)]"
+          className="relative aspect-[16/11] overflow-hidden rounded-3xl border border-white/70 dark:border-white/10 shadow-[0_28px_70px_-30px_rgba(15,23,42,0.4)]"
         >
           <Image
             src={area.cover}
@@ -421,12 +421,12 @@ export function AreaDetailView({ slug }: { slug: string }) {
 
       {/* Story + highlights */}
       <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
-        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.05 }} className="glass-strong rounded-3xl border border-white/70 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)] sm:p-8">
-          <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.05 }} className="glass-strong rounded-3xl border border-white/70 dark:border-white/10 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)] sm:p-8">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             The honest picture
           </h2>
           {area.about.map((p, i) => (
-            <p key={i} className="mt-4 text-[14.5px] leading-[1.8] text-neutral-600 first:mt-4">
+            <p key={i} className="mt-4 text-[14.5px] leading-[1.8] text-muted-foreground first:mt-4">
               {p}
             </p>
           ))}
@@ -434,7 +434,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
             {area.goodFor.map((g) => (
               <span
                 key={g}
-                className="rounded-full border border-[#0F766E]/20 bg-[#E7F4F0]/70 px-3 py-1.5 text-[11.5px] font-semibold text-[#0B6B5D]"
+                className="rounded-full border border-primary/20 bg-accent/70 px-3 py-1.5 text-[11.5px] font-semibold text-accent-foreground"
               >
                 Good for {g.toLowerCase()}
               </span>
@@ -442,8 +442,8 @@ export function AreaDetailView({ slug }: { slug: string }) {
           </div>
         </motion.section>
 
-        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-[#0F766E]/20 bg-[linear-gradient(135deg,rgba(231,244,240,0.9),rgba(231,244,240,0.45))] p-6 ring-1 ring-[#0F766E]/10 backdrop-blur-sm sm:p-8">
-          <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+        <motion.section {...fadeUp} transition={{ duration: 0.45, delay: 0.1 }} className="rounded-3xl border border-primary/20 bg-gradient-to-br from-accent/90 to-accent/45 p-6 ring-1 ring-ring/10 backdrop-blur-sm sm:p-8">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Why buyers pick it
           </h2>
           <ul className="mt-5 space-y-3.5">
@@ -454,9 +454,9 @@ export function AreaDetailView({ slug }: { slug: string }) {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.35, delay: 0.15 + i * 0.08 }}
-                className="flex items-start gap-3 text-[13.5px] leading-relaxed text-neutral-700"
+                className="flex items-start gap-3 text-[13.5px] leading-relaxed text-foreground"
               >
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#0F766E]" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 {h}
               </motion.li>
             ))}
@@ -468,18 +468,18 @@ export function AreaDetailView({ slug }: { slug: string }) {
       <section className="mt-14" aria-label="Society map">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+            <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
               <Map className="h-4 w-4" />
               Society map
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
               {area.name} block map
             </h2>
           </div>
           {mapImage ? (
             <button
               onClick={() => setMapOpen(true)}
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-accent/70 px-4 py-2 text-[12.5px] font-semibold text-accent-foreground transition-all hover:border-primary/50 hover:bg-accent"
             >
               View full screen
               <Maximize2 className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
@@ -489,7 +489,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
               href={`https://www.google.com/maps?q=${areaCoord.lat},${areaCoord.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-accent/70 px-4 py-2 text-[12.5px] font-semibold text-accent-foreground transition-all hover:border-primary/50 hover:bg-accent"
             >
               Open in Google Maps
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -504,7 +504,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
             className="gradient-border mt-6 overflow-hidden rounded-3xl shadow-[0_20px_48px_-24px_rgba(15,23,42,0.25)]"
           >
             {isPdfMap ? (
-              <div className="bg-[#F7F9F8]">
+              <div className="bg-muted">
                 <iframe
                   src={mapImage}
                   title={`${area.name} society layout plan (PDF)`}
@@ -517,7 +517,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
                 type="button"
                 onClick={() => setMapOpen(true)}
                 aria-label={`Open the ${area.name} block map full screen`}
-                className="block w-full cursor-zoom-in bg-[#F7F9F8]"
+                className="block w-full cursor-zoom-in bg-muted"
               >
                 <span className="relative block aspect-[4/3] w-full sm:aspect-[16/9]">
                   <Image
@@ -530,8 +530,8 @@ export function AreaDetailView({ slug }: { slug: string }) {
                 </span>
               </button>
             )}
-            <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 px-5 py-3.5">
-              <span className="text-[12.5px] leading-relaxed text-neutral-500">
+            <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3.5">
+              <span className="text-[12.5px] leading-relaxed text-muted-foreground">
                 {isPdfMap
                   ? "Official society layout — open the PDF for full detail."
                   : "Official society layout — tap the map to zoom in."}
@@ -542,7 +542,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
                     href={mapImage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+                    className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-accent-foreground hover:underline"
                   >
                     Open PDF
                     <ArrowUpRight className="h-3.5 w-3.5" />
@@ -552,7 +552,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
                   href={waLink(`Hi City Line Property! Please share the latest ${area.name} block map with prices.`)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+                  className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-accent-foreground hover:underline"
                 >
                   Ask for the latest block prices
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -569,15 +569,15 @@ export function AreaDetailView({ slug }: { slug: string }) {
             <div className="h-[400px] sm:h-[460px]">
               <RealMap markers={areaMarkers} center={areaCoord} zoom={15} className="h-full w-full" />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-neutral-100 px-5 py-3.5">
-              <span className="text-[12.5px] leading-relaxed text-neutral-500">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-3.5">
+              <span className="text-[12.5px] leading-relaxed text-muted-foreground">
                 Live location view — detailed block map available at our office.
               </span>
               <a
                 href={waLink(`Hi City Line Property! Please share the ${area.name} block map with prices.`)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[#0B6B5D] hover:underline"
+                className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-accent-foreground hover:underline"
               >
                 Request the block map
                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -591,16 +591,16 @@ export function AreaDetailView({ slug }: { slug: string }) {
       <section className="mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
               Live on the market
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+            <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
               Current listings in {area.name}
             </h2>
           </div>
           <button
             onClick={browseArea}
-            className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+            className="group inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-accent/70 px-4 py-2 text-[12.5px] font-semibold text-accent-foreground transition-all hover:border-primary/50 hover:bg-accent"
           >
             Browse all in {area.name}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -608,16 +608,16 @@ export function AreaDetailView({ slug }: { slug: string }) {
         </div>
 
         {loading ? (
-          <div className="mt-6 flex min-h-40 items-center justify-center rounded-3xl border border-neutral-200/70 bg-white">
-            <Loader2 className="h-5 w-5 animate-spin text-[#0F766E]" />
+          <div className="mt-6 flex min-h-40 items-center justify-center rounded-3xl border border-border bg-card">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
           </div>
         ) : listings.items.length === 0 ? (
-          <div className="mt-6 rounded-3xl border border-neutral-200/80 bg-white p-10 text-center">
-            <Building2 className="mx-auto h-8 w-8 text-neutral-300" />
-            <p className="mt-3 text-[14px] font-semibold text-neutral-700">
+          <div className="mt-6 rounded-3xl border border-border bg-card p-10 text-center">
+            <Building2 className="mx-auto h-8 w-8 text-muted-foreground" />
+            <p className="mt-3 text-[14px] font-semibold text-foreground">
               No published listings in this area right now
             </p>
-            <p className="mx-auto mt-1.5 max-w-sm text-[13px] leading-relaxed text-neutral-400">
+            <p className="mx-auto mt-1.5 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
               Good files here usually move before they reach the site — WhatsApp
               the office and we will send what is coming up.
             </p>
@@ -633,7 +633,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
 
       {/* Nearby areas */}
       <section className="mt-14" aria-label="Other areas">
-        <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           Explore the other areas
         </h2>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -650,20 +650,20 @@ export function AreaDetailView({ slug }: { slug: string }) {
                   navigate({ name: "area", slug: a.slug });
                   window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
                 }}
-                className="group flex items-center gap-3.5 rounded-2xl border border-neutral-200/80 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#0F766E]/35 hover:shadow-[0_12px_32px_-16px_rgba(15,118,110,0.45)]"
+                className="group flex items-center gap-3.5 rounded-2xl border border-border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_12px_32px_-16px_rgba(15,118,110,0.45)]"
               >
                 <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
                   <Image src={a.cover} alt="" fill sizes="48px" className="object-cover transition-transform duration-500 group-hover:scale-110" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13.5px] font-semibold text-neutral-900 transition-colors group-hover:text-[#0B6B5D]">
+                  <span className="block truncate text-[13.5px] font-semibold text-foreground transition-colors group-hover:text-accent-foreground">
                     {a.name}
                   </span>
-                  <span className="block text-[11.5px] text-neutral-400">
+                  <span className="block text-[11.5px] text-muted-foreground">
                     {s.count} {s.count === 1 ? "listing" : "listings"}
                   </span>
                 </span>
-                <ArrowUpRight className="h-4 w-4 shrink-0 text-neutral-300 transition-colors group-hover:text-[#0F766E]" />
+                <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
               </motion.button>
             );
           })}

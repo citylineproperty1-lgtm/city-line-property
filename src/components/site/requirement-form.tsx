@@ -122,16 +122,16 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="flex flex-col items-center rounded-2xl border border-[#0F766E]/20 bg-gradient-to-b from-[#E7F4F0]/70 to-white px-6 py-12 text-center"
+        className="flex flex-col items-center rounded-2xl border border-primary/20 bg-gradient-to-b from-accent/70 to-card px-6 py-12 text-center"
         role="status"
       >
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0F766E]/10">
-          <CheckCircle2 className="h-8 w-8 text-[#0F766E]" />
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+          <CheckCircle2 className="h-8 w-8 text-primary" />
         </span>
-        <h3 className="mt-5 text-xl font-semibold tracking-tight text-neutral-900">
+        <h3 className="mt-5 text-xl font-semibold tracking-tight text-foreground">
           Requirement saved — our team will call you
         </h3>
-        <p className="mt-2 max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
+        <p className="mt-2 max-w-sm text-[13.5px] leading-relaxed text-muted-foreground">
           Thanks {name.split(" ")[0] || "there"}! Your brief is with the City Line team.
           Expect a call within working hours (Mon–Sun, 10 AM – 8 PM).
         </p>
@@ -144,7 +144,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         </Button>
         <button
           onClick={reset}
-          className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-neutral-400 transition-colors hover:text-neutral-700"
+          className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <RotateCcw className="h-3 w-3" />
           Post another requirement
@@ -157,7 +157,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     <form onSubmit={submit} className="space-y-4" noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="rf-name" className="text-[13px] text-neutral-600">
+          <Label htmlFor="rf-name" className="text-[13px] text-muted-foreground">
             Full name *
           </Label>
           <Input
@@ -167,12 +167,12 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Ali Hassan"
-            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
+            className="h-11 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/40"
             autoComplete="name"
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="rf-phone" className="text-[13px] text-neutral-600">
+          <Label htmlFor="rf-phone" className="text-[13px] text-muted-foreground">
             Phone (WhatsApp) *
           </Label>
           <Input
@@ -182,15 +182,15 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="03xx xxx xxxx"
-            className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
+            className="h-11 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/40"
             autoComplete="tel"
           />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="rf-email" className="text-[13px] text-neutral-600">
-          Email <span className="text-neutral-400">(optional)</span>
+        <Label htmlFor="rf-email" className="text-[13px] text-muted-foreground">
+          Email <span className="text-muted-foreground">(optional)</span>
         </Label>
         <Input
           id="rf-email"
@@ -198,16 +198,16 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="h-11 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
+          className="h-11 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/40"
           autoComplete="email"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-[13px] text-neutral-600">Category</Label>
+          <Label className="text-[13px] text-muted-foreground">Category</Label>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-11 w-full rounded-xl border-neutral-200 bg-neutral-50 text-sm focus:ring-0" aria-label="Category">
+            <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Category">
               <SelectValue placeholder="What are you looking for?" />
             </SelectTrigger>
             <SelectContent>
@@ -221,9 +221,9 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-[13px] text-neutral-600">Area</Label>
+          <Label className="text-[13px] text-muted-foreground">Area</Label>
           <Select value={area} onValueChange={setArea}>
-            <SelectTrigger className="h-11 w-full rounded-xl border-neutral-200 bg-neutral-50 text-sm focus:ring-0" aria-label="Preferred area">
+            <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Preferred area">
               <SelectValue placeholder="Preferred area" />
             </SelectTrigger>
             <SelectContent>
@@ -239,9 +239,9 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-[13px] text-neutral-600">Budget</Label>
+        <Label className="text-[13px] text-muted-foreground">Budget</Label>
         <Select value={budget} onValueChange={setBudget}>
-          <SelectTrigger className="h-11 w-full rounded-xl border-neutral-200 bg-neutral-50 text-sm focus:ring-0" aria-label="Budget">
+          <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Budget">
             <SelectValue placeholder="Your budget" />
           </SelectTrigger>
           <SelectContent>
@@ -255,8 +255,8 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="rf-msg" className="text-[13px] text-neutral-600">
-          Message <span className="text-neutral-400">(optional — we build a brief for you)</span>
+        <Label htmlFor="rf-msg" className="text-[13px] text-muted-foreground">
+          Message <span className="text-muted-foreground">(optional — we build a brief for you)</span>
         </Label>
         <Textarea
           id="rf-msg"
@@ -264,7 +264,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="e.g. 5 Marla plot near the main boulevard, ideally corner…"
-          className="resize-none rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-[#0F766E]/40"
+          className="resize-none rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/40"
         />
       </div>
 
@@ -272,7 +272,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-medium text-red-700"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-medium text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
           role="alert"
         >
           {error}
@@ -296,7 +296,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           </>
         )}
       </Button>
-      <p className="text-center text-[11.5px] leading-relaxed text-neutral-400">
+      <p className="text-center text-[11.5px] leading-relaxed text-muted-foreground">
         Free &amp; non-binding. Your details are only used to call you back about this
         requirement — never shared, never spammed.
       </p>

@@ -209,16 +209,16 @@ export function AdminOverview({
         <AdminCard>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
-                <TrendingUp className="h-4 w-4 text-[#0F766E]" />
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+                <TrendingUp className="h-4 w-4 text-primary" />
                 Last 14 days
               </h3>
-              <p className="mt-0.5 text-[12px] text-neutral-400">New leads captured, day by day.</p>
+              <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">New leads captured, day by day.</p>
             </div>
-            <div className="flex items-center gap-4 text-[11.5px] font-medium text-neutral-500">
+            <div className="flex items-center gap-4 text-[11.5px] font-medium text-neutral-500 dark:text-neutral-400">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-[#0F766E]" /> Leads
-                <b className="tabular-nums text-neutral-800">{leads14}</b>
+                <span className="h-2 w-2 rounded-full bg-primary" /> Leads
+                <b className="tabular-nums text-neutral-800 dark:text-neutral-200">{leads14}</b>
               </span>
             </div>
           </div>
@@ -230,7 +230,7 @@ export function AdminOverview({
         {/* Leads pipeline funnel */}
         <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
           <AdminCard className="h-full">
-            <h3 className="text-[15px] font-semibold text-neutral-900">Leads pipeline</h3>
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Leads pipeline</h3>
             {o.leads.total === 0 ? (
               <EmptyLine text="No leads yet — website inquiries will appear here." />
             ) : (
@@ -244,8 +244,8 @@ export function AdminOverview({
                   { key: "LOST", label: "Lost", count: o.leads.lost, color: "#E5484D" },
                 ].map((s, i) => (
                   <div key={s.key} className="flex items-center gap-3">
-                    <span className="w-20 shrink-0 text-right text-[12px] font-medium text-neutral-500">{s.label}</span>
-                    <div className="h-7 flex-1 overflow-hidden rounded-lg bg-black/[0.04]">
+                    <span className="w-20 shrink-0 text-right text-[12px] font-medium text-neutral-500 dark:text-neutral-400">{s.label}</span>
+                    <div className="h-7 flex-1 overflow-hidden rounded-lg bg-muted">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: s.count === 0 ? "0%" : `${Math.max(6, (s.count / Math.max(1, o.leads.total)) * 100)}%` }}
@@ -263,7 +263,7 @@ export function AdminOverview({
                     </div>
                   </div>
                 ))}
-                <p className="pt-1 text-right text-[11px] text-neutral-400">
+                <p className="pt-1 text-right text-[11px] text-neutral-400 dark:text-neutral-500">
                   {o.leads.total > 0
                     ? `${Math.round((o.leads.won / o.leads.total) * 100)}% win rate`
                     : "—"}
@@ -276,7 +276,7 @@ export function AdminOverview({
         {/* Inventory by category */}
         <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
           <AdminCard className="h-full">
-            <h3 className="text-[15px] font-semibold text-neutral-900">Inventory by category</h3>
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Inventory by category</h3>
             {o.byCategory.length === 0 ? (
               <EmptyLine text="No listings yet." />
             ) : (
@@ -284,7 +284,7 @@ export function AdminOverview({
                 {o.byCategory.map((c, i) => (
                   <li key={c.slug}>
                     <div className="flex items-center justify-between text-[12.5px]">
-                      <span className="flex items-center gap-2 font-medium text-neutral-700">
+                      <span className="flex items-center gap-2 font-medium text-neutral-700 dark:text-neutral-300">
                         <span
                           className="h-2.5 w-2.5 rounded-full"
                           style={{ backgroundColor: c.color }}
@@ -292,9 +292,9 @@ export function AdminOverview({
                         />
                         {c.name}
                       </span>
-                      <span className="font-semibold tabular-nums text-neutral-500">{c.count}</span>
+                      <span className="font-semibold tabular-nums text-neutral-500 dark:text-neutral-400">{c.count}</span>
                     </div>
-                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-black/[0.05]">
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${(c.count / maxCat) * 100}%` }}
@@ -313,7 +313,7 @@ export function AdminOverview({
         {/* Listings by area */}
         <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }}>
           <AdminCard className="h-full">
-            <h3 className="text-[15px] font-semibold text-neutral-900">Listings by area</h3>
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Listings by area</h3>
             {o.byArea.length === 0 ? (
               <EmptyLine text="No listings yet." />
             ) : (
@@ -321,10 +321,10 @@ export function AdminOverview({
                 {o.byArea.map((a, i) => (
                   <li key={a.area}>
                     <div className="flex items-center justify-between text-[12.5px]">
-                      <span className="font-medium text-neutral-700">{a.area}</span>
-                      <span className="font-semibold tabular-nums text-neutral-500">{a.count}</span>
+                      <span className="font-medium text-neutral-700 dark:text-neutral-300">{a.area}</span>
+                      <span className="font-semibold tabular-nums text-neutral-500 dark:text-neutral-400">{a.count}</span>
                     </div>
-                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-black/[0.05]">
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${(a.count / maxArea) * 100}%` }}
@@ -343,14 +343,14 @@ export function AdminOverview({
         <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.18 }}>
           <AdminCard className="h-full">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900">
-                <CalendarClock className="h-4 w-4 text-[#0F766E]" />
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
+                <CalendarClock className="h-4 w-4 text-primary" />
                 Follow-ups due
               </h3>
               {onOpenLeads && (o.followUps.overdue > 0 || o.followUps.today > 0) && (
                 <button
                   onClick={onOpenLeads}
-                  className="rounded-full bg-[#E7F4F0] px-3 py-1 text-[11px] font-semibold text-[#0B6B5D] transition-colors hover:bg-[#D9EEE8]"
+                  className="rounded-full bg-accent px-3 py-1 text-[11px] font-semibold text-accent-foreground transition-colors hover:bg-[#D9EEE8] dark:hover:bg-white/10"
                 >
                   Open Leads
                 </button>
@@ -366,36 +366,36 @@ export function AdminOverview({
                       "rounded-2xl px-4 py-3",
                       o.followUps.overdue > 0
                         ? "bg-[#E5484D]/[0.08] ring-1 ring-[#E5484D]/25"
-                        : "bg-black/[0.03]"
+                        : "bg-muted"
                     )}
                   >
                     <p
                       className={cn(
                         "text-xl font-bold tabular-nums",
-                        o.followUps.overdue > 0 ? "text-[#D5303B]" : "text-neutral-400"
+                        o.followUps.overdue > 0 ? "text-[#D5303B]" : "text-neutral-400 dark:text-neutral-500"
                       )}
                     >
                       {o.followUps.overdue}
                     </p>
-                    <p className="text-[11px] font-medium text-neutral-400">overdue</p>
+                    <p className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">overdue</p>
                   </div>
                   <div
                     className={cn(
                       "rounded-2xl px-4 py-3",
                       o.followUps.today > 0
-                        ? "bg-[linear-gradient(135deg,rgba(20,160,143,0.22),rgba(15,118,110,0.12))] ring-1 ring-[#0F766E]/30"
-                        : "bg-black/[0.03]"
+                        ? "bg-[linear-gradient(135deg,rgba(20,160,143,0.22),rgba(15,118,110,0.12))] ring-1 ring-primary/30"
+                        : "bg-muted"
                     )}
                   >
                     <p
                       className={cn(
                         "text-xl font-bold tabular-nums",
-                        o.followUps.today > 0 ? "text-[#0B6B5D]" : "text-neutral-400"
+                        o.followUps.today > 0 ? "text-accent-foreground" : "text-neutral-400 dark:text-neutral-500"
                       )}
                     >
                       {o.followUps.today}
                     </p>
-                    <p className="text-[11px] font-medium text-neutral-400">due today</p>
+                    <p className="text-[11px] font-medium text-neutral-400 dark:text-neutral-500">due today</p>
                   </div>
                 </div>
                 {o.followUps.upcoming.length > 0 && (
@@ -403,11 +403,11 @@ export function AdminOverview({
                     {o.followUps.upcoming.slice(0, 3).map((u) => (
                       <li
                         key={u.id}
-                        className="flex items-center justify-between gap-2 rounded-xl bg-neutral-50/80 px-3 py-2 text-[12px]"
+                        className="flex items-center justify-between gap-2 rounded-xl bg-neutral-50/80 px-3 py-2 text-[12px] dark:bg-muted/80"
                       >
                         <span className="flex min-w-0 items-center gap-2">
-                          <Phone className="h-3 w-3 shrink-0 text-neutral-400" />
-                          <span className="truncate font-semibold text-neutral-700">{u.name}</span>
+                          <Phone className="h-3 w-3 shrink-0 text-neutral-400 dark:text-neutral-500" />
+                          <span className="truncate font-semibold text-neutral-700 dark:text-neutral-300">{u.name}</span>
                         </span>
                         <span
                           className={cn(
@@ -431,8 +431,8 @@ export function AdminOverview({
       <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }}>
         <AdminCard>
           <div className="flex items-center justify-between">
-            <h3 className="text-[15px] font-semibold text-neutral-900">Recent leads</h3>
-            <span className="rounded-full bg-black/[0.05] px-2.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-500">
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Recent leads</h3>
+            <span className="rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-500 dark:text-neutral-400">
               latest {o.recentLeads.length}
             </span>
           </div>
@@ -446,31 +446,31 @@ export function AdminOverview({
               {o.recentLeads.map((l) => (
                 <li
                   key={l.id}
-                  className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-black/[0.05] bg-neutral-50/60 px-3.5 py-3"
+                  className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-border bg-neutral-50/60 px-3.5 py-3 dark:bg-muted/60"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-[13.5px] font-semibold text-neutral-900">{l.name}</p>
+                      <p className="truncate text-[13.5px] font-semibold text-neutral-900 dark:text-neutral-100">{l.name}</p>
                       <StatusChip status={l.status} />
                       <WaChip status={l.waStatus} />
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11.5px] text-neutral-400">
-                      <a href={`tel:${l.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-neutral-700">
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11.5px] text-neutral-400 dark:text-neutral-500">
+                      <a href={`tel:${l.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 hover:text-neutral-700 dark:hover:text-neutral-200">
                         <Phone className="h-3 w-3" />
                         {l.phone}
                       </a>
-                      <span className="rounded-full bg-black/[0.05] px-2 py-0.5 font-medium text-neutral-500">
+                      <span className="rounded-full bg-muted px-2 py-0.5 font-medium text-neutral-500 dark:text-neutral-400">
                         {SOURCE_LABELS[l.source] ?? l.source}
                       </span>
                       {l.property && (
-                        <span className="max-w-52 truncate rounded-full bg-[#E7F4F0] px-2 py-0.5 font-medium text-[#0B6B5D]">
+                        <span className="max-w-52 truncate rounded-full bg-accent px-2 py-0.5 font-medium text-accent-foreground">
                           {l.property}
                         </span>
                       )}
                     </div>
-                    <p className="mt-1.5 line-clamp-1 text-[12px] text-neutral-500">&ldquo;{l.message}&rdquo;</p>
+                    <p className="mt-1.5 line-clamp-1 text-[12px] text-neutral-500 dark:text-neutral-400">&ldquo;{l.message}&rdquo;</p>
                   </div>
-                  <time className="shrink-0 text-[11px] text-neutral-400" dateTime={l.createdAt}>
+                  <time className="shrink-0 text-[11px] text-neutral-400 dark:text-neutral-500" dateTime={l.createdAt}>
                     {timeAgo(l.createdAt)}
                   </time>
                 </li>
@@ -484,7 +484,7 @@ export function AdminOverview({
 }
 
 function EmptyLine({ text }: { text: string }) {
-  return <p className="mt-4 rounded-xl bg-neutral-50/70 px-4 py-6 text-center text-[12.5px] text-neutral-400">{text}</p>;
+  return <p className="mt-4 rounded-xl bg-neutral-50/70 px-4 py-6 text-center text-[12.5px] text-neutral-400 dark:bg-muted/70 dark:text-neutral-500">{text}</p>;
 }
 
 /** Single-series SVG chart: emerald leads (area + line), 14 days. */
@@ -566,7 +566,7 @@ function TrendChart({
               x={px(i)}
               y={H - 8}
               textAnchor={i === 0 ? "start" : i === data.length - 1 ? "end" : "middle"}
-              className="fill-neutral-400"
+              className="fill-neutral-400 dark:fill-neutral-500"
               fontSize="10"
             >
               {d.label}
@@ -575,7 +575,7 @@ function TrendChart({
         )}
       </svg>
       {total === 0 && (
-        <p className="-mt-24 flex items-center justify-center gap-2 text-[12.5px] text-neutral-400">
+        <p className="-mt-24 flex items-center justify-center gap-2 text-[12.5px] text-neutral-400 dark:text-neutral-500">
           <Eye className="h-4 w-4" /> No leads in the last 14 days yet.
         </p>
       )}

@@ -73,12 +73,12 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
         transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
         className="w-full max-w-sm"
       >
-        <div className="rounded-3xl border border-black/[0.06] bg-white p-7 shadow-[0_10px_40px_rgba(0,0,0,0.07)] sm:p-8">
+        <div className="rounded-3xl border border-border bg-card p-7 shadow-[0_10px_40px_rgba(0,0,0,0.07)] sm:p-8">
           <div className="flex flex-col items-center text-center">
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-1.5 shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-1.5 shadow-sm">
               <Image src="/logo.png" alt="City Line Property logo" width={52} height={52} className="h-13 w-13 rounded-xl" />
             </div>
-            <h1 className="mt-4 text-xl font-semibold tracking-tight text-neutral-900">
+            <h1 className="mt-4 text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               City Line Property
             </h1>
             <p className={`mt-1 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] ${BRAND_TEXT}`}>
@@ -89,7 +89,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
 
           <form onSubmit={submit} className="mt-7 space-y-4" noValidate>
             <div className="space-y-1.5">
-              <Label htmlFor="admin-email" className="text-[12.5px] text-neutral-600">
+              <Label htmlFor="admin-email" className="text-[12.5px] text-neutral-600 dark:text-neutral-300">
                 Email
               </Label>
               <Input
@@ -99,14 +99,14 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                 placeholder="you@citylineproperty.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-11 rounded-xl border-black/[0.09] bg-white text-[14px] focus-visible:ring-[#0F766E]/35"
+                className="h-11 rounded-xl border-border bg-card text-[14px] focus-visible:ring-ring/35"
                 disabled={busy}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="admin-password" className="text-[12.5px] text-neutral-600">
+              <Label htmlFor="admin-password" className="text-[12.5px] text-neutral-600 dark:text-neutral-300">
                 Password
               </Label>
               <div className="relative">
@@ -117,7 +117,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                   placeholder="••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-xl border-black/[0.09] bg-white pr-11 text-[14px] focus-visible:ring-[#0F766E]/35"
+                  className="h-11 rounded-xl border-border bg-card pr-11 text-[14px] focus-visible:ring-ring/35"
                   disabled={busy}
                   required
                 />
@@ -125,7 +125,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
                   type="button"
                   onClick={() => setShow((s) => !s)}
                   aria-label={show ? "Hide password" : "Show password"}
-                  className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-black/[0.05] hover:text-neutral-700"
+                  className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-black/[0.05] hover:text-neutral-700 dark:text-neutral-500 dark:hover:bg-white/10 dark:hover:text-neutral-200"
                 >
                   {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -163,7 +163,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
           </form>
         </div>
 
-        <p className="mt-5 text-center text-[12px] leading-relaxed text-neutral-400">
+        <p className="mt-5 text-center text-[12px] leading-relaxed text-neutral-400 dark:text-neutral-500">
           Authorized personnel only · All actions are logged
           <br />
           For your security this panel signs out automatically when the page is

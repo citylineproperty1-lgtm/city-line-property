@@ -229,11 +229,11 @@ export function AdminDigest({ api }: { api: AdminApi }) {
         <AdminCard className="p-4 sm:p-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900">
-                <Newspaper className="h-4 w-4 text-[#C9A227]" />
+              <h2 className="flex items-center gap-2 text-[15px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+                <Newspaper className="h-4 w-4 text-[#C9A227] dark:text-[#E3C34A]" />
                 Property Digest
               </h2>
-              <p className="mt-0.5 text-[12.5px] text-neutral-500">
+              <p className="mt-0.5 text-[12.5px] text-neutral-500 dark:text-neutral-400">
                 {loaded
                   ? `${posts.length} post(s) · ${publishedCount} published · appears on #/digest instantly`
                   : "Loading posts…"}
@@ -245,7 +245,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
             </Button>
           </div>
           {loadError && (
-            <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-[12.5px] font-medium text-red-600">
+            <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-[12.5px] font-medium text-red-600 dark:bg-red-950/40 dark:text-red-400">
               {loadError}
             </p>
           )}
@@ -261,9 +261,9 @@ export function AdminDigest({ api }: { api: AdminApi }) {
         </div>
       ) : posts.length === 0 ? (
         <AdminCard className="p-10 text-center">
-          <FileText className="mx-auto h-10 w-10 text-neutral-300" />
-          <p className="mt-3 text-[14.5px] font-semibold text-neutral-900">No posts yet</p>
-          <p className="mt-1 text-[13px] text-neutral-500">
+          <FileText className="mx-auto h-10 w-10 text-neutral-300 dark:text-neutral-600" />
+          <p className="mt-3 text-[14.5px] font-semibold text-neutral-900 dark:text-neutral-100">No posts yet</p>
+          <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
             Write the first market note — it goes live on the public digest as soon as you publish.
           </p>
         </AdminCard>
@@ -278,42 +278,42 @@ export function AdminDigest({ api }: { api: AdminApi }) {
             >
               <AdminCard className="flex items-center gap-4 p-4 sm:px-5">
                 {/* Cover thumb */}
-                <span className="relative hidden h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-[#F5EDD7] sm:block">
+                <span className="relative hidden h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-[#F5EDD7] sm:block dark:bg-[#332B12]">
                   {p.cover ? (
                     <Image src={p.cover} alt="" fill sizes="96px" className="object-cover" unoptimized />
                   ) : (
                     <span className="flex h-full items-center justify-center">
-                      <Newspaper className="h-6 w-6 text-[#C9A227]/50" />
+                      <Newspaper className="h-6 w-6 text-[#C9A227]/50 dark:text-[#E3C34A]/50" />
                     </span>
                   )}
                 </span>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full bg-[#F5EDD7] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8A7119]">
+                    <span className="rounded-full bg-[#F5EDD7] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8A7119] dark:bg-[#332B12] dark:text-[#E3C34A]">
                       {p.tag}
                     </span>
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold",
                         p.published
-                          ? "border-[#34C759]/30 bg-[#34C759]/10 text-[#1E8E3E]"
-                          : "border-black/10 bg-black/[0.04] text-neutral-500"
+                          ? "border-[#34C759]/30 bg-[#34C759]/10 text-[#1E8E3E] dark:text-[#4ADE80]"
+                          : "border-border bg-muted text-neutral-500 dark:text-neutral-400"
                       )}
                     >
                       <span
                         className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          p.published ? "bg-[#34C759]" : "bg-neutral-400"
+                          p.published ? "bg-[#34C759]" : "bg-neutral-400 dark:bg-neutral-500"
                         )}
                       />
                       {p.published ? "Published" : "Draft"}
                     </span>
                   </div>
-                  <p className="mt-1.5 truncate text-[14px] font-semibold tracking-tight text-neutral-900">
+                  <p className="mt-1.5 truncate text-[14px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
                     {p.title}
                   </p>
-                  <p className="mt-0.5 flex items-center gap-3 text-[11.5px] text-neutral-400">
+                  <p className="mt-0.5 flex items-center gap-3 text-[11.5px] text-neutral-400 dark:text-neutral-500">
                     <span>{formatDate(p.createdAt)}</span>
                     <span className="inline-flex items-center gap-1">
                       <Eye className="h-3 w-3" />
@@ -330,7 +330,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
                       onCheckedChange={(v) => void togglePublished(p, v)}
                       aria-label={`Toggle published for ${p.title}`}
                     />
-                    <span className="text-[11px] font-medium text-neutral-500">Live</span>
+                    <span className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">Live</span>
                   </label>
                   <div className="flex items-center gap-1.5">
                     <Button
@@ -346,7 +346,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
                       size="sm"
                       variant="outline"
                       onClick={() => setDeleteTarget(p)}
-                      className="h-8 rounded-full border-red-200 px-2.5 text-red-500 hover:bg-red-50 hover:text-red-600"
+                      className="h-8 rounded-full border-red-200 px-2.5 text-red-500 hover:bg-red-50 hover:text-red-600 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
                       aria-label={`Delete ${p.title}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -374,7 +374,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
 
           <div className="grid gap-3.5 py-1">
             <div className="grid gap-1.5">
-              <Label htmlFor="post-title" className="text-[12px] font-semibold text-neutral-600">
+              <Label htmlFor="post-title" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">
                 Title *
               </Label>
               <Input
@@ -388,7 +388,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
 
             <div className="grid gap-3.5 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label htmlFor="post-tag" className="text-[12px] font-semibold text-neutral-600">
+                <Label htmlFor="post-tag" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">
                   Tag
                 </Label>
                 <Input
@@ -406,8 +406,8 @@ export function AdminDigest({ api }: { api: AdminApi }) {
                       className={cn(
                         "rounded-full border px-2 py-0.5 text-[10.5px] font-medium transition-colors",
                         form.tag === t
-                          ? "border-[#C9A227]/50 bg-[#F5EDD7] text-[#8A7119]"
-                          : "border-black/10 bg-white text-neutral-500 hover:bg-neutral-50"
+                          ? "border-[#C9A227]/50 bg-[#F5EDD7] text-[#8A7119] dark:bg-[#332B12] dark:text-[#E3C34A]"
+                          : "border-border bg-card text-neutral-500 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:bg-white/10"
                       )}
                     >
                       {t}
@@ -417,12 +417,12 @@ export function AdminDigest({ api }: { api: AdminApi }) {
               </div>
 
               <div className="grid gap-1.5">
-                <Label htmlFor="post-cover" className="text-[12px] font-semibold text-neutral-600">
+                <Label htmlFor="post-cover" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">
                   Cover image
                 </Label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+                    <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
                     <Input
                       id="post-cover"
                       value={form.cover}
@@ -452,7 +452,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
                   </Button>
                 </div>
                 {form.cover.trim() && (
-                  <span className="relative mt-1 h-24 overflow-hidden rounded-xl border border-black/[0.08] bg-neutral-50">
+                  <span className="relative mt-1 h-24 overflow-hidden rounded-xl border border-border bg-neutral-50 dark:bg-neutral-800">
                     <Image
                       src={form.cover.trim()}
                       alt="Cover preview"
@@ -467,8 +467,8 @@ export function AdminDigest({ api }: { api: AdminApi }) {
             </div>
 
             <div className="grid gap-1.5">
-              <Label htmlFor="post-excerpt" className="text-[12px] font-semibold text-neutral-600">
-                Excerpt <span className="font-normal text-neutral-400">· shown on cards (auto from content if empty)</span>
+              <Label htmlFor="post-excerpt" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">
+                Excerpt <span className="font-normal text-neutral-400 dark:text-neutral-500">· shown on cards (auto from content if empty)</span>
               </Label>
               <Textarea
                 id="post-excerpt"
@@ -481,7 +481,7 @@ export function AdminDigest({ api }: { api: AdminApi }) {
             </div>
 
             <div className="grid gap-1.5">
-              <Label htmlFor="post-content" className="text-[12px] font-semibold text-neutral-600">
+              <Label htmlFor="post-content" className="text-[12px] font-semibold text-neutral-600 dark:text-neutral-300">
                 Article
               </Label>
               <Textarea
@@ -492,19 +492,19 @@ export function AdminDigest({ api }: { api: AdminApi }) {
                 className="rounded-xl leading-relaxed"
                 placeholder={"Opening paragraph…\n\n## A section heading\n\nMore paragraphs…\n\n1. A numbered list\n2. Second point"}
               />
-              <p className="flex items-center gap-1.5 text-[11px] text-neutral-400">
+              <p className="flex items-center gap-1.5 text-[11px] text-neutral-400 dark:text-neutral-500">
                 <FileText className="h-3 w-3" />
                 {form.content.trim() ? form.content.trim().split(/\s+/).length : 0} words ·{" "}
                 {Math.max(1, Math.round((form.content.trim() ? form.content.trim().split(/\s+/).length : 0) / 200))} min read
               </p>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-black/[0.07] bg-[#FAFAF8] px-4 py-3">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-muted px-4 py-3">
               <div className="flex items-center gap-2.5">
-                <Send className={cn("h-4 w-4", form.published ? "text-[#34C759]" : "text-neutral-400")} />
+                <Send className={cn("h-4 w-4", form.published ? "text-[#34C759]" : "text-neutral-400 dark:text-neutral-500")} />
                 <div>
-                  <p className="text-[13px] font-semibold text-neutral-800">Publish immediately</p>
-                  <p className="text-[11.5px] text-neutral-500">
+                  <p className="text-[13px] font-semibold text-neutral-800 dark:text-neutral-200">Publish immediately</p>
+                  <p className="text-[11.5px] text-neutral-500 dark:text-neutral-400">
                     {form.published ? "Goes live on #/digest when saved" : "Saved as a private draft"}
                   </p>
                 </div>

@@ -274,7 +274,7 @@ export function AdminListingDrawer({
     step?: string;
   }) => (
     <div className="space-y-1.5">
-      <Label htmlFor={props.id} className="text-[12px] text-neutral-500">
+      <Label htmlFor={props.id} className="text-[12px] text-neutral-500 dark:text-neutral-400 dark:text-neutral-400">
         {props.label}
       </Label>
       <Input
@@ -286,7 +286,7 @@ export function AdminListingDrawer({
         placeholder={props.placeholder}
         value={form[k] as string}
         onChange={(e) => set(k, e.target.value as ListingForm[typeof k])}
-        className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+        className="h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
       />
     </div>
   );
@@ -297,8 +297,8 @@ export function AdminListingDrawer({
         side="right"
         className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl lg:max-w-2xl"
       >
-        <SheetHeader className="gap-1 border-b border-black/[0.06] bg-white px-5 py-4 sm:px-6">
-          <SheetTitle className="text-[16px] font-semibold tracking-tight text-neutral-900">
+        <SheetHeader className="gap-1 border-b border-border bg-card px-5 py-4 sm:px-6">
+          <SheetTitle className="text-[16px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
             {listing ? (
               <>
                 Edit listing{" "}
@@ -308,7 +308,7 @@ export function AdminListingDrawer({
               "Add new listing"
             )}
           </SheetTitle>
-          <SheetDescription className="text-[12.5px] text-neutral-400">
+          <SheetDescription className="text-[12.5px] text-neutral-400 dark:text-neutral-500">
             {listing
               ? "Changes go live the moment the listing is published."
               : "Reference (CLP-1xx) and web address are assigned automatically."}
@@ -330,7 +330,7 @@ export function AdminListingDrawer({
           {/* Core */}
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="f-title" className="text-[12px] text-neutral-500">
+              <Label htmlFor="f-title" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Title *
               </Label>
               <Input
@@ -338,11 +338,11 @@ export function AdminListingDrawer({
                 value={form.title}
                 onChange={(e) => set("title", e.target.value)}
                 placeholder="5 Marla house — Royal Enclave"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="f-desc" className="text-[12px] text-neutral-500">
+              <Label htmlFor="f-desc" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Description
               </Label>
               <Textarea
@@ -351,12 +351,12 @@ export function AdminListingDrawer({
                 value={form.description}
                 onChange={(e) => set("description", e.target.value)}
                 placeholder="Highlight the block, plot number, facing, possession status…"
-                className="resize-none rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="resize-none rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="f-price" className="text-[12px] text-neutral-500">
+                <Label htmlFor="f-price" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                   Price (PKR) * {form.status === "RENT" && "· per month"}
                 </Label>
                 <Input
@@ -366,34 +366,34 @@ export function AdminListingDrawer({
                   value={form.price}
                   onChange={(e) => set("price", e.target.value)}
                   placeholder="12500000"
-                  className="h-10 rounded-xl border-black/[0.09] text-[13.5px] tabular-nums focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border text-[13.5px] tabular-nums focus-visible:ring-ring/35"
                 />
                 {(() => {
                   const n = Number(form.price);
                   if (!form.price || !Number.isFinite(n) || n <= 0) {
                     return (
-                      <p className="text-[11px] text-neutral-400">
+                      <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
                         Type the price — we show it in words so you can double-check.
                       </p>
                     );
                   }
                   return (
                     <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11.5px] leading-snug">
-                      <span className="font-semibold tabular-nums text-neutral-700">
+                      <span className="font-semibold tabular-nums text-neutral-700 dark:text-neutral-300">
                         = {formatPKR(n)}
                       </span>
-                      <span className="rounded-full bg-[#E7F4F0] px-2 py-0.5 font-semibold text-[#0B6B5D]">
+                      <span className="rounded-full bg-accent px-2 py-0.5 font-semibold text-accent-foreground">
                         {pkrInWords(n)}
                       </span>
                       {form.status === "RENT" && (
-                        <span className="text-neutral-400">per month</span>
+                        <span className="text-neutral-400 dark:text-neutral-500">per month</span>
                       )}
                     </p>
                   );
                 })()}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] text-neutral-500">Deal type *</Label>
+                <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">Deal type *</Label>
                 <Segmented
                   layoutId="drawer-deal"
                   options={[
@@ -408,9 +408,9 @@ export function AdminListingDrawer({
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label className="text-[12px] text-neutral-500">Category *</Label>
+                <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">Category *</Label>
                 <Select value={form.type} onValueChange={(v) => set("type", v)}>
-                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
+                  <SelectTrigger className="h-10 w-full rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35">
                     <SelectValue placeholder="Choose category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -426,9 +426,9 @@ export function AdminListingDrawer({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] text-neutral-500">Area *</Label>
+                <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">Area *</Label>
                 <Select value={form.district} onValueChange={(v) => set("district", v)}>
-                  <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
+                  <SelectTrigger className="h-10 w-full rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35">
                     <SelectValue placeholder="Choose area" />
                   </SelectTrigger>
                   <SelectContent>
@@ -442,7 +442,7 @@ export function AdminListingDrawer({
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="f-address" className="text-[12px] text-neutral-500">
+              <Label htmlFor="f-address" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 Address / block detail
               </Label>
               <Input
@@ -450,21 +450,21 @@ export function AdminListingDrawer({
                 value={form.address}
                 onChange={(e) => set("address", e.target.value)}
                 placeholder="Block C, 150 ft boulevard"
-                className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
               />
             </div>
           </div>
 
           {/* Specs */}
-          <fieldset className="rounded-2xl border border-black/[0.06] p-4">
-            <legend className="px-1.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+          <fieldset className="rounded-2xl border border-border p-4">
+            <legend className="px-1.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
               Specifications
             </legend>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {numInput("beds", { id: "f-beds", label: "Bedrooms" })}
               {numInput("baths", { id: "f-baths", label: "Bathrooms" })}
               <div className="space-y-1.5">
-                <Label htmlFor="f-parking" className="text-[12px] text-neutral-500">
+                <Label htmlFor="f-parking" className="text-[12px] text-neutral-500 dark:text-neutral-400">
                   Parking
                 </Label>
                 <Input
@@ -472,9 +472,9 @@ export function AdminListingDrawer({
                   value={form.parking}
                   onChange={(e) => set("parking", e.target.value)}
                   placeholder="e.g. Available"
-                  className="h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                  className="h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
                 />
-                <p className="text-[11px] text-neutral-400">
+                <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
                   Just write “Available” — no numbers needed.
                 </p>
               </div>
@@ -486,9 +486,9 @@ export function AdminListingDrawer({
           {/* Status + flags */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label className="text-[12px] text-neutral-500">Listing state</Label>
+              <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">Listing state</Label>
               <Select value={form.listingState} onValueChange={(v) => set("listingState", v)}>
-                <SelectTrigger className="h-10 w-full rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35">
+                <SelectTrigger className="h-10 w-full rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -500,9 +500,9 @@ export function AdminListingDrawer({
                 </SelectContent>
               </Select>
             </div>
-            <label className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-4 py-3">
-              <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700">
-                <Star className="h-4 w-4 text-[#0F766E]" /> Published
+            <label className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">
+              <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700 dark:text-neutral-300">
+                <Star className="h-4 w-4 text-primary" /> Published
               </span>
               <Switch
                 checked={form.published}
@@ -510,9 +510,9 @@ export function AdminListingDrawer({
                 aria-label="Published on public site"
               />
             </label>
-            <label className="flex items-center justify-between rounded-2xl border border-black/[0.06] px-4 py-3">
-              <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700">
-                <Crown className="h-4 w-4 text-[#0F766E]" /> Featured
+            <label className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">
+              <span className="flex items-center gap-2 text-[13px] font-medium text-neutral-700 dark:text-neutral-300">
+                <Crown className="h-4 w-4 text-primary" /> Featured
               </span>
               <Switch
                 checked={form.featured}
@@ -525,8 +525,8 @@ export function AdminListingDrawer({
           {/* Amenities */}
           <div className="space-y-2">
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-              <Label className="text-[12px] text-neutral-500">Amenities</Label>
-              <span className="text-[11px] text-neutral-400">
+              <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">Amenities</Label>
+              <span className="text-[11px] text-neutral-400 dark:text-neutral-500">
                 Tap a common one — it&apos;s added to the post automatically
               </span>
             </div>
@@ -541,13 +541,13 @@ export function AdminListingDrawer({
                   }
                 }}
                 placeholder="e.g. Solar system, Servant quarter…"
-                className="h-10 flex-1 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="h-10 flex-1 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35"
               />
               <Button
                 type="button"
                 onClick={addAmenity}
                 variant="outline"
-                className="h-10 rounded-xl border-black/[0.09] px-3.5"
+                className="h-10 rounded-xl border-border px-3.5"
               >
                 <Plus className="h-4 w-4" /> Add
               </Button>
@@ -567,8 +567,8 @@ export function AdminListingDrawer({
                     className={cn(
                       "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11.5px] font-medium transition-colors",
                       active
-                        ? "border-[#0F766E] bg-[#0F766E] text-white shadow-[0_4px_10px_-4px_rgba(15,118,110,0.55)]"
-                        : "border-black/[0.08] bg-white text-neutral-600 hover:border-[#0F766E]/40 hover:bg-[#F7FBFA] hover:text-[#0B6B5D]"
+                        ? "border-primary bg-primary text-white shadow-[0_4px_10px_-4px_rgba(15,118,110,0.55)]"
+                        : "border-border bg-card text-neutral-600 hover:border-primary/40 hover:bg-muted hover:text-accent-foreground dark:text-neutral-300"
                     )}
                   >
                     {active && <Check className="h-3 w-3" />}
@@ -582,14 +582,14 @@ export function AdminListingDrawer({
                 {form.amenities.map((a) => (
                   <span
                     key={a}
-                    className="inline-flex items-center gap-1 rounded-full border border-[#0F766E]/30 bg-[#E7F4F0] py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-[#0B6B5D]"
+                    className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-accent py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-accent-foreground"
                   >
                     {a}
                     <button
                       type="button"
                       onClick={() => set("amenities", form.amenities.filter((x) => x !== a))}
                       aria-label={`Remove amenity ${a}`}
-                      className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-[#0F766E]/15"
+                      className="flex h-4 w-4 items-center justify-center rounded-full hover:bg-primary/15"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -601,9 +601,9 @@ export function AdminListingDrawer({
 
           {/* Images manager */}
           <div className="space-y-2.5">
-            <Label className="text-[12px] text-neutral-500">
+            <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">
               Photos{" "}
-              <span className="text-neutral-400">
+              <span className="text-neutral-400 dark:text-neutral-500">
                 · drag to reorder — first image is the cover
               </span>
             </Label>
@@ -626,8 +626,8 @@ export function AdminListingDrawer({
                     onDrop={(e) => e.preventDefault()}
                     onDragEnd={() => setDragIdx(null)}
                     className={cn(
-                      "group relative aspect-[4/3] overflow-hidden rounded-xl border border-black/[0.08] cursor-grab active:cursor-grabbing",
-                      dragIdx === i && "opacity-40 ring-2 ring-[#0F766E]"
+                      "group relative aspect-[4/3] overflow-hidden rounded-xl border border-border cursor-grab active:cursor-grabbing",
+                      dragIdx === i && "opacity-40 ring-2 ring-primary"
                     )}
                   >
                     <Image
@@ -639,7 +639,7 @@ export function AdminListingDrawer({
                       unoptimized
                     />
                     {i === 0 && (
-                      <span className="absolute left-1.5 top-1.5 rounded-full bg-[#0F766E] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-white">
+                      <span className="absolute left-1.5 top-1.5 rounded-full bg-primary px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-white">
                         Cover
                       </span>
                     )}
@@ -691,7 +691,7 @@ export function AdminListingDrawer({
             <div className="flex flex-col gap-2 sm:flex-row">
               <div className="flex flex-1 gap-2">
                 <div className="relative flex-1">
-                  <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+                  <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
                   <Input
                     value={urlDraft}
                     onChange={(e) => setUrlDraft(e.target.value)}
@@ -702,14 +702,14 @@ export function AdminListingDrawer({
                       }
                     }}
                     placeholder="Paste image URL…"
-                    className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13px] focus-visible:ring-[#0F766E]/35"
+                    className="h-10 rounded-xl border-border pl-9 text-[13px] focus-visible:ring-ring/35"
                   />
                 </div>
                 <Button
                   type="button"
                   onClick={addImageUrl}
                   variant="outline"
-                  className="h-10 rounded-xl border-black/[0.09] px-3.5"
+                  className="h-10 rounded-xl border-border px-3.5"
                 >
                   <ImagePlus className="h-4 w-4" /> Attach
                 </Button>
@@ -729,7 +729,7 @@ export function AdminListingDrawer({
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 variant="outline"
-                className="h-10 rounded-xl border-black/[0.09] px-3.5"
+                className="h-10 rounded-xl border-border px-3.5"
               >
                 {uploading ? (
                   <>
@@ -742,14 +742,14 @@ export function AdminListingDrawer({
                 )}
               </Button>
             </div>
-            <p className="text-[11px] text-neutral-400">
+            <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
               JPG · PNG · WebP · AVIF, up to 4 MB. Uploaded files are stored securely on our server.
             </p>
           </div>
         </div>
 
-        <SheetFooter className="sticky bottom-0 flex-row items-center gap-2 border-t border-black/[0.06] bg-white/95 px-5 py-4 backdrop-blur sm:px-6">
-          <p className="mr-auto hidden text-[11px] text-neutral-400 sm:block">
+        <SheetFooter className="sticky bottom-0 flex-row items-center gap-2 border-t border-border bg-card/95 px-5 py-4 backdrop-blur sm:px-6">
+          <p className="mr-auto hidden text-[11px] text-neutral-400 dark:text-neutral-500 sm:block">
             {listing ? `Editing ${listing.reference}` : "New listings appear in Inventory instantly"}
           </p>
           <Button
@@ -757,7 +757,7 @@ export function AdminListingDrawer({
             variant="outline"
             onClick={onClose}
             disabled={saving}
-            className="h-10 rounded-xl border-black/[0.09]"
+            className="h-10 rounded-xl border-border"
           >
             Cancel
           </Button>

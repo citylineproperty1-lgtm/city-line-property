@@ -139,11 +139,11 @@ export function PropertyDetailView({ id }: { id: string }) {
   if (notFound || !property) {
     return (
       <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-28 text-center sm:px-6">
-        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100">
-          <Building2 className="h-6 w-6 text-neutral-400" />
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+          <Building2 className="h-6 w-6 text-muted-foreground" />
         </span>
         <h1 className="mt-5 text-2xl font-semibold tracking-tight">Property not found</h1>
-        <p className="mt-2 max-w-sm text-sm text-neutral-500">
+        <p className="mt-2 max-w-sm text-sm text-muted-foreground">
           This listing may have been sold, rented out or removed by the owner.
         </p>
         <Button
@@ -185,7 +185,7 @@ export function PropertyDetailView({ id }: { id: string }) {
       {/* Back */}
       <button
         onClick={() => navigate({ name: "properties" })}
-        className="group inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900 print:hidden"
+        className="group inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground print:hidden"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         All properties
@@ -198,7 +198,7 @@ export function PropertyDetailView({ id }: { id: string }) {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="mt-4"
       >
-        <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-neutral-200/70 bg-neutral-100">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-border bg-muted">
           <Image
             key={property.images[imgIndex]}
             src={property.images[imgIndex]}
@@ -260,9 +260,9 @@ export function PropertyDetailView({ id }: { id: string }) {
               key={img + i}
               onClick={() => setImgIndex(i)}
               className={cn(
-                "relative aspect-[16/10] overflow-hidden rounded-xl border-2 bg-neutral-100 transition-all",
+                "relative aspect-[16/10] overflow-hidden rounded-xl border-2 bg-muted transition-all",
                 imgIndex === i
-                  ? "border-[#0F766E] opacity-100 shadow-[0_0_0_3px_rgba(15,118,110,0.18)]"
+                  ? "border-primary opacity-100 shadow-[0_0_0_3px_rgba(15,118,110,0.18)]"
                   : "border-transparent opacity-70 hover:opacity-100"
               )}
               aria-label={`View photo ${i + 1}`}
@@ -295,15 +295,15 @@ export function PropertyDetailView({ id }: { id: string }) {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[12px] font-semibold text-[#0B6B5D]">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[12px] font-semibold text-accent-foreground">
                     <BadgeCheck className="h-3.5 w-3.5" />
                     Verified listing
                   </span>
                 </div>
-                <h1 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+                <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                   {property.title}
                 </h1>
-                <p className="mt-2 flex items-center gap-1.5 text-sm text-neutral-500">
+                <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   {property.address}, {property.district}, {property.city}
                 </p>
@@ -319,8 +319,8 @@ export function PropertyDetailView({ id }: { id: string }) {
                   className={cn(
                     "flex h-11 w-11 items-center justify-center rounded-full border transition-all",
                     isFav
-                      ? "border-rose-200 bg-rose-50"
-                      : "border-neutral-200 bg-white hover:bg-neutral-50"
+                      ? "border-rose-200 bg-rose-50 dark:border-rose-500/30 dark:bg-rose-500/10"
+                      : "border-border bg-card hover:bg-accent"
                   )}
                   aria-label={isFav ? "Remove from saved" : "Save property"}
                 >
@@ -331,7 +331,7 @@ export function PropertyDetailView({ id }: { id: string }) {
                     <Heart
                       className={cn(
                         "h-5 w-5",
-                        isFav ? "fill-rose-500 text-rose-500" : "text-neutral-500"
+                        isFav ? "fill-rose-500 text-rose-500" : "text-muted-foreground"
                       )}
                     />
                   </span>
@@ -356,14 +356,14 @@ export function PropertyDetailView({ id }: { id: string }) {
                       });
                     }
                   }}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition-all hover:bg-neutral-50 hover:text-neutral-900"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-all hover:bg-accent hover:text-foreground"
                   aria-label="Share property"
                 >
                   <Share2 className="h-4.5 w-4.5" />
                 </button>
                 <button
                   onClick={() => window.print()}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-500 transition-all hover:bg-neutral-50 hover:text-neutral-900"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-all hover:bg-accent hover:text-foreground"
                   aria-label="Print property flyer"
                   title="Print flyer"
                 >
@@ -372,22 +372,22 @@ export function PropertyDetailView({ id }: { id: string }) {
               </div>
             </div>
 
-            <p className="mt-5 text-3xl font-semibold tracking-tight tabular-nums text-neutral-900">
+            <p className="mt-5 text-3xl font-semibold tracking-tight tabular-nums text-foreground">
               {formatPKR(property.price, isRent)}
               {isRent && (
-                <span className="ml-1 text-sm font-normal text-neutral-400">
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
                   monthly
                 </span>
               )}
             </p>
 
             {/* Facts */}
-            <div className="mt-7 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-neutral-200/80 bg-neutral-200/60 sm:grid-cols-3">
+            <div className="mt-7 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
               {facts.map((fact) => (
-                <div key={fact.label} className="bg-white px-5 py-4">
-                  <fact.icon className="h-4.5 w-4.5 text-neutral-400" />
-                  <p className="mt-2 text-[15px] font-semibold text-neutral-900">{fact.value}</p>
-                  <p className="text-[12px] text-neutral-400">{fact.label}</p>
+                <div key={fact.label} className="bg-card px-5 py-4">
+                  <fact.icon className="h-4.5 w-4.5 text-muted-foreground" />
+                  <p className="mt-2 text-[15px] font-semibold text-foreground">{fact.value}</p>
+                  <p className="text-[12px] text-muted-foreground">{fact.label}</p>
                 </div>
               ))}
             </div>
@@ -400,15 +400,15 @@ export function PropertyDetailView({ id }: { id: string }) {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mt-10"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
               About this property
             </h2>
-            <p className="mt-3 text-[15px] leading-[1.8] text-neutral-600">
+            <p className="mt-3 text-[15px] leading-[1.8] text-muted-foreground">
               {property.description}
             </p>
-            <p className="mt-4 text-[13px] text-neutral-400">
+            <p className="mt-4 text-[13px] text-muted-foreground">
               Listed {formatDate(property.createdAt)} · Ref{" "}
-              <span className="font-semibold tracking-wide text-[#0B6B5D]">
+              <span className="font-semibold tracking-wide text-accent-foreground">
                 {property.reference}
               </span>
             </p>
@@ -421,16 +421,16 @@ export function PropertyDetailView({ id }: { id: string }) {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="mt-10"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Amenities & features
             </h2>
             <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {property.amenities.map((a) => (
                 <div
                   key={a}
-                  className="flex items-center gap-2.5 rounded-xl border border-neutral-100 bg-neutral-50/60 px-4 py-3 text-[14px] text-neutral-700"
+                  className="flex items-center gap-2.5 rounded-xl border border-border bg-muted/60 px-4 py-3 text-[14px] text-foreground"
                 >
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0F766E]" />
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
                   {a}
                 </div>
               ))}
@@ -456,10 +456,10 @@ export function PropertyDetailView({ id }: { id: string }) {
         <section className="mt-16 print:hidden">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
                 Keep exploring
               </p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                 More in {property.district} &amp; nearby
               </h2>
             </div>
@@ -468,7 +468,7 @@ export function PropertyDetailView({ id }: { id: string }) {
                 setFilters({ search: property.district, type: property.type });
                 navigate({ name: "properties" });
               }}
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-[#E7F4F0]/70 px-4 py-2 text-[12.5px] font-semibold text-[#0B6B5D] transition-all hover:border-[#0F766E]/50 hover:bg-[#E7F4F0]"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-accent/70 px-4 py-2 text-[12.5px] font-semibold text-accent-foreground transition-all hover:border-primary/50 hover:bg-accent"
             >
               Browse {categoryLabel(property.type)} in {property.district}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -536,21 +536,21 @@ function OfficeCardWithForm({ property }: { property: Property }) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       {/* Office identity */}
-      <div className="flex items-center gap-4 border-b border-neutral-100 bg-neutral-50/50 p-5">
+      <div className="flex items-center gap-4 border-b border-border bg-muted/50 p-5">
         <span className="brand-gradient flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-white">
           CL
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold text-neutral-900">
+          <p className="truncate text-[15px] font-semibold text-foreground">
             {BUSINESS.name}
           </p>
-          <p className="truncate text-[12.5px] font-medium text-[#0B6B5D]">
+          <p className="truncate text-[12.5px] font-medium text-accent-foreground">
             {BUSINESS.commissionLine} · direct dealing
           </p>
         </div>
-        <span className="inline-flex shrink-0 items-center rounded-full bg-[#E7F4F0] px-2.5 py-1 text-[11px] font-semibold text-[#0B6B5D]">
+        <span className="inline-flex shrink-0 items-center rounded-full bg-accent px-2.5 py-1 text-[11px] font-semibold text-accent-foreground">
           <BadgeCheck className="mr-1 h-3.5 w-3.5" />
           Office
         </span>
@@ -560,14 +560,14 @@ function OfficeCardWithForm({ property }: { property: Property }) {
         <div className="grid grid-cols-1 gap-2">
           <a
             href={`tel:${BUSINESS.telPrimary}`}
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-neutral-200 text-[13.5px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
+            className="flex h-10 items-center justify-center gap-2 rounded-full border border-border text-[13.5px] font-medium text-foreground transition-colors hover:bg-accent"
           >
             <Phone className="h-3.5 w-3.5" />
             {BUSINESS.phonePrimary}
           </a>
           <a
             href={`tel:${BUSINESS.telSecondary}`}
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-neutral-200 text-[13.5px] font-medium text-neutral-700 transition-colors hover:bg-neutral-50"
+            className="flex h-10 items-center justify-center gap-2 rounded-full border border-border text-[13.5px] font-medium text-foreground transition-colors hover:bg-accent"
           >
             <Phone className="h-3.5 w-3.5" />
             {BUSINESS.phoneSecondary}
@@ -590,20 +590,20 @@ function OfficeCardWithForm({ property }: { property: Property }) {
 
         <button
           onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center justify-between text-[15px] font-semibold text-neutral-900"
+          className="flex w-full items-center justify-between text-[15px] font-semibold text-foreground"
         >
           Request a viewing
           <ChevronDown
-            className={cn("h-4 w-4 text-neutral-400 transition-transform", open && "rotate-180")}
+            className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
           />
         </button>
 
         {open && (
           sent ? (
-            <div className="mt-4 rounded-xl border border-[#0F766E]/30 bg-[#E7F4F0]/60 p-5 text-center">
-              <CheckCircle2 className="mx-auto h-8 w-8 text-[#0F766E]" />
-              <p className="mt-2 text-sm font-semibold text-[#0B6B5D]">Viewing requested</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-[#0B6B5D]">
+            <div className="mt-4 rounded-xl border border-primary/30 bg-accent/60 p-5 text-center">
+              <CheckCircle2 className="mx-auto h-8 w-8 text-primary" />
+              <p className="mt-2 text-sm font-semibold text-accent-foreground">Viewing requested</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-accent-foreground">
                 We&rsquo;ve received your request — the team will call you within a few
                 working hours ({BUSINESS.hours}).
               </p>
@@ -611,7 +611,7 @@ function OfficeCardWithForm({ property }: { property: Property }) {
           ) : (
             <form onSubmit={submit} className="mt-4 space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="inq-name" className="text-[13px] text-neutral-600">
+                <Label htmlFor="inq-name" className="text-[13px] text-muted-foreground">
                   Full name
                 </Label>
                 <Input
@@ -621,12 +621,12 @@ function OfficeCardWithForm({ property }: { property: Property }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ali Hassan"
-                  className="h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
+                  className="h-10 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/30"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="inq-email" className="text-[13px] text-neutral-600">
+                  <Label htmlFor="inq-email" className="text-[13px] text-muted-foreground">
                     Email
                   </Label>
                   <Input
@@ -636,11 +636,11 @@ function OfficeCardWithForm({ property }: { property: Property }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
+                    className="h-10 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/30"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="inq-phone" className="text-[13px] text-neutral-600">
+                  <Label htmlFor="inq-phone" className="text-[13px] text-muted-foreground">
                     Phone
                   </Label>
                   <Input
@@ -649,12 +649,12 @@ function OfficeCardWithForm({ property }: { property: Property }) {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="03xx …"
-                    className="h-10 rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
+                    className="h-10 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/30"
                   />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="inq-msg" className="text-[13px] text-neutral-600">
+                <Label htmlFor="inq-msg" className="text-[13px] text-muted-foreground">
                   Message
                 </Label>
                 <Textarea
@@ -664,7 +664,7 @@ function OfficeCardWithForm({ property }: { property: Property }) {
                   rows={3}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="resize-none rounded-xl border-neutral-200 bg-neutral-50 text-sm focus-visible:ring-neutral-300"
+                  className="resize-none rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/30"
                 />
               </div>
               <Button
@@ -681,7 +681,7 @@ function OfficeCardWithForm({ property }: { property: Property }) {
                   "Send request"
                 )}
               </Button>
-              <p className="text-center text-[11.5px] text-neutral-400">
+              <p className="text-center text-[11.5px] text-muted-foreground">
                 No spam. Your details go straight to our office — nothing else.
               </p>
             </form>
@@ -700,25 +700,25 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
 
   if (isRent) {
     return (
-      <div className="rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="flex items-center gap-2.5">
           <span className="brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
             <Calculator className="h-4 w-4" />
           </span>
-          <h3 className="text-[15px] font-semibold text-neutral-900">Annual rent outlook</h3>
+          <h3 className="text-[15px] font-semibold text-foreground">Annual rent outlook</h3>
         </div>
         <div className="mt-5 space-y-2.5 text-sm">
-          <div className="flex justify-between text-neutral-500">
+          <div className="flex justify-between text-muted-foreground">
             <span>Monthly rent</span>
-            <span className="font-semibold text-neutral-900">{formatPKR(price, true)}</span>
+            <span className="font-semibold text-foreground">{formatPKR(price, true)}</span>
           </div>
-          <div className="flex justify-between text-neutral-500">
+          <div className="flex justify-between text-muted-foreground">
             <span>Per year (×12)</span>
-            <span className="font-semibold text-neutral-900">{formatPKR(price * 12)}</span>
+            <span className="font-semibold text-foreground">{formatPKR(price * 12)}</span>
           </div>
-          <div className="flex justify-between border-t border-neutral-100 pt-2.5 text-neutral-500">
+          <div className="flex justify-between border-t border-border pt-2.5 text-muted-foreground">
             <span>Typical advance (3 mo)</span>
-            <span className="font-semibold text-neutral-900">{formatPKR(price * 3)}</span>
+            <span className="font-semibold text-foreground">{formatPKR(price * 3)}</span>
           </div>
         </div>
       </div>
@@ -728,18 +728,18 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
   const monthly = monthlyInstallment(price, downPct, years, rate);
 
   return (
-    <div className="rounded-2xl border border-neutral-200/80 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center gap-2.5">
         <span className="brand-gradient flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.6)]">
           <Calculator className="h-4 w-4" />
         </span>
-        <h3 className="text-[15px] font-semibold text-neutral-900">Instalment estimator</h3>
+        <h3 className="text-[15px] font-semibold text-foreground">Instalment estimator</h3>
       </div>
       <div className="mt-5 space-y-5">
         <div>
           <div className="flex items-center justify-between text-[13px]">
-            <span className="font-medium text-neutral-600">Down payment</span>
-            <span className="font-semibold text-neutral-900">
+            <span className="font-medium text-muted-foreground">Down payment</span>
+            <span className="font-semibold text-foreground">
               {downPct}% · {formatPKR((price * downPct) / 100)}
             </span>
           </div>
@@ -750,14 +750,14 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={5}
             value={downPct}
             onChange={(e) => setDownPct(Number(e.target.value))}
-            className="mt-2 w-full accent-[#0F766E]"
+            className="mt-2 w-full accent-primary"
             aria-label="Down payment percentage"
           />
         </div>
         <div>
           <div className="flex items-center justify-between text-[13px]">
-            <span className="font-medium text-neutral-600">Loan term</span>
-            <span className="font-semibold text-neutral-900">{years} years</span>
+            <span className="font-medium text-muted-foreground">Loan term</span>
+            <span className="font-semibold text-foreground">{years} years</span>
           </div>
           <input
             type="range"
@@ -766,14 +766,14 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={5}
             value={years}
             onChange={(e) => setYears(Number(e.target.value))}
-            className="mt-2 w-full accent-[#0F766E]"
+            className="mt-2 w-full accent-primary"
             aria-label="Loan term in years"
           />
         </div>
         <div>
           <div className="flex items-center justify-between text-[13px]">
-            <span className="font-medium text-neutral-600">Interest rate</span>
-            <span className="font-semibold text-neutral-900">{rate}% / year</span>
+            <span className="font-medium text-muted-foreground">Interest rate</span>
+            <span className="font-semibold text-foreground">{rate}% / year</span>
           </div>
           <input
             type="range"
@@ -782,7 +782,7 @@ function MortgageCalculator({ price, isRent }: { price: number; isRent: boolean 
             step={0.5}
             value={rate}
             onChange={(e) => setRate(Number(e.target.value))}
-            className="mt-2 w-full accent-[#0F766E]"
+            className="mt-2 w-full accent-primary"
             aria-label="Annual interest rate"
           />
         </div>

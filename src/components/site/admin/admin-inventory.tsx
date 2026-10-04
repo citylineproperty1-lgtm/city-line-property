@@ -219,18 +219,18 @@ export function AdminInventory({ api }: { api: AdminApi }) {
         <AdminCard className="p-4 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" />
               <Input
                 value={qInput}
                 onChange={(e) => setQInput(e.target.value)}
                 placeholder="Search reference, title or area…"
                 aria-label="Search inventory"
-                className="h-10 rounded-xl border-black/[0.09] pl-9 text-[13.5px] focus-visible:ring-[#0F766E]/35"
+                className="h-10 rounded-xl border-border pl-9 text-[13.5px] focus-visible:ring-ring/35"
               />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Select value={state} onValueChange={setState}>
-                <SelectTrigger className="h-10 w-[136px] rounded-xl border-black/[0.09] text-[13px] focus-visible:ring-[#0F766E]/35">
+                <SelectTrigger className="h-10 w-[136px] rounded-xl border-border text-[13px] focus-visible:ring-ring/35">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -242,7 +242,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                 </SelectContent>
               </Select>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="h-10 w-[158px] rounded-xl border-black/[0.09] text-[13px] focus-visible:ring-[#0F766E]/35">
+                <SelectTrigger className="h-10 w-[158px] rounded-xl border-border text-[13px] focus-visible:ring-ring/35">
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -265,7 +265,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
               </Button>
             </div>
           </div>
-          <p className="mt-2.5 text-[11.5px] text-neutral-400">
+          <p className="mt-2.5 text-[11.5px] text-neutral-400 dark:text-neutral-500">
             {loading ? "Loading inventory…" : `${totalShown} listing${totalShown === 1 ? "" : "s"} shown`}
           </p>
         </AdminCard>
@@ -292,17 +292,17 @@ export function AdminInventory({ api }: { api: AdminApi }) {
             ) : (
             <div className={`max-h-[70vh] overflow-y-auto ${SCROLLBAR_CLS}`}>
               <Table>
-                <TableHeader className="sticky top-0 z-10 bg-white/95 backdrop-blur">
-                  <TableRow className="border-black/[0.05] hover:bg-transparent">
-                    <TableHead className="min-w-[260px] text-[11px] uppercase tracking-wider text-neutral-400">
+                <TableHeader className="sticky top-0 z-10 bg-card/95 backdrop-blur">
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="min-w-[260px] text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
                       Listing
                     </TableHead>
-                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400">Category</TableHead>
-                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400">Price</TableHead>
-                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400">State</TableHead>
-                    <TableHead className="text-center text-[11px] uppercase tracking-wider text-neutral-400">Live</TableHead>
-                    <TableHead className="text-center text-[11px] uppercase tracking-wider text-neutral-400">Featured</TableHead>
-                    <TableHead className="text-right text-[11px] uppercase tracking-wider text-neutral-400">Actions</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Category</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Price</TableHead>
+                    <TableHead className="text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">State</TableHead>
+                    <TableHead className="text-center text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Live</TableHead>
+                    <TableHead className="text-center text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Featured</TableHead>
+                    <TableHead className="text-right text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -315,15 +315,15 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                       }}
                       tabIndex={0}
                       aria-label={`Edit ${p.title}`}
-                      className="cursor-pointer border-black/[0.05] hover:bg-[#0F766E]/[0.04]"
+                      className="cursor-pointer border-border hover:bg-primary/[0.04]"
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Thumb images={p.images} title={p.title} />
                           <div className="min-w-0">
-                            <p className="truncate text-[13px] font-semibold text-neutral-900">{p.title}</p>
-                            <p className="mt-0.5 text-[11.5px] text-neutral-400">
-                              <span className="font-semibold text-[#0B6B5D]">{p.reference}</span> · {p.district}
+                            <p className="truncate text-[13px] font-semibold text-neutral-900 dark:text-neutral-100">{p.title}</p>
+                            <p className="mt-0.5 text-[11.5px] text-neutral-400 dark:text-neutral-500">
+                              <span className="font-semibold text-accent-foreground">{p.reference}</span> · {p.district}
                             </p>
                           </div>
                         </div>
@@ -364,10 +364,14 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                           disabled={busyId === p.id}
                           aria-label={p.featured ? `Unfeature ${p.title}` : `Feature ${p.title}`}
                           aria-pressed={p.featured}
-                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-[#E7F4F0]"
+                          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-accent"
                         >
                           <Star
-                            className={`h-4 w-4 ${p.featured ? "fill-[#0F766E] text-[#0F766E]" : "text-neutral-300 hover:text-[#0F766E]/60"}`}
+                            className={`h-4 w-4 ${
+                              p.featured
+                                ? "fill-primary text-primary"
+                                : "text-neutral-300 hover:text-primary/60 dark:text-neutral-600 dark:hover:text-primary/60"
+                            }`}
                           />
                         </button>
                       </TableCell>
@@ -378,7 +382,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                             variant="ghost"
                             onClick={() => openDrawer(p)}
                             aria-label={`Edit ${p.title}`}
-                            className="h-8 w-8 rounded-lg text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900"
+                            className="h-8 w-8 rounded-lg text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/10 dark:hover:text-neutral-100"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
@@ -387,7 +391,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                             variant="ghost"
                             onClick={() => setDeleteTarget(p)}
                             aria-label={`Delete ${p.title}`}
-                            className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
+                            className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-[#E5484D]/10 hover:text-[#E5484D] dark:text-neutral-500"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -432,15 +436,17 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                     <Thumb images={p.images} title={p.title} className="h-20 w-24" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-neutral-900">
+                        <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
                           {p.title}
                         </p>
                         <Star
-                          className={`mt-0.5 h-4 w-4 shrink-0 ${p.featured ? "fill-[#0F766E] text-[#0F766E]" : "text-neutral-300"}`}
+                          className={`mt-0.5 h-4 w-4 shrink-0 ${
+                            p.featured ? "fill-primary text-primary" : "text-neutral-300 dark:text-neutral-600"
+                          }`}
                         />
                       </div>
-                      <p className="mt-1 text-[11.5px] text-neutral-400">
-                        <span className="font-semibold text-[#0B6B5D]">{p.reference}</span> · {p.district}
+                      <p className="mt-1 text-[11.5px] text-neutral-400 dark:text-neutral-500">
+                        <span className="font-semibold text-accent-foreground">{p.reference}</span> · {p.district}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                         <CategoryChip slug={p.type} categories={categories} />
@@ -452,7 +458,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                           {LISTING_STATE_META[p.listingState]?.label ?? p.listingState}
                         </span>
                         {!p.published && (
-                          <span className="rounded-full bg-black/[0.05] px-2 py-0.5 text-[10.5px] font-semibold text-neutral-500">
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-[10.5px] font-semibold text-neutral-500 dark:text-neutral-400">
                             Draft
                           </span>
                         )}
@@ -460,7 +466,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                     </div>
                   </div>
                   <div
-                    className="mt-3 flex items-center justify-between gap-2 border-t border-black/[0.05] pt-3"
+                    className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3"
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
                   >
@@ -491,7 +497,7 @@ export function AdminInventory({ api }: { api: AdminApi }) {
                         variant="ghost"
                         onClick={() => setDeleteTarget(p)}
                         aria-label={`Delete ${p.title}`}
-                        className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-[#E5484D]/10 hover:text-[#E5484D]"
+                        className="h-8 w-8 rounded-lg text-neutral-400 hover:bg-[#E5484D]/10 hover:text-[#E5484D] dark:text-neutral-500"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -521,18 +527,18 @@ export function AdminInventory({ api }: { api: AdminApi }) {
 
       {/* Delete confirm */}
       <AlertDialog open={deleteTarget !== null} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <AlertDialogContent className="rounded-3xl border-black/[0.06]">
+        <AlertDialogContent className="rounded-3xl border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-neutral-900">
+            <AlertDialogTitle className="text-neutral-900 dark:text-neutral-100">
               Delete {deleteTarget?.reference}?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[13.5px] text-neutral-500">
+            <AlertDialogDescription className="text-[13.5px] text-neutral-500 dark:text-neutral-400">
               &ldquo;{deleteTarget?.title}&rdquo; will be permanently removed from the inventory,
               together with its views and lead history. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl border-black/[0.09]">
+            <AlertDialogCancel className="rounded-xl border-border">
               Keep listing
             </AlertDialogCancel>
             <AlertDialogAction
@@ -554,11 +560,11 @@ export function AdminInventory({ api }: { api: AdminApi }) {
 function Thumb({ images, title, className = "h-11 w-14" }: { images: string[]; title: string; className?: string }) {
   const src = images[0];
   return (
-    <div className={`relative shrink-0 overflow-hidden rounded-xl border border-black/[0.07] bg-neutral-100 ${className}`}>
+    <div className={`relative shrink-0 overflow-hidden rounded-xl border border-border bg-neutral-100 dark:bg-neutral-800 ${className}`}>
       {src ? (
         <Image src={src} alt="" fill sizes="96px" className="object-cover" unoptimized />
       ) : (
-        <span className="flex h-full items-center justify-center text-neutral-300">
+        <span className="flex h-full items-center justify-center text-neutral-300 dark:text-neutral-600">
           <Home className="h-4 w-4" />
         </span>
       )}
@@ -571,7 +577,7 @@ function CategoryChip({ slug, categories }: { slug: string; categories: AdminCat
   const cat = categories.find((c) => c.slug === slug);
   return (
     <span
-      className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-black/[0.07] bg-black/[0.025] px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600"
+      className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600 dark:text-neutral-300"
       title={cat?.name ?? slug}
     >
       <span
@@ -605,19 +611,19 @@ function PriceEditor({
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button
-          className="group inline-flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[13px] font-semibold tabular-nums text-neutral-900 transition-colors hover:bg-[#E7F4F0]"
+          className="group inline-flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[13px] font-semibold tabular-nums text-neutral-900 transition-colors hover:bg-accent dark:text-neutral-100"
           aria-label={`Edit price, currently ${formatPKR(price)}`}
         >
           {formatPKR(price)}
-          <Pencil className="h-3 w-3 text-neutral-300 transition-colors group-hover:text-[#0F766E]" />
+          <Pencil className="h-3 w-3 text-neutral-300 transition-colors group-hover:text-primary dark:text-neutral-600" />
         </button>
       </PopoverTrigger>
       <PopoverContent
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
-        className="w-60 rounded-2xl border-black/[0.08] p-3.5"
+        className="w-60 rounded-2xl border-border p-3.5"
       >
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
           Update price (PKR)
         </p>
         <Input
@@ -629,7 +635,7 @@ function PriceEditor({
           onKeyDown={(e) => {
             if (e.key === "Enter") onSave();
           }}
-          className="mt-2 h-9 rounded-xl border-black/[0.09] text-[13px] tabular-nums focus-visible:ring-[#0F766E]/35"
+          className="mt-2 h-9 rounded-xl border-border text-[13px] tabular-nums focus-visible:ring-ring/35"
         />
         <Button
           size="sm"
@@ -681,11 +687,11 @@ function StateSelect({
 function InventoryEmpty() {
   return (
     <div className="flex flex-col items-center py-14 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/[0.04]">
-        <Home className="h-5 w-5 text-neutral-300" />
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted">
+        <Home className="h-5 w-5 text-neutral-300 dark:text-neutral-600" />
       </span>
-      <p className="mt-3 text-[14px] font-semibold text-neutral-700">No listings match</p>
-      <p className="mt-1 max-w-xs text-[12.5px] text-neutral-400">
+      <p className="mt-3 text-[14px] font-semibold text-neutral-700 dark:text-neutral-300">No listings match</p>
+      <p className="mt-1 max-w-xs text-[12.5px] text-neutral-400 dark:text-neutral-500">
         Try a different search or filter — or add a new listing with the emerald button.
       </p>
     </div>

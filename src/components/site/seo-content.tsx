@@ -47,29 +47,29 @@ export async function SeoContent() {
   return (
     <section
       aria-label="About City Line Property"
-      className="border-t border-neutral-200 bg-white"
+      className="border-t border-border bg-card"
     >
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <h2 className="text-xl font-bold tracking-tight text-neutral-900 sm:text-2xl">
+        <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           City Line Property — Real Estate Agency in Etihad Town, Lahore
         </h2>
-        <div className="mt-4 space-y-3 text-sm leading-relaxed text-neutral-600">
+        <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <p>
-            <strong className="font-semibold text-neutral-800">City Line Property</strong> is a
+            <strong className="font-semibold text-foreground">City Line Property</strong> is a
             trusted property dealer and real estate agency located at 151-C Etihad Town Phase 1,
             Lahore. We help clients buy, sell and rent residential plots, commercial plots, houses,
             apartments and commercial property across Etihad Town Phase 1, Etihad Town Phase 2,
             Royal Enclave, Premier Enclave and Overseas Block — with only{" "}
-            <strong className="font-semibold text-neutral-800">1% commission</strong>, direct
+            <strong className="font-semibold text-foreground">1% commission</strong>, direct
             dealing and no hidden margin or middlemen.
           </p>
           <p>
             Browse our {total > 0 ? `${total} ` : ""}verified listings or call us at{" "}
-            <a href="tel:+923094499940" className="font-medium text-[#0F766E] hover:underline">
+            <a href="tel:+923094499940" className="font-medium text-primary hover:underline">
               0309 4499940
             </a>{" "}
             /{" "}
-            <a href="tel:+923218422109" className="font-medium text-[#0F766E] hover:underline">
+            <a href="tel:+923218422109" className="font-medium text-primary hover:underline">
               0321 8422109
             </a>{" "}
             — we answer on WhatsApp too.
@@ -78,14 +78,14 @@ export async function SeoContent() {
 
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
               Areas We Cover
             </h3>
-            <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {AREAS.map((a) => (
                 <li key={a}>
                   <a
-                    className="transition-colors hover:text-[#0F766E] hover:underline"
+                    className="transition-colors hover:text-primary hover:underline"
                     href={`#/properties?q=${encodeURIComponent(a)}`}
                   >
                     Property in {a}
@@ -96,14 +96,14 @@ export async function SeoContent() {
           </div>
 
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
               Property Categories
             </h3>
-            <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {categories.map((c) => (
                 <li key={c.slug}>
                   <a
-                    className="transition-colors hover:text-[#0F766E] hover:underline"
+                    className="transition-colors hover:text-primary hover:underline"
                     href={`#/properties?type=${c.slug}`}
                   >
                     {c.name} in Etihad Town, Lahore
@@ -115,14 +115,14 @@ export async function SeoContent() {
 
           {featured.length > 0 && (
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0F766E]">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
                 Featured Listings
               </h3>
-              <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                 {featured.map((p) => (
                   <li key={p.id}>
                     <a
-                      className="transition-colors hover:text-[#0F766E] hover:underline"
+                      className="transition-colors hover:text-primary hover:underline"
                       href={`#/property/${p.id}`}
                     >
                       {p.title} — {formatPrice(p.price, p.status)}
@@ -134,7 +134,7 @@ export async function SeoContent() {
           )}
         </div>
 
-        <p className="mt-8 border-t border-neutral-200 pt-6 text-xs leading-relaxed text-neutral-500">
+        <p className="mt-8 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
           City Line Property · 151-C Etihad Town Phase 1, Lahore, Punjab, Pakistan · Phone 0309
           4499940 · 0321 8422109 · WhatsApp +92 309 4499940 · Open daily 10:00–20:00
         </p>

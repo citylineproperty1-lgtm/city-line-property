@@ -167,14 +167,14 @@ function WebhookCard({
       <AdminCard>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
               <BellRing className="h-4.5 w-4.5" />
             </span>
             <div>
-              <h3 className="text-[15px] font-semibold text-neutral-900">
+              <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
                 WhatsApp webhook — auto-send leads
               </h3>
-              <p className="mt-0.5 text-[12px] text-neutral-400">
+              <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">
                 Every new website lead is pushed here automatically.
               </p>
             </div>
@@ -182,8 +182,8 @@ function WebhookCard({
           <span
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${
               configured
-                ? "border-[#34C759]/30 bg-[#34C759]/10 text-[#1E8E3E]"
-                : "border-black/10 bg-black/[0.04] text-neutral-500"
+                ? "border-[#34C759]/30 bg-[#34C759]/10 text-[#1E8E3E] dark:text-[#4ADE80]"
+                : "border-border bg-muted text-neutral-500 dark:text-neutral-400"
             }`}
           >
             {configured ? (
@@ -200,7 +200,7 @@ function WebhookCard({
 
         <div className="mt-4 space-y-3">
           <div className="space-y-1.5">
-            <Label htmlFor="webhook-url" className="text-[12px] text-neutral-500">
+            <Label htmlFor="webhook-url" className="text-[12px] text-neutral-500 dark:text-neutral-400">
               Webhook URL
             </Label>
             <Input
@@ -208,7 +208,7 @@ function WebhookCard({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://api.callmebot.com/whatsapp.php?phone=923…&text={MESSAGE}&apikey=…"
-              className="h-10 rounded-xl border-black/[0.09] font-mono text-[12.5px] focus-visible:ring-[#0F766E]/35"
+              className="h-10 rounded-xl border-border font-mono text-[12.5px] focus-visible:ring-ring/35"
               autoComplete="off"
               spellCheck={false}
             />
@@ -232,20 +232,20 @@ function WebhookCard({
             </Button>
           </div>
 
-          <div className="rounded-2xl border border-[#0F766E]/20 bg-[#E7F4F0]/60 p-4">
-            <p className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide text-[#0B6B5D]">
+          <div className="rounded-2xl border border-primary/20 bg-accent/60 p-4">
+            <p className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-wide text-accent-foreground">
               <Info className="h-3.5 w-3.5" /> How it works
             </p>
-            <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-[12.5px] leading-relaxed text-neutral-600">
+            <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-[12.5px] leading-relaxed text-neutral-600 dark:text-neutral-300">
               <li>
                 Register your WhatsApp number with{" "}
                 <strong>@CallMeBot</strong> (message &ldquo;I allow callmebot to send me
                 messages&rdquo; to their bot) to get your personal{" "}
-                <code className="rounded bg-white/70 px-1 py-px text-[11px]">apikey</code>.
+                <code className="rounded bg-card/70 px-1 py-px text-[11px]">apikey</code>.
               </li>
               <li>
                 Paste a URL shaped like{" "}
-                <code className="mt-0.5 block break-all rounded-lg bg-white/80 px-2 py-1 text-[11px] text-neutral-700">
+                <code className="mt-0.5 block break-all rounded-lg bg-card/80 px-2 py-1 text-[11px] text-neutral-700 dark:text-neutral-200">
                   https://api.callmebot.com/whatsapp.php?phone=923094499940&amp;text=
                   {"{MESSAGE}"}&amp;apikey=XXXX
                 </code>
@@ -314,12 +314,12 @@ function ContactCard({
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.06 }}>
       <AdminCard>
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
             <ExternalLink className="h-4.5 w-4.5" />
           </span>
           <div>
-            <h3 className="text-[15px] font-semibold text-neutral-900">Contact information</h3>
-            <p className="mt-0.5 text-[12px] text-neutral-400">
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Contact information</h3>
+            <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">
               Shown across the public site (header, footer, contact page).
             </p>
           </div>
@@ -328,7 +328,7 @@ function ContactCard({
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {CONTACT_FIELDS.map((f) => (
             <div key={f.key} className={f.wide ? "sm:col-span-2" : undefined}>
-              <Label htmlFor={`set-${f.key}`} className="text-[12px] text-neutral-500">
+              <Label htmlFor={`set-${f.key}`} className="text-[12px] text-neutral-500 dark:text-neutral-400">
                 {f.label}
               </Label>
               <Input
@@ -336,7 +336,7 @@ function ContactCard({
                 value={form[f.key]}
                 onChange={(e) => setForm((s) => ({ ...s, [f.key]: e.target.value }))}
                 placeholder={f.placeholder}
-                className={`mt-1.5 h-10 rounded-xl border-black/[0.09] text-[13.5px] focus-visible:ring-[#0F766E]/35 ${f.mono ? "font-mono text-[12.5px]" : ""}`}
+                className={`mt-1.5 h-10 rounded-xl border-border text-[13.5px] focus-visible:ring-ring/35 ${f.mono ? "font-mono text-[12.5px]" : ""}`}
               />
             </div>
           ))}
@@ -424,14 +424,14 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.09 }}>
       <AdminCard>
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
             <Map className="h-4.5 w-4.5" />
           </span>
           <div>
-            <h3 className="text-[15px] font-semibold text-neutral-900">
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">
               Society block maps
             </h3>
-            <p className="mt-0.5 text-[12px] text-neutral-400">
+            <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">
               Upload the official layout map for each area — it shows on that
               area&rsquo;s guide page. JPG · PNG · WebP · AVIF · PDF, up to 4.5 MB.
             </p>
@@ -451,12 +451,12 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
             return (
               <div
                 key={slot.key}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-black/[0.07] bg-white p-3"
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-3"
               >
-                <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-black/[0.06] bg-[#F7F9F8]">
+                <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                   {path ? (
                     path.toLowerCase().endsWith(".pdf") ? (
-                      <span className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-[#0B6B5D]">
+                      <span className="flex h-full w-full flex-col items-center justify-center gap-0.5 text-accent-foreground">
                         <FileText className="h-5 w-5" />
                         <span className="text-[9px] font-bold uppercase tracking-[0.14em]">
                           PDF
@@ -472,16 +472,16 @@ function AreaMapsCard({ api }: { api: AdminApi }) {
                       />
                     )
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-neutral-300">
+                    <span className="flex h-full w-full items-center justify-center text-neutral-300 dark:text-neutral-600">
                       <Map className="h-5 w-5" />
                     </span>
                   )}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13.5px] font-semibold text-neutral-900">
+                  <p className="text-[13.5px] font-semibold text-neutral-900 dark:text-neutral-100">
                     {slot.name}
                   </p>
-                  <p className="mt-0.5 text-[11.5px] text-neutral-400">
+                  <p className="mt-0.5 text-[11.5px] text-neutral-400 dark:text-neutral-500">
                     {path
                       ? path.toLowerCase().endsWith(".pdf")
                         ? "Official PDF layout plan is live on the area page"
@@ -580,7 +580,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
     autoComplete: string
   ) => (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-[12px] text-neutral-500">
+      <Label htmlFor={id} className="text-[12px] text-neutral-500 dark:text-neutral-400">
         {label}
       </Label>
       <div className="relative">
@@ -590,7 +590,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
-          className="h-10 rounded-xl border-black/[0.09] pr-10 text-[13.5px] focus-visible:ring-[#0F766E]/35"
+          className="h-10 rounded-xl border-border pr-10 text-[13.5px] focus-visible:ring-ring/35"
           required
         />
         {id === "pw-current" && (
@@ -598,7 +598,7 @@ function PasswordCard({ api }: { api: AdminApi }) {
             type="button"
             onClick={() => setShow((s) => !s)}
             aria-label={show ? "Hide passwords" : "Show passwords"}
-            className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-400 hover:bg-black/[0.05]"
+            className="absolute right-1.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-neutral-400 hover:bg-black/[0.05] dark:text-neutral-500 dark:hover:bg-white/10"
           >
             {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
           </button>
@@ -611,12 +611,12 @@ function PasswordCard({ api }: { api: AdminApi }) {
     <motion.section {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.12 }}>
       <AdminCard>
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E7F4F0] text-[#0B6B5D]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
             <KeyRound className="h-4.5 w-4.5" />
           </span>
           <div>
-            <h3 className="text-[15px] font-semibold text-neutral-900">Change password</h3>
-            <p className="mt-0.5 text-[12px] text-neutral-400">
+            <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100">Change password</h3>
+            <p className="mt-0.5 text-[12px] text-neutral-400 dark:text-neutral-500">
               Minimum 8 characters. You stay signed in on this device.
             </p>
           </div>

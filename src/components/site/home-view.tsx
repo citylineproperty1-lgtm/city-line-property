@@ -308,13 +308,13 @@ export function HomeView() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0F766E]/25 bg-white/80 px-3.5 py-1.5 text-[12px] font-semibold text-[#0B6B5D] shadow-sm backdrop-blur"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-card/80 px-3.5 py-1.5 text-[12px] font-semibold text-accent-foreground shadow-sm backdrop-blur"
               >
                 <MapPin className="h-3.5 w-3.5" />
                 Real Estate Office · Etihad Town, Lahore
               </motion.span>
 
-              <h1 className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight text-neutral-900 sm:text-6xl">
+              <h1 className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl">
                 <span className="sr-only">
                   City Line Property — real estate agency in Etihad Town, Lahore. Buy, sell and
                   rent property with only 1% commission.
@@ -342,9 +342,9 @@ export function HomeView() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55, duration: 0.55, ease: "easeOut" }}
-                className="mt-5 max-w-xl text-[15px] leading-relaxed text-neutral-600 sm:text-base"
+                className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base"
               >
-                <span className="font-semibold text-[#0B6B5D]">Only 1% commission.</span>{" "}
+                <span className="font-semibold text-accent-foreground">Only 1% commission.</span>{" "}
                 Direct dealing — no hidden margin, no middlemen. Buy, sell or rent
                 across Etihad Town&rsquo;s five societies with the office that calls it home.
               </motion.p>
@@ -358,7 +358,7 @@ export function HomeView() {
               >
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Select value={heroType} onValueChange={setHeroType}>
-                    <SelectTrigger className="h-11 rounded-2xl border-black/[0.06] bg-white text-[13px] font-medium focus:ring-0" aria-label="Category">
+                    <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Category">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -371,7 +371,7 @@ export function HomeView() {
                     </SelectContent>
                   </Select>
                   <Select value={heroArea} onValueChange={setHeroArea}>
-                    <SelectTrigger className="h-11 rounded-2xl border-black/[0.06] bg-white text-[13px] font-medium focus:ring-0" aria-label="Area">
+                    <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
                       <SelectValue placeholder="Area" />
                     </SelectTrigger>
                     <SelectContent>
@@ -386,7 +386,7 @@ export function HomeView() {
                 </div>
                 <div className="mt-2 flex gap-2">
                   <Select value={heroBudget} onValueChange={setHeroBudget}>
-                    <SelectTrigger className="h-11 flex-1 rounded-2xl border-black/[0.06] bg-white text-[13px] font-medium focus:ring-0" aria-label="Budget">
+                    <SelectTrigger className="h-11 flex-1 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Budget">
                       <SelectValue placeholder="Budget" />
                     </SelectTrigger>
                     <SelectContent>
@@ -414,27 +414,27 @@ export function HomeView() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.05, duration: 0.6 }}
-                className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12.5px] font-medium text-neutral-500"
+                className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12.5px] font-medium text-muted-foreground"
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <Building2 className="h-3.5 w-3.5 text-[#0F766E]" />
-                  <AnimatedNumber value={stats?.properties ?? null} className="font-semibold tabular-nums text-neutral-800" />
+                  <Building2 className="h-3.5 w-3.5 text-primary" />
+                  <AnimatedNumber value={stats?.properties ?? null} className="font-semibold tabular-nums text-foreground" />
                   live listings
                 </span>
-                <span aria-hidden className="h-3 w-px bg-neutral-300/70" />
+                <span aria-hidden className="h-3 w-px bg-border" />
                 <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-[#0F766E]" />
-                  <span className="font-semibold tabular-nums text-neutral-800">{AREAS.length}</span>
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <span className="font-semibold tabular-nums text-foreground">{AREAS.length}</span>
                   areas covered
                 </span>
-                <span aria-hidden className="h-3 w-px bg-neutral-300/70" />
+                <span aria-hidden className="h-3 w-px bg-border" />
                 <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-[#0F766E]" />
-                  <span className="font-semibold tabular-nums text-neutral-800">{years}+</span>
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  <span className="font-semibold tabular-nums text-foreground">{years}+</span>
                   years in Etihad Town
                 </span>
                 <span
-                  className="inline-flex items-center rounded-full bg-[#E7F4F0] px-3 py-1 text-[11.5px] font-bold uppercase tracking-wide text-[#0B6B5D] ring-1 ring-[#0F766E]/20"
+                  className="inline-flex items-center rounded-full bg-accent px-3 py-1 text-[11.5px] font-bold uppercase tracking-wide text-accent-foreground ring-1 ring-ring/20"
                 >
                   Only 1% commission
                 </span>
@@ -449,7 +449,7 @@ export function HomeView() {
               className="relative"
             >
               <motion.div style={{ y: parY }} className="relative">
-                <div className="relative aspect-[4/3.2] overflow-hidden rounded-[2rem] border border-black/[0.06] shadow-[0_40px_90px_-30px_rgba(15,23,42,0.35)]">
+                <div className="relative aspect-[4/3.2] overflow-hidden rounded-[2rem] border border-border shadow-[0_40px_90px_-30px_rgba(15,23,42,0.35)]">
                   <motion.div
                     className="absolute inset-0"
                     initial={{ scale: 1.12 }}
@@ -467,7 +467,7 @@ export function HomeView() {
                   </motion.div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
                   {/* floating commission chip */}
-                  <span className="glass-chip absolute left-4 top-4 inline-flex animate-float items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1.5 text-[11.5px] font-bold uppercase tracking-wide text-[#0B6B5D] shadow-lg">
+                  <span className="glass-chip absolute left-4 top-4 inline-flex animate-float items-center gap-1.5 rounded-full border border-white/60 px-3.5 py-1.5 text-[11.5px] font-bold uppercase tracking-wide text-accent-foreground shadow-lg">
                     <BadgePercent className="h-3.5 w-3.5" />
                     Only 1% commission
                   </span>
@@ -486,10 +486,10 @@ export function HomeView() {
                         <Monogram px={44} />
                       </span>
                       <span className="flex flex-col">
-                        <span className="text-[11px] font-semibold uppercase tracking-wide text-[#0B6B5D]">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-accent-foreground">
                           Our office
                         </span>
-                        <span className="text-[13px] font-semibold tracking-tight text-neutral-900">
+                        <span className="text-[13px] font-semibold tracking-tight text-foreground">
                           151-C, Etihad Town Phase 1
                         </span>
                       </span>
@@ -507,7 +507,7 @@ export function HomeView() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.6 }}
             onClick={() => document.getElementById("commission-band")?.scrollIntoView({ behavior: "smooth" })}
-            className="mx-auto mt-12 flex flex-col items-center gap-1 text-neutral-400 transition-colors hover:text-[#0F766E]"
+            className="mx-auto mt-12 flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-primary"
             aria-label="Scroll to discover our 1% promise"
           >
             <span className="text-[11px] font-semibold uppercase tracking-[0.25em]">Scroll</span>
@@ -552,13 +552,13 @@ export function HomeView() {
           ].map((s) => (
             <div
               key={s.label}
-              className="glass rounded-2xl border border-black/[0.06] px-5 py-6 text-center shadow-[0_18px_50px_-30px_rgba(15,118,110,0.28)] sm:px-6 sm:py-7"
+              className="glass rounded-2xl border border-border px-5 py-6 text-center shadow-[0_18px_50px_-30px_rgba(15,118,110,0.28)] sm:px-6 sm:py-7"
             >
-              <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-neutral-400">{s.label}</p>
-              <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-neutral-900 sm:text-[30px]">
+              <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{s.label}</p>
+              <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-foreground sm:text-[30px]">
                 {s.value}
               </p>
-              <p className="mt-2 text-[11.5px] font-medium leading-snug text-neutral-400">{s.sub}</p>
+              <p className="mt-2 text-[11.5px] font-medium leading-snug text-muted-foreground">{s.sub}</p>
             </div>
           ))}
           </motion.div>
@@ -573,12 +573,12 @@ export function HomeView() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Where we work</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Where we work</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 Explore Etihad Town.
               </h2>
             </div>
-            <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
+            <p className="max-w-sm text-[13.5px] leading-relaxed text-muted-foreground">
               Two phases, one main boulevard — and our own office in the middle of it.
               Every file is walked and verified on foot.
             </p>
@@ -593,7 +593,7 @@ export function HomeView() {
                   variants={pop}
                   whileHover={{ y: -4 }}
                   onClick={() => exploreArea(g.name)}
-                  className="lift group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E] focus-visible:ring-offset-2 sm:h-[380px]"
+                  className="lift group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-[380px]"
                   aria-label={`Explore properties in ${g.name}`}
                 >
                   <Image
@@ -608,7 +608,7 @@ export function HomeView() {
                     aria-hidden
                   />
                   {g.office && (
-                    <span className="glass-chip absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3 py-1 text-[11.5px] font-semibold text-[#0B6B5D] shadow-sm">
+                    <span className="glass-chip absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/60 px-3 py-1 text-[11.5px] font-semibold text-accent-foreground shadow-sm">
                       <MapPin className="h-3 w-3" />
                       Our office here
                     </span>
@@ -619,7 +619,7 @@ export function HomeView() {
                       {g.goodFor.map((tag) => (
                         <span
                           key={tag}
-                          className="glass-chip inline-flex items-center rounded-full border border-white/40 px-2.5 py-1 text-[11px] font-semibold text-[#0B6B5D]"
+                          className="glass-chip inline-flex items-center rounded-full border border-white/40 px-2.5 py-1 text-[11px] font-semibold text-accent-foreground"
                         >
                           {tag}
                         </span>
@@ -642,12 +642,12 @@ export function HomeView() {
             })}
           </div>
 
-          <motion.p variants={item} className="mt-6 text-center text-[13px] font-medium text-neutral-500">
-            Also serving <span className="font-semibold text-[#0B6B5D]">Royal Enclave, Premier Enclave &amp; Overseas
+          <motion.p variants={item} className="mt-6 text-center text-[13px] font-medium text-muted-foreground">
+            Also serving <span className="font-semibold text-accent-foreground">Royal Enclave, Premier Enclave &amp; Overseas
             Block</span> —{" "}
             <button
               onClick={() => navigate({ name: "areas" })}
-              className="font-semibold text-[#0B6B5D] underline decoration-[#0F766E]/30 underline-offset-4 transition-colors hover:decoration-[#0F766E]"
+              className="font-semibold text-accent-foreground underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary"
             >
               see all five areas
             </button>
@@ -659,8 +659,8 @@ export function HomeView() {
       <section className="mx-auto w-full max-w-6xl px-4 pb-4 sm:px-6" aria-label="What we deal in">
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="text-center">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">What we deal in</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">What we deal in</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Seven ways we can help you.
             </h2>
           </motion.div>
@@ -694,10 +694,10 @@ export function HomeView() {
                   >
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-neutral-900">
+                  <span className="mt-3.5 text-[14.5px] font-semibold tracking-tight text-foreground">
                     {c.name}
                   </span>
-                  <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-medium text-neutral-500">
+                  <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground">
                     {count > 0 ? `${count} live ${count === 1 ? "listing" : "listings"}` : "Ask us for files"}
                     <ArrowRight
                       className="h-3 w-3 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
@@ -738,16 +738,16 @@ export function HomeView() {
           className="flex items-end justify-between gap-4"
         >
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Handpicked for you</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Handpicked for you</p>
             <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Featured listings
             </h2>
           </div>
           <Button
             variant="ghost"
             onClick={() => navigate({ name: "properties" })}
-            className="group hidden h-10 items-center gap-1.5 rounded-full text-sm font-medium text-neutral-600 hover:bg-[#E7F4F0] hover:text-[#0B6B5D] sm:inline-flex"
+            className="group hidden h-10 items-center gap-1.5 rounded-full text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground sm:inline-flex"
           >
             View all
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -769,7 +769,7 @@ export function HomeView() {
               ))
             : featured.length === 0
               ? (
-                <div className="flex w-full items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/60 px-6 py-10 text-center text-sm text-neutral-500">
+                <div className="flex w-full items-center justify-center rounded-2xl border border-dashed border-border bg-muted/60 px-6 py-10 text-center text-sm text-muted-foreground">
                   Listings are being refreshed right now — please check back in a moment.
                 </div>
               )
@@ -784,7 +784,7 @@ export function HomeView() {
           <Button
             variant="outline"
             onClick={() => navigate({ name: "properties" })}
-            className="h-11 rounded-full border-neutral-200 bg-white text-sm font-medium"
+            className="h-11 rounded-full border-border bg-card text-sm font-medium"
           >
             View all properties
             <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -799,16 +799,16 @@ export function HomeView() {
           className="flex items-end justify-between gap-4"
         >
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Just added to the board</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Just added to the board</p>
             <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Latest listings
             </h2>
           </div>
           <Button
             variant="ghost"
             onClick={() => navigate({ name: "properties" })}
-            className="group hidden h-10 items-center gap-1.5 rounded-full text-sm font-medium text-neutral-600 hover:bg-[#E7F4F0] hover:text-[#0B6B5D] sm:inline-flex"
+            className="group hidden h-10 items-center gap-1.5 rounded-full text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground sm:inline-flex"
           >
             View all
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -841,7 +841,7 @@ export function HomeView() {
           <Button
             variant="outline"
             onClick={() => navigate({ name: "properties" })}
-            className="h-11 rounded-full border-neutral-200 bg-white text-sm font-medium"
+            className="h-11 rounded-full border-border bg-card text-sm font-medium"
           >
             View all properties
             <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -857,12 +857,12 @@ export function HomeView() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-wider text-[#0B6B5D]">On the map</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+              <p className="text-[13px] font-semibold uppercase tracking-wider text-accent-foreground">On the map</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 Real streets. Real files.
               </h2>
             </div>
-            <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500">
+            <p className="max-w-sm text-[13.5px] leading-relaxed text-muted-foreground">
               Every deal we close sits inside this pocket of Raiwind Road, Lahore —
               tap a pin to open its area guide.
             </p>
@@ -904,8 +904,8 @@ export function HomeView() {
         <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
             <motion.div variants={item} className="text-center">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">Why City Line</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Why City Line</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 Property, minus the games.
               </h2>
             </motion.div>
@@ -914,12 +914,12 @@ export function HomeView() {
             <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {WHY_US.map((w) => (
                 <motion.div key={w.title} variants={item} className="h-full">
-                  <TiltCard className="glass-strong lift h-full rounded-3xl border border-white/70 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)]">
+                  <TiltCard className="glass-strong lift h-full rounded-3xl border border-white/70 dark:border-white/10 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)]">
                     <span className="brand-gradient flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(15,118,110,0.6)]">
                       <w.icon className="h-5 w-5" />
                     </span>
-                    <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-neutral-900">{w.title}</h3>
-                    <p className="mt-2 text-[13.5px] leading-relaxed text-neutral-500">{w.text}</p>
+                    <h3 className="mt-4 text-[15px] font-semibold tracking-tight text-foreground">{w.title}</h3>
+                    <p className="mt-2 text-[13.5px] leading-relaxed text-muted-foreground">{w.text}</p>
                   </TiltCard>
                 </motion.div>
               ))}
@@ -932,8 +932,8 @@ export function HomeView() {
       <section className="mx-auto w-full max-w-6xl px-4 sm:px-6" aria-label="How a deal works">
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="text-center">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">How a deal works</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">How a deal works</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Four steps. Zero surprises.
             </h2>
           </motion.div>
@@ -945,7 +945,7 @@ export function HomeView() {
               whileInView={{ scaleX: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 1.5, ease: "easeInOut", delay: 0.35 }}
-              className="absolute left-[12%] right-[12%] top-7 hidden h-[3px] origin-left rounded-full bg-gradient-to-r from-[#0F766E]/30 via-[#0F766E] to-[#0F766E]/30 sm:block"
+              className="absolute left-[12%] right-[12%] top-7 hidden h-[3px] origin-left rounded-full bg-gradient-to-r from-primary/30 via-primary to-primary/30 sm:block"
               aria-hidden
             />
             <motion.div
@@ -953,22 +953,22 @@ export function HomeView() {
               whileInView={{ scaleY: 1 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 1.5, ease: "easeInOut", delay: 0.35 }}
-              className="absolute bottom-10 left-7 top-10 w-[3px] origin-top rounded-full bg-gradient-to-b from-[#0F766E] to-[#0F766E]/20 sm:hidden"
+              className="absolute bottom-10 left-7 top-10 w-[3px] origin-top rounded-full bg-gradient-to-b from-primary to-primary/20 sm:hidden"
               aria-hidden
             />
 
             <ol className="grid gap-10 sm:grid-cols-4 sm:gap-4">
               {PROCESS_STEPS.map((s, i) => (
                 <motion.li key={s.title} variants={item} className="relative flex gap-5 sm:flex-col sm:items-center sm:gap-0 sm:text-center">
-                  <span className="brand-gradient relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-extrabold text-white shadow-[0_8px_20px_-6px_rgba(15,118,110,0.6)] ring-4 ring-[#0F766E]/15">
+                  <span className="brand-gradient relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-extrabold text-white shadow-[0_8px_20px_-6px_rgba(15,118,110,0.6)] ring-4 ring-ring/15">
                     {i + 1}
                   </span>
                   <div className="sm:mt-5">
-                    <span className="mb-2 hidden h-10 w-10 items-center justify-center rounded-xl bg-[#E7F4F0] text-[#0B6B5D] sm:flex sm:mx-auto">
+                    <span className="mb-2 hidden h-10 w-10 items-center justify-center rounded-xl bg-accent text-accent-foreground sm:flex sm:mx-auto">
                       <s.icon className="h-5 w-5" />
                     </span>
-                    <h3 className="text-[15px] font-semibold tracking-tight text-neutral-900">{s.title}</h3>
-                    <p className="mt-1.5 text-[13px] leading-relaxed text-neutral-500">{s.text}</p>
+                    <h3 className="text-[15px] font-semibold tracking-tight text-foreground">{s.title}</h3>
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{s.text}</p>
                   </div>
                 </motion.li>
               ))}
@@ -986,13 +986,13 @@ export function HomeView() {
             whileInView="show"
             viewport={viewportOnce}
           >
-            <motion.p variants={item} className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#0B6B5D]">
+            <motion.p variants={item} className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
               Post your requirement
             </motion.p>
-            <motion.h2 variants={item} className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            <motion.h2 variants={item} className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Tell us once — we call you back.
             </motion.h2>
-            <motion.p variants={item} className="mt-3 max-w-md text-[14.5px] leading-relaxed text-neutral-500">
+            <motion.p variants={item} className="mt-3 max-w-md text-[14.5px] leading-relaxed text-muted-foreground">
               Skip scrolling through fake ads. Post your requirement once and our team
               shortlists genuine files for you — usually within 48 hours.
             </motion.p>
@@ -1002,9 +1002,9 @@ export function HomeView() {
                 "Only verified files from our five areas, matched to your budget",
                 "1% commission confirmed in writing before anything moves",
               ].map((li) => (
-                <motion.li key={li} variants={item} className="flex items-start gap-3 text-[14px] text-neutral-600">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0F766E]/10">
-                    <Check className="h-3 w-3 text-[#0F766E]" />
+                <motion.li key={li} variants={item} className="flex items-start gap-3 text-[14px] text-muted-foreground">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                    <Check className="h-3 w-3 text-primary" />
                   </span>
                   {li}
                 </motion.li>
@@ -1013,7 +1013,7 @@ export function HomeView() {
             <motion.button
               variants={item}
               onClick={() => window.open(waLink("Hi City Line Property — I want to discuss a property requirement."), "_blank", "noopener")}
-              className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#22C55E]/40 bg-white px-5 py-2.5 text-[13px] font-semibold text-[#15803D] shadow-sm transition-colors hover:bg-[#22C55E]/10"
+              className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#22C55E]/40 bg-card px-5 py-2.5 text-[13px] font-semibold text-[#15803D] dark:text-[#4ADE80] shadow-sm transition-colors hover:bg-[#22C55E]/10"
             >
               <MessageCircle className="h-4 w-4" />
               Or WhatsApp us right now
@@ -1025,7 +1025,7 @@ export function HomeView() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="rounded-3xl border border-black/[0.07] bg-white p-6 shadow-[0_30px_70px_-30px_rgba(15,23,42,0.3)] sm:p-8"
+            className="rounded-3xl border border-border bg-card p-6 shadow-[0_30px_70px_-30px_rgba(15,23,42,0.3)] sm:p-8"
           >
             <RequirementForm />
           </motion.div>

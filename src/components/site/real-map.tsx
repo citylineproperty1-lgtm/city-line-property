@@ -147,24 +147,24 @@ export default function RealMap({
         const rows: string[] = [];
         if (m.price) {
           rows.push(
-            `<div style="font-weight:800;color:#0F766E;font-size:14px;margin:2px 0 4px;">${
+            `<div style="font-weight:800;color:var(--primary);font-size:14px;margin:2px 0 4px;">${
               m.price.startsWith("PKR") ? m.price : `PKR ${m.price}`
             }</div>`
           );
         }
         if (m.subtitle) {
-          rows.push(`<div style="color:#6B7280;font-size:11px;">${m.subtitle}</div>`);
+          rows.push(`<div style="color:var(--muted-foreground);font-size:11px;">${m.subtitle}</div>`);
         }
         const cta =
           m.kind === "office" && officePopup
-            ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:8px;background:#0F766E;color:#fff;font-size:11px;font-weight:700;padding:6px 10px;border-radius:999px;text-decoration:none;">Get Directions →</a>`
+            ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:8px;background:var(--primary);color:var(--primary-foreground);font-size:11px;font-weight:700;padding:6px 10px;border-radius:999px;text-decoration:none;">Get Directions →</a>`
             : m.kind !== "office" && selectRef.current
-              ? `<button data-clp-id="${m.id}" style="margin-top:8px;background:#0F766E;color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;border:none;cursor:pointer;">View details →</button>`
+              ? `<button data-clp-id="${m.id}" style="margin-top:8px;background:var(--primary);color:var(--primary-foreground);font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;border:none;cursor:pointer;">View details →</button>`
               : "";
 
         marker.bindPopup(
           `<div style="min-width:150px;">
-            <div style="font-weight:700;color:#111827;font-size:13px;line-height:1.3;">${m.title}</div>
+            <div style="font-weight:700;color:var(--foreground);font-size:13px;line-height:1.3;">${m.title}</div>
             ${rows.join("")}
             ${cta}
           </div>`
@@ -191,7 +191,7 @@ export default function RealMap({
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border border-black/8 shadow-[0_2px_12px_rgba(15,23,42,0.06)] ${className}`}
+      className={`overflow-hidden rounded-2xl border border-border shadow-[0_2px_12px_rgba(15,23,42,0.06)] ${className}`}
       role="application"
       aria-label="Interactive OpenStreetMap"
     >

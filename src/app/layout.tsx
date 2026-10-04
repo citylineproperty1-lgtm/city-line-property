@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SeoJsonLd } from "@/components/site/seo-jsonld";
 import { SeoContent } from "@/components/site/seo-content";
 import { SeoGate } from "@/components/site/seo-gate";
+import { ThemeProvider } from "@/components/site/theme-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -101,7 +102,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0F766E",
+  // Adaptive browser chrome: follows the visitor's scheme until they pick a
+  // theme explicitly (next-themes then drives <html class="dark">).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f0e" },
+  ],
 };
 
 export default function RootLayout({
@@ -112,7 +118,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}>
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
         {/* Server-rendered, crawlable homepage content (auto-hidden on other hash views) */}
         <SeoGate>
           <SeoContent />

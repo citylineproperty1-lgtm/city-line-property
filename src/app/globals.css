@@ -111,24 +111,168 @@
 }
 
 .dark {
-  --background: #0b0f0e;
-  --foreground: #f3f6f5;
-  --card: #121715;
-  --card-foreground: #f3f6f5;
-  --popover: #121715;
-  --popover-foreground: #f3f6f5;
+  /* Soft charcoal with a green undertone — deliberately lighter than OLED
+     black so cards, borders and text keep clear separation (user feedback:
+     "do the dark mode some light"). Elevation ramp: canvas < card < popover. */
+  --background: #151b19;
+  --foreground: #edf3f1;
+  --card: #1e2624;
+  --card-foreground: #edf3f1;
+  --popover: #212b28;
+  --popover-foreground: #edf3f1;
   --primary: #2dd4bf;
-  --primary-foreground: #06251f;
-  --secondary: #1a211e;
-  --secondary-foreground: #e5eae8;
-  --muted: #1a211e;
-  --muted-foreground: #94a3ab;
-  --accent: #12332e;
-  --accent-foreground: #7fe0cd;
-  --destructive: #ff6369;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.15);
+  --primary-foreground: #052a24;
+  --secondary: #29342f;
+  --secondary-foreground: #e3eae7;
+  --muted: #29342f;
+  --muted-foreground: #a3b5ae;
+  --accent: #1f4038;
+  --accent-foreground: #8ee9d5;
+  --destructive: #ff6b70;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.17);
   --ring: #2dd4bf;
+
+  /* Sidebar tokens flip with the theme (admin shell reads them) */
+  --sidebar: #1a2321;
+  --sidebar-foreground: #edf3f1;
+  --sidebar-primary: #2dd4bf;
+  --sidebar-primary-foreground: #052a24;
+  --sidebar-accent: #1f4038;
+  --sidebar-accent-foreground: #8ee9d5;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #2dd4bf;
+
+  /* Brand ramp: light tints become glow accents on dark surfaces */
+  --brand-light: #5eb9a9;
+  --brand: #2dd4bf;
+  --brand-dark: #14b8a6;
+  --brand-deep: #0f766e;
+
+  /* Ink chip on overlays stays dark in both themes */
+  --ink-chip: rgba(12, 18, 16, 0.72);
+}
+
+/* Tell the browser to render native widgets (scrollbars, inputs, selects)
+   in their dark variants — variables alone don't do this. */
+.dark {
+  color-scheme: dark;
+}
+:root {
+  color-scheme: light;
+}
+
+/*
+ * ---------- Dark-mode overrides for custom utilities ----------
+ * Each light utility gets a .dark counterpart so components keep using the
+ * same class names in both themes (no dark: sprinkles needed for these).
+ */
+
+/* Frosted glass — white frost becomes warm charcoal frost */
+.dark .glass {
+  background-color: rgba(26, 34, 31, 0.72);
+}
+.dark .glass-strong {
+  background-color: rgba(21, 27, 25, 0.9);
+}
+.dark .glass-chip {
+  background-color: rgba(30, 38, 36, 0.8);
+}
+
+/* Paper mesh backdrop → soft charcoal mesh (matches --background) */
+.dark .bg-mesh {
+  background-color: #151b19;
+  background-image:
+    radial-gradient(42rem 42rem at 8% -12%, rgba(45, 212, 191, 0.14), transparent 60%),
+    radial-gradient(36rem 36rem at 104% 6%, rgba(20, 160, 143, 0.16), transparent 56%),
+    radial-gradient(30rem 30rem at 50% 118%, rgba(20, 184, 166, 0.18), transparent 62%),
+    radial-gradient(rgba(45, 212, 191, 0.08) 1px, transparent 1px);
+  background-size: auto, auto, auto, 22px 22px;
+}
+
+/* Dotted backdrop — faint teal dots on dark */
+.dark .bg-dots {
+  background-image: radial-gradient(rgba(45, 212, 191, 0.16) 1px, transparent 1px);
+}
+
+/* Gradient hairline borders — teal ring on the night palette */
+.dark .gradient-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(30, 38, 36, 0.94), rgba(30, 38, 36, 0.94)) padding-box,
+    linear-gradient(135deg, rgba(45, 212, 191, 0.6), rgba(45, 212, 191, 0.1) 45%, rgba(20, 160, 143, 0.5)) border-box;
+}
+.dark .gradient-border-glass {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(26, 34, 31, 0.8), rgba(26, 34, 31, 0.8)) padding-box,
+    linear-gradient(135deg, rgba(45, 212, 191, 0.6), rgba(45, 212, 191, 0.1) 45%, rgba(20, 160, 143, 0.5)) border-box;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+
+/* Gradient headline text — brighter ramp for dark canvases */
+.dark .text-brand-gradient {
+  background-image: linear-gradient(120deg, #5eead4 0%, #2dd4bf 55%, #14b8a6 100%);
+}
+
+/* Shadows: lift cards off the charcoal canvas */
+.dark .card-shadow {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 4px 16px -4px rgba(0, 0, 0, 0.45),
+    0 16px 40px -12px rgba(45, 212, 191, 0.14);
+}
+.dark .lift:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 12px 24px -8px rgba(0, 0, 0, 0.5),
+    0 24px 48px -16px rgba(45, 212, 191, 0.25);
+}
+
+/* Category cards: keep per-category identity, darken the wash */
+.dark .cat-card {
+  background-color: color-mix(in srgb, var(--cat) 16%, #1e2624);
+  border-color: color-mix(in srgb, var(--cat) 30%, transparent);
+}
+.dark .cat-card:hover {
+  background-color: color-mix(in srgb, var(--cat) 24%, #1e2624);
+}
+
+/* Selection + scrollbar */
+.dark ::selection {
+  background: rgba(45, 212, 191, 0.28);
+  color: #e9fffb;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* Leaflet chrome follows the theme (tiles stay light for readability) */
+.dark .leaflet-popup-content-wrapper {
+  background: #1e2624;
+  color: #edf3f1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.dark .leaflet-popup-tip {
+  background: #1e2624;
+}
+.dark .leaflet-control-zoom a {
+  color: #edf3f1 !important;
+  background: #1e2624;
+}
+.dark .leaflet-bar {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+.dark .leaflet-control-attribution {
+  background: rgba(21, 27, 25, 0.85) !important;
+  color: #a3b5ae;
+}
+.dark .leaflet-container {
+  background: #1a2321;
 }
 
 @layer base {
