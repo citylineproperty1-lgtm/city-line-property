@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useScroll, useSpring, useTransform, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,7 +19,7 @@ import RealMap, { type MapMarker } from "@/components/site/real-map";
 import { RequirementForm } from "@/components/site/requirement-form";
 import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
-import { AREAS, AREA_COORDS, BUSINESS, OFFICE_COORD, waLink } from "@/lib/business";
+import { AREAS, AREA_COORDS, BUSINESS, MARLA_SQFT, OFFICE_COORD, waLink, type SizeUnit } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
@@ -285,6 +286,26 @@ export function HomeView() {
   const [heroArea, setHeroArea] = useState("ALL");
   const [heroBudget, setHeroBudget] = useState("0");
   const [heroPurpose, setHeroPurpose] = useState<HeroPurpose>("SALE");
+  /* Size filter — manual number + unit (sqft / Marla), stored in the listing
+     filters as a minimum area in sqft. */
+  const [heroSize, setHeroSize] = useState("");
+  const [heroSizeUnit, setHeroSizeUnit] = useState<SizeUnit>("marla");
+
+  const heroMinArea = (): number | null => {
+    const n = Number(heroSize);
+    if (heroSize.trim() === "" || Number.isNaN(n) || n <= 0) return null;
+    return heroSizeUnit === "marla" ? n * MARLA_SQFT : n;
+  };
+
+  /* Switching unit converts the typed number so the size meaning stays true. */
+  const switchHeroSizeUnit = (next: SizeUnit) => {
+    const n = Number(heroSize);
+    if (heroSize.trim() !== "" && !Number.isNaN(n) && n > 0) {
+      const sqft = heroSizeUnit === "marla" ? n * MARLA_SQFT : n;
+      setHeroSize(String(next === "marla" ? +(sqft / MARLA_SQFT).toFixed(2) : Math.round(sqft)));
+    }
+    setHeroSizeUnit(next);
+  };
 
   /* Budget scales differ between sale (one-off) and rent (per month) — when
      the picked value doesn't exist on the new scale, fall back to "any". */
@@ -306,18 +327,19 @@ export function HomeView() {
       beds: 0,
       minPrice: null,
       maxPrice: Number(heroBudget) > 0 ? Number(heroBudget) : null,
+      minArea: heroMinArea(),
       sort: "newest",
     });
     navigate({ name: "properties" });
   };
 
   const browseType = (slug: string) => {
-    setFilters({ type: slug, search: "", status: "ALL", beds: 0, minPrice: null, maxPrice: null, sort: "newest" });
+    setFilters({ type: slug, search: "", status: "ALL", beds: 0, minPrice: null, maxPrice: null, minArea: null, sort: "newest" });
     navigate({ name: "properties" });
   };
 
   const exploreArea = (area: string) => {
-    setFilters({ search: area, type: "ALL", status: "ALL", beds: 0, minPrice: null, maxPrice: null, sort: "newest" });
+    setFilters({ search: area, type: "ALL", status: "ALL", beds: 0, minPrice: null, maxPrice: null, minArea: null, sort: "newest" });
     navigate({ name: "properties" });
   };
 
@@ -417,13 +439,13 @@ export function HomeView() {
                     </button>
                   ))}
                 </div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2 sm:grid-cols-3">
                   <Select value={heroType} onValueChange={setHeroType}>
                     <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Category">
-                      <SelectValue placeholder="Category" />
+                      {heroType === "ALL" ? <span>Category</span> : <SelectValue placeholder="Category" />}
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ALL">Any category</SelectItem>
+                      <SelectItem value="ALL">All categories</SelectItem>
                       {cats
                         .filter(
                           (c) =>
@@ -437,6 +459,34 @@ export function HomeView() {
                         ))}
                     </SelectContent>
                   </Select>
+                  {/* Size — manual number + sqft / Marla unit (minimum area) */}
+                  <div
+                    className="flex h-11 items-center rounded-2xl border border-border bg-card pr-1"
+                    aria-label="Minimum size"
+                  >
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      value={heroSize}
+                      onChange={(e) => setHeroSize(e.target.value)}
+                      placeholder="Size"
+                      aria-label="Minimum size — enter a number"
+                      className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-3.5 text-[13px] font-medium focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
+                    <Select value={heroSizeUnit} onValueChange={(v) => switchHeroSizeUnit(v as SizeUnit)}>
+                      <SelectTrigger
+                        className="h-9 w-[84px] shrink-0 rounded-xl border-0 bg-muted/70 px-2 text-[12px] font-medium focus:ring-0"
+                        aria-label="Size unit"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sqft">sqft</SelectItem>
+                        <SelectItem value="marla">Marla</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Select value={heroArea} onValueChange={setHeroArea}>
                     <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
                       <SelectValue placeholder="Area" />

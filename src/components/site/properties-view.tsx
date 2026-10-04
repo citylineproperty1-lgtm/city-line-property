@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import {
 import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-card";
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
-import { AREAS } from "@/lib/business";
+import { AREAS, MARLA_SQFT, formatMinArea, type SizeUnit } from "@/lib/business";
 import { CATEGORIES, PLOT_CATEGORY_SLUGS, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
 import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -63,6 +63,59 @@ export function PropertiesView() {
   const [error, setError] = useState<string | null>(null);
   const [cats, setCats] = useState<CategoryDef[]>(CATEGORIES);
 
+  /* Size filter — uncontrolled input + ref; the store holds minArea in sqft.
+     The effect only syncs the DOM when the store value was changed from
+     outside (chip clear, reset, hero search landing), never while typing. */
+  const [sizeUnit, setSizeUnit] = useState<SizeUnit>("marla");
+  const sizeRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const el = sizeRef.current;
+    if (!el) return;
+    const n = Number(el.value);
+    const current =
+      el.value.trim() !== "" && !Number.isNaN(n) && n > 0
+        ? sizeUnit === "marla"
+          ? n * MARLA_SQFT
+          : n
+        : null;
+    if (f.minArea !== current) {
+      el.value =
+        f.minArea == null
+          ? ""
+          : sizeUnit === "marla"
+            ? String(+((f.minArea / MARLA_SQFT).toFixed(2)))
+            : String(Math.round(f.minArea));
+    }
+  }, [f.minArea, sizeUnit]);
+
+  const onSizeChange = () => {
+    const el = sizeRef.current;
+    if (!el) return;
+    const n = Number(el.value);
+    setFilters({
+      minArea:
+        el.value.trim() !== "" && !Number.isNaN(n) && n > 0
+          ? sizeUnit === "marla"
+            ? n * MARLA_SQFT
+            : n
+          : null,
+    });
+  };
+
+  const switchSizeUnit = (next: SizeUnit) => {
+    const el = sizeRef.current;
+    const n = el ? Number(el.value) : NaN;
+    if (el && el.value.trim() !== "" && !Number.isNaN(n) && n > 0) {
+      const sqft = sizeUnit === "marla" ? n * MARLA_SQFT : n;
+      const nextText = next === "marla" ? String(+(sqft / MARLA_SQFT).toFixed(2)) : String(Math.round(sqft));
+      el.value = nextText;
+      const num = Number(nextText);
+      setFilters({ minArea: num > 0 ? (next === "marla" ? num * MARLA_SQFT : num) : null });
+    }
+    setSizeUnit(next);
+  };
+
   useEffect(() => {
     let alive = true;
     fetch("/api/categories")
@@ -86,6 +139,7 @@ export function PropertiesView() {
     if (f.beds > 0) p.set("beds", String(f.beds));
     if (f.minPrice) p.set("minPrice", String(f.minPrice));
     if (f.maxPrice) p.set("maxPrice", String(f.maxPrice));
+    if (f.minArea) p.set("minArea", String(Math.round(f.minArea)));
     p.set("sort", f.sort);
     return p.toString();
   }, [f]);
@@ -153,6 +207,7 @@ export function PropertiesView() {
       label: `Max ${formatPKR(f.maxPrice).replace("PKR ", "")}`,
       clear: () => setFilters({ maxPrice: null }),
     });
+  if (f.minArea) chips.push({ label: formatMinArea(f.minArea), clear: () => setFilters({ minArea: null }) });
 
   const savedCount = favorites.length;
 
@@ -247,10 +302,10 @@ export function PropertiesView() {
             {/* category */}
             <Select value={f.type} onValueChange={(v) => setFilters({ type: v })}>
               <SelectTrigger className="h-11 w-[150px] rounded-full border-border bg-card text-[13px] focus:ring-0">
-                <SelectValue placeholder="Category" />
+                {f.type === "ALL" ? <span>Category</span> : <SelectValue placeholder="Category" />}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Any category</SelectItem>
+                <SelectItem value="ALL">All categories</SelectItem>
                 {cats
                   .filter(
                     (c) =>
@@ -264,6 +319,36 @@ export function PropertiesView() {
                   ))}
               </SelectContent>
             </Select>
+
+            {/* size — manual number + sqft / Marla unit (minimum area) */}
+            <div
+              className="flex h-11 items-center rounded-full border border-border bg-card"
+              aria-label="Minimum size"
+            >
+              <Input
+                ref={sizeRef}
+                type="number"
+                inputMode="numeric"
+                min={0}
+                defaultValue={f.minArea == null ? "" : String(+((f.minArea / MARLA_SQFT).toFixed(2)))}
+                onChange={onSizeChange}
+                placeholder="Size"
+                aria-label="Minimum size — enter a number"
+                className="h-full w-[76px] rounded-l-full border-0 bg-transparent px-4 text-[13px] focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <Select value={sizeUnit} onValueChange={(v) => switchSizeUnit(v as SizeUnit)}>
+                <SelectTrigger
+                  className="h-9 w-[86px] shrink-0 rounded-full border-0 bg-muted px-3 text-[12px] focus:ring-0"
+                  aria-label="Size unit"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sqft">sqft</SelectItem>
+                  <SelectItem value="marla">Marla</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             {/* area */}
             <Select value={activeArea} onValueChange={(v) => setFilters({ search: v === "ALL" ? "" : v })}>

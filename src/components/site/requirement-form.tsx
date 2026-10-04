@@ -244,10 +244,10 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           <Label className="text-[13px] text-muted-foreground">Category</Label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Category">
-              <SelectValue placeholder="What are you looking for?" />
+              {category === "ALL" ? <span>Category</span> : <SelectValue placeholder="What are you looking for?" />}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">Any category</SelectItem>
+              <SelectItem value="ALL">All categories</SelectItem>
               {CATEGORIES.filter(
                 (c) =>
                   c.slug !== "for-rent" && // rentals are picked via the purpose switch

@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     const beds = Number(sp.get("beds") ?? 0);
     const minPrice = Number(sp.get("minPrice") ?? 0);
     const maxPrice = Number(sp.get("maxPrice") ?? 0);
+    const minArea = Number(sp.get("minArea") ?? 0);
     const city = sp.get("city") ?? "";
     const district = sp.get("district") ?? "";
     const featured = sp.get("featured") === "true";
@@ -42,6 +43,7 @@ export async function GET(req: NextRequest) {
     if (city && city !== "ALL") where.city = city;
     if (district && district !== "ALL") where.district = district;
     if (!Number.isNaN(beds) && beds > 0) where.beds = { gte: beds };
+    if (!Number.isNaN(minArea) && minArea > 0) where.area = { gte: minArea };
     if (minPrice > 0 || maxPrice > 0) {
       where.price = {
         ...(minPrice > 0 ? { gte: minPrice } : {}),

@@ -76,3 +76,18 @@ export function officeDirectionsLink(): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${OFFICE_COORD.lat},${OFFICE_COORD.lng}`;
 }
 
+
+/** Lahore (Punjab) standard: 1 Marla = 272.25 sqft. Used by the size filter. */
+export const MARLA_SQFT = 272.25;
+
+/** Unit the visitor types a size in. */
+export type SizeUnit = "sqft" | "marla";
+
+/** Human label for a minimum-area value stored in sqft ("5+ Marla" / "1,500+ sqft"). */
+export function formatMinArea(sqft: number): string {
+  const marla = sqft / MARLA_SQFT;
+  if (Math.abs(marla - Math.round(marla)) < 0.05 && Math.round(marla) > 0) {
+    return `${Math.round(marla)}+ Marla`;
+  }
+  return `${Math.round(sqft).toLocaleString("en-PK")}+ sqft`;
+}

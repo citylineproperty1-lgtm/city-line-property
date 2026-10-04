@@ -328,6 +328,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
       beds: 0,
       minPrice: null,
       maxPrice: null,
+      minArea: null,
       sort: "newest",
     });
     navigate({ name: "properties" });

@@ -26,6 +26,7 @@ interface ListingsFilters {
   beds: number; // 0 = any
   minPrice: number | null;
   maxPrice: number | null;
+  minArea: number | null; // minimum size in sqft (marla inputs convert via MARLA_SQFT)
   sort: string; // newest | price-asc | price-desc | area-desc
 }
 
@@ -40,6 +41,7 @@ function filtersToQuery(f: ListingsFilters): string {
   if (f.beds > 0) p.set("beds", String(f.beds));
   if (f.minPrice != null) p.set("min", String(f.minPrice));
   if (f.maxPrice != null) p.set("max", String(f.maxPrice));
+  if (f.minArea != null) p.set("area", String(Math.round(f.minArea)));
   if (f.sort !== "newest") p.set("sort", f.sort);
   const s = p.toString();
   return s ? `?${s}` : "";
@@ -65,6 +67,8 @@ export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
   if (min && /^\d+$/.test(min)) f.minPrice = Number(min);
   const max = p.get("max");
   if (max && /^\d+$/.test(max)) f.maxPrice = Number(max);
+  const area = p.get("area");
+  if (area && /^\d+$/.test(area)) f.minArea = Number(area);
   const sort = p.get("sort");
   if (sort && /^[a-z-]+$/.test(sort)) f.sort = sort;
   return Object.keys(f).length > 0 ? f : null;
@@ -133,6 +137,7 @@ const defaultFilters: ListingsFilters = {
   beds: 0,
   minPrice: null,
   maxPrice: null,
+  minArea: null,
   sort: "newest",
 };
 
