@@ -15,7 +15,7 @@ import { PropertyCard, PropertyCardSkeleton } from "@/components/site/property-c
 import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { AREAS } from "@/lib/business";
-import { CATEGORIES, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
+import { CATEGORIES, PLOT_CATEGORY_SLUGS, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
 import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -224,7 +224,13 @@ export function PropertiesView() {
               {STATUS_TABS.map((t) => (
                 <button
                   key={t.value}
-                  onClick={() => setFilters({ status: t.value })}
+                  onClick={() =>
+                    setFilters({
+                      status: t.value,
+                      // Plots can't be rented — drop a selected plot category when switching to For Rent
+                      ...(t.value === "RENT" && PLOT_CATEGORY_SLUGS.has(f.type) ? { type: "ALL" } : {}),
+                    })
+                  }
                   className={cn(
                     "rounded-full px-4 py-1.5 text-[13px] font-medium transition-all",
                     f.status === t.value
@@ -246,7 +252,11 @@ export function PropertiesView() {
               <SelectContent>
                 <SelectItem value="ALL">Any category</SelectItem>
                 {cats
-                  .filter((c) => c.slug !== "for-rent") // rentals are picked via the For Rent tab
+                  .filter(
+                    (c) =>
+                      c.slug !== "for-rent" && // rentals are picked via the For Rent tab
+                      (f.status !== "RENT" || !PLOT_CATEGORY_SLUGS.has(c.slug)) // plots can't be rented
+                  )
                   .map((c) => (
                     <SelectItem key={c.slug} value={c.slug}>
                       {c.name}

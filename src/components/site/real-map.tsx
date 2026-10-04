@@ -195,7 +195,7 @@ export default function RealMap({
       role="application"
       aria-label="Interactive OpenStreetMap"
     >
-      <div ref={elRef} className="h-full w-full" />
+      <div ref={elRef} className="relative h-full w-full" />
     </div>
   );
 }

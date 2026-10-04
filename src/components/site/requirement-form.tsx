@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, type LeadInput } from "@/lib/types";
+import { CATEGORIES, PLOT_CATEGORY_SLUGS, type LeadInput } from "@/lib/types";
 import { AREAS, waLink } from "@/lib/business";
 import { cn } from "@/lib/utils";
 import { Loader2, Send, CheckCircle2, MessageCircle, RotateCcw } from "lucide-react";
@@ -81,6 +81,8 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     setPurpose(next);
     const list = next === "RENT" ? RENT_BUDGETS : BUDGETS;
     if (!list.some((b) => b.value === budget)) setBudget("0");
+    // Plots can't be rented — drop a selected plot category when switching to Rent
+    if (next === "RENT" && PLOT_CATEGORY_SLUGS.has(category)) setCategory("ALL");
   };
 
   const reset = () => {
@@ -246,7 +248,11 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Any category</SelectItem>
-              {CATEGORIES.filter((c) => c.slug !== "for-rent").map((c) => (
+              {CATEGORIES.filter(
+                (c) =>
+                  c.slug !== "for-rent" && // rentals are picked via the purpose switch
+                  (purpose === "BUY" || !PLOT_CATEGORY_SLUGS.has(c.slug)) // plots can't be rented
+              ).map((c) => (
                 <SelectItem key={c.slug} value={c.slug}>
                   {c.name}
                 </SelectItem>

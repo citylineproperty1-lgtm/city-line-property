@@ -71,6 +71,12 @@ export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
   CATEGORIES.map((c) => [c.slug, c.name])
 );
 
+/** Plot categories can't be rented — hidden from category dropdowns when the purpose is Rent. */
+export const PLOT_CATEGORY_SLUGS: ReadonlySet<string> = new Set([
+  "residential-plots",
+  "commercial-plots",
+]);
+
 export function categoryLabel(type: string): string {
   if (CATEGORY_LABELS[type]) return CATEGORY_LABELS[type];
   if (TYPE_LABELS_LEGACY[type]) return TYPE_LABELS_LEGACY[type];

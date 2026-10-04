@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
   CATEGORIES,
+  PLOT_CATEGORY_SLUGS,
   type CategoryDef,
   type PlatformStats,
   type Property,
@@ -291,6 +292,8 @@ export function HomeView() {
     setHeroPurpose(next);
     const list = next === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
     if (!list.some((b) => b.value === heroBudget)) setHeroBudget("0");
+    // Plots can't be rented — drop a selected plot category when switching to Rent
+    if (next === "RENT" && PLOT_CATEGORY_SLUGS.has(heroType)) setHeroType("ALL");
   };
 
   const heroBudgets = heroPurpose === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
@@ -422,7 +425,11 @@ export function HomeView() {
                     <SelectContent>
                       <SelectItem value="ALL">Any category</SelectItem>
                       {cats
-                        .filter((c) => c.slug !== "for-rent") // rentals are picked via the Rent purpose switch
+                        .filter(
+                          (c) =>
+                            c.slug !== "for-rent" && // rentals are picked via the Rent purpose switch
+                            (heroPurpose === "SALE" || !PLOT_CATEGORY_SLUGS.has(c.slug)) // plots can't be rented
+                        )
                         .map((c) => (
                           <SelectItem key={c.slug} value={c.slug}>
                             {c.name}
