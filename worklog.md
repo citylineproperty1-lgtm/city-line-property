@@ -1376,3 +1376,19 @@ Work Log:
 Stage Summary:
 - Search UX now: Purpose (Buy/Rent) -> Category | Size (sqft/Marla) | Area -> Budget -> Search; same filters deep-linkable via hash query
 - Commit pushed to origin/main (Vercel auto-deploy)
+
+---
+Task ID: 64
+Agent: Z.ai Code (main session)
+Task: Owner misplaced admin password — re-deliver + repair env clobber found during verification
+
+Work Log:
+- Verified password against PRODUCTION login API (https://citylineproperty.vercel.app/api/admin/login): 8WDsPtxnpP$7DF → 200 ok:true; old default CityLine@2025 → 401. Owner had not changed it since the Task 58 reset
+- Discovered 6th occurrence of the boot .env clobber (SQLite template) — this time .env.supabase + /home/z/.clp-env-supabase were ALSO missing (container rebuild wiped /home/z copies; .env.supabase not in repo.tar since gitignored)
+- Restored dual pooler URLs into .env; recreated both canonical backups (chmod 600/660); dev server was down (curl 000) → restarted per protocol (unset DATABASE_URL DIRECT_URL subshell)
+- Health: home 200, /api/settings 200 (live Supabase data); local login API → 200 ok:true with same password (shared DB with prod)
+
+Stage Summary:
+- Admin password re-delivered in chat (8WDsPtxnpP$7DF for admin@citylineproperty.com / "admin" shorthand) — verified 200 against prod AND local
+- .env heal chain fully restored (.env + .env.supabase + /home/z/.clp-env-supabase); dev server healthy on Supabase
+- RISK: on next full container rebuild the /home/z backup is lost again and .env.supabase is gitignored by design — the webDevReview agent must recreate both from the worklog recipe if `rg -o "^[A-Z_]+" .env` shows no postgresql line
