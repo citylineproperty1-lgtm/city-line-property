@@ -1428,3 +1428,21 @@ Work Log:
 Stage Summary:
 - Search UIs now show only field names (Category/Size/Area/Budget/Beds/Min price/Max price) with All-* reset options; zero "Any" wording anywhere
 - .env heal chain rebuilt again; LOCAL dev healthy on Supabase; PROD verified working throughout (key=properties)
+
+---
+Task ID: 67
+Agent: Z.ai Code (main session)
+Task: Owner asked for an elegant branded intro (screenshot of Tranzlo splash: logo + animated progress line) — "add like this login page"
+
+Work Log:
+- Interpreted the reference image correctly: it is a splash/preloader screen (brand lockup + thin progress line), not a login form; admin login was already redesigned in an earlier task
+- Created src/components/site/splash-screen.tsx: fixed overlay z-[9999], soft teal radial glow, animated Monogram (64px) + "City Line Property" wordmark in primary teal + "YOUR KEY TO THE CITY" letterspaced tagline, thin 3px progress track (w-44/52) filling 6%→100% over 1.4s cubic-bezier(0.65,0,0.35,1)
+- Timing: MIN_MS 1600 + window load event (MAX cap 3500ms); hides only when BOTH met; click/tap anywhere skips; body scroll locked while visible; framer AnimatePresence exit fade+scale 1.025 over 0.55s; prefers-reduced-motion shortens everything
+- Wired into src/app/page.tsx root (SPA shell mounts once → hash navigation never re-triggers splash; shows on every full page load like the reference)
+- Lint fix: react-hooks/set-state-in-effect on derived done flag → replaced useEffect latch with derived state `done = skipped || (minDone && ready)`
+- E2E verified: temporarily MIN_MS=9000 → screenshot /tmp/splash-full.png shows elegant splash fully visible (matches reference); reverted to 1600; reload → wait 4s → snapshot: 87 home-content matches, splash role=status gone, only footer tagline text remains; console clean
+- Commit 1e4a5b4 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Site now opens with an elegant branded splash: monogram + teal wordmark + tagline + animated progress line, fades into the app (~2.2s total); reduced-motion and click-to-skip respected
+- Pending from Task 65: DNS check cron job 441819 (15:00 PKT) auto-verifies citylineproperty.com.pk; NS already at Vercel per HosterPK, PKNIC zone publish pending
