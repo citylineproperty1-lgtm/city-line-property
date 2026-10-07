@@ -1480,3 +1480,20 @@ Stage Summary:
 - Splash: dark-teal brand moment, white lockup, taller dual white waves, 3s min, tap-to-skip
 - DNS: PKNIC publish still pending after run 2 (15:00 PKT); webDevReview agent owns the retry ladder (16:30 PKT next)
 - Task 65 DNS run 3 (16:30 PKT, job 441937): dig NS empty @8.8.8.8 AND @root-c1.pknic.pk — PKNIC still publishing (6h since HosterPK NS change; zone batches can take 24-48h). One short line sent to owner. NEXT: run 4 of 4 at 18:30 PKT (epoch 1791379800000) — cron tool unavailable in this turn's function set, job creation delegated to webDevReview-15min agent (441906): create one_time job, epoch millis expr 1791379800000, tz Asia/Karachi, message = this task text with run counter updated to 4, plus: if run 4 also misses, send one short line and schedule ONE final run next morning 10:00 PKT Oct 8 (epoch 1791431400000) as the true final auto-check.
+
+---
+Task ID: 70
+Agent: Z.ai Code (main session)
+Task: Owner: wave not looking good — replace with elegant loader like original reference; plus 8th .env clobber recovery
+
+Work Log:
+- 8th env clobber (container resync): .env deleted entirely, dev.log gone, dev server down (ERR_CONNECTION_REFUSED). Restored dual pooler URLs from worklog recipe, recreated .env.supabase + /home/z/.clp-env-supabase (chmod 600), dev restart -> home 200 + /api/settings 200 on live Supabase
+- Replaced dual-wave loader with thin elegant progress line matching owner's original Tranzlo reference: 3px track (white/20, rounded-full) + white fill (4% -> 100% over 2.8s, ease [0.22,0.61,0.36,1]) + soft white glow on fill; fill completes right as the 3s hold ends, then splash fades
+- Kept: dark-teal gradient bg, white lockup, 3s minimum, tap-to-skip, scroll lock tied to done (Task 69 fix intact)
+- Verified: lint 0 errors; screenshot /tmp/splash-line2.png shows line mid-fill exactly like reference; splash exits, body overflow visible, scrollTo 700 -> 700; 0 console errors
+- Commit eaf66b1 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Splash final design: dark-teal brand surface + white lockup + thin white progress line (reference style); wave code removed
+- .env heal chain rebuilt after 8th clobber; dev healthy
+- DNS: run 4 of 4 auto-check at 18:30 PKT (webDevReview agent owns creation per worklog Task 65 run 3 note)
