@@ -1406,3 +1406,5 @@ Work Log:
 
 Stage Summary:
 - Domain registered: citylineproperty.com.pk (HosterPK, expires Oct 2028); connection to Vercel pending owner dashboard steps; .com variant not purchased (optional future add)
+- Task 65 update (same day): owner completed Vercel side (citylineproperty.com.pk + www added to project, apex 308->www, www->Production; both red "Invalid Configuration" as expected). HosterPK client area has NO self-serve nameserver UI for .com.pk — owner opened support ticket #5998127 "Nameserver change request" (status Awaiting staff, dept Domains, opened 7 Oct). Domain is Active at HosterPK (renews Sep 07 2028) but NOT yet in global DNS zone (dig NS/A empty as of ticket time).
+- NEXT SESSION CHECKLIST: (1) `dig NS citylineproperty.com.pk +short` — success = ns1/ns2.vercel-dns.com; (2) then `curl -sI https://www.citylineproperty.com.pk` expect 200 + valid TLS; (3) confirm apex 308 -> www; (4) tell owner site is live + advise Vercel Domains Edit -> redirect citylineproperty.vercel.app -> www.citylineproperty.com.pk (308) for SEO; (5) if still HosterPK NS after 48-72h, owner should bump ticket #5998127.
