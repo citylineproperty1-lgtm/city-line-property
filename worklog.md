@@ -1539,3 +1539,22 @@ Stage Summary:
 - Mobile now visually lighter: everything ~15-30% smaller on phones (headings, paddings, cards, buttons), desktop pixel-identical
 - Hero + search card + trust row now fit one mobile viewport
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
+
+---
+Task ID: 73
+Agent: Z.ai Code (main session)
+Task: Owner — add manual "write your own area" option in Area dropdown + manual "+" custom budget option (screenshot: Area pill)
+
+Work Log:
+- Added "Other area — write your own" SelectItem + free-text Input in 3 places:
+  1) Hero search card: pick Other -> animated Input below grid ("Write the area — e.g. Block C, Phase 2"); trigger label becomes "Area: <typed text>" (truncated) once typed; empty text + Search -> toast "Please write the area you want"; search uses typed text as keyword
+  2) Requirement form (home + contact): same pattern, typed area replaces area in POST /api/leads + WhatsApp brief; validation error if empty; reset clears it
+  3) Listings filter bar: "Other area" pill + manual Input row below bar (MapPin icon, clear X), bound to f.search with existing 250ms debounce -> filters live; BUGFIX: picking OTHER with empty search snapped back to ALL (derived activeArea) -> added otherAreaMode state, cleared on real-area/All pick and on Clear-all-filters
+- Added "+ Custom budget" SelectItem in hero + requirement form: pick -> PKR Input (numeric, no spinners) + live hint "≈ PKR 85 Lakh maximum" / "per month" for rent; hero -> sets maxPrice; form -> budget sent to API + brief label via formatPKR; switching Buy<->Rent resets custom (different scales); empty amount -> toast/error
+- TRUE-ALARM LESSON (from this session's false alarm): bash tool OUTPUT display can eat "[h" sequences (const [heroX displayed as const eroX) — looks like file corruption but is not; verify with grep -c 'const \[h' or Read tool before touching anything
+- E2E verified (agent-browser): hero Area->Other->typed "Block C Phase 2" + Budget->Custom->8500000 -> hint "≈ PKR 85 Lakh maximum" -> Search -> properties view with chip "Block C Phase 2" + "Max 85 Lakh" + bar in Other-area mode with input; empty-area toast shown; bar typed "hall" -> live 1 listing + chip; requirement form Other + Custom submitted -> success screen (lead saved via POST /api/leads); desktop 1280 trigger shows "Area: Block C Pha…" truncation; lint 0 errors; console only pre-existing warnings
+- Commit e2748e2 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Clients can now write any area name (3 entry points) and any exact budget amount — flows validated end to end on mobile + desktop
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
