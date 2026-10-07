@@ -441,7 +441,7 @@ export function HomeView() {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <Select value={heroType} onValueChange={setHeroType}>
-                    <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Category">
+                    <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Category">
                       {heroType === "ALL" ? <span>Category</span> : <SelectValue placeholder="Category" />}
                     </SelectTrigger>
                     <SelectContent>
@@ -488,7 +488,7 @@ export function HomeView() {
                     </Select>
                   </div>
                   <Select value={heroArea} onValueChange={setHeroArea}>
-                    <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
+                    <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
                       {heroArea === "ALL" ? <span>Area</span> : <SelectValue placeholder="Area" />}
                     </SelectTrigger>
                     <SelectContent>
@@ -501,10 +501,10 @@ export function HomeView() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="mt-2 flex gap-2">
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <Select value={heroBudget} onValueChange={setHeroBudget}>
                     <SelectTrigger
-                      className="h-11 flex-1 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0"
+                      className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0 sm:w-auto sm:flex-1"
                       aria-label={heroPurpose === "RENT" ? "Monthly rent budget" : "Budget"}
                     >
                       {heroBudget === "0" ? <span>Budget</span> : <SelectValue placeholder="Budget" />}
@@ -519,7 +519,7 @@ export function HomeView() {
                   </Select>
                   <Button
                     onClick={heroSearch}
-                    className="sheen h-11 rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95"
+                    className="sheen h-11 w-full rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95 sm:w-auto"
                     aria-label="Search listings"
                   >
                     <Search className="mr-1.5 h-4 w-4" />
