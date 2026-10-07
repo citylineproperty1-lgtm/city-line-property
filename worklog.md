@@ -1516,3 +1516,26 @@ Stage Summary:
 - Mobile hero card fixed (the visible complaint); desktop hero also improved
 - Contact bubble auto-open after 9s reviewed — by design, dismissible, session-aware; left as-is
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373)
+
+---
+Task ID: 72
+Agent: Z.ai Code (main session)
+Task: Owner follow-up — "on mobile screen view look things big, do it little bit smaller according to mobile view"
+
+Work Log:
+- Follow-up to Task 71 (layout fix) — this round = global mobile SCALE pass: everything a size smaller on <640px, desktop untouched (every change paired with sm: original value)
+- home-view: hero h1 42px->31px, hero paragraph 15px->13.5px, hero pt/pb reduced, grid gap 12->8; ALL section paddings py-16/pt-16 -> py-10/pt-10 (desktop sm: values kept); section h2 text-2xl -> text-[21px]; explore area cards h-340->h-248 + inner p-6->p-5; category tiles mt-9->mt-6 + p-5->p-4; stats cards px/py reduced + number 26->23px; featured/latest carousel card w-320->w-272 (more peek of next card); why-us p-6->p-5; process circles h-14->h-12 + gaps tightened; form card p-6->p-5; CTA band p-8->p-6 + h2 2xl->22px + buttons h-12->h-11; monogram 64->56
+- property-card: body p-5 -> p-4 sm:p-5
+- properties-view: h1 3xl->26px, empty states py reduced
+- property-detail: h1 2xl->21px, price 3xl->25px (sm:3xl kept)
+- about/contact: h1 4xl->30px (sm:5xl kept), big p-8/p-10 cards -> p-6 sm:*
+- areas-view: both h1 3xl->26px, p-10 cards -> p-6 sm:p-10, py-16->py-10
+- saved-view: h1 3xl->26px, empty py-20->py-12
+- footer: py-14->py-10, gap-10->gap-8 (sm: kept)
+- Verified: lint 0 errors; mobile 390px screenshots of hero/stats/areas/categories/cards/map/why-us/process/detail all clean + compact; desktop 1280px hero + explore unchanged; scrollWidth-clientWidth = 0 (no overflow); body overflow released after splash; console clean (only pre-existing non-static-position warning)
+- Commit 36e1a90 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Mobile now visually lighter: everything ~15-30% smaller on phones (headings, paddings, cards, buttons), desktop pixel-identical
+- Hero + search card + trust row now fit one mobile viewport
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
