@@ -190,13 +190,13 @@ const EXPLORE_AREAS = ["etihad-town-phase-1", "etihad-town-phase-2"]
   .filter((a): a is NonNullable<typeof a> => Boolean(a));
 
 const HERO_BUDGETS = [
-  { value: "0", label: "All budgets" },
-  { value: "5000000", label: "Up to 50 Lakh" },
-  { value: "10000000", label: "Up to 1 Crore" },
-  { value: "20000000", label: "Up to 2 Crore" },
-  { value: "30000000", label: "Up to 3 Crore" },
-  { value: "50000000", label: "Up to 5 Crore" },
-  { value: "100000000", label: "Up to 10 Crore" },
+  { value: "0", label: "Any budget" },
+  { value: "5000000", label: "50 Lakh" },
+  { value: "10000000", label: "1 Crore" },
+  { value: "20000000", label: "2 Crore" },
+  { value: "30000000", label: "3 Crore" },
+  { value: "50000000", label: "5 Crore" },
+  { value: "100000000", label: "10 Crore" },
 ];
 
 /* Hero purpose filter — Buy / Rent only (drives the status filter on the
@@ -210,14 +210,14 @@ const PURPOSE_TABS: { value: HeroPurpose; label: string; icon: LucideIcon }[] = 
 
 /* Monthly rent scale for the hero budget dropdown (Etihad Town rentals). */
 const HERO_RENT_BUDGETS = [
-  { value: "0", label: "All budgets" }, // rent scale — value "0" = no cap
-  { value: "25000", label: "Up to 25,000 / mo" },
-  { value: "50000", label: "Up to 50,000 / mo" },
-  { value: "75000", label: "Up to 75,000 / mo" },
-  { value: "100000", label: "Up to 1 Lakh / mo" },
-  { value: "150000", label: "Up to 1.5 Lakh / mo" },
-  { value: "250000", label: "Up to 2.5 Lakh / mo" },
-  { value: "500000", label: "Up to 5 Lakh / mo" },
+  { value: "0", label: "Any budget" }, // rent scale — value "0" = no cap
+  { value: "25000", label: "25,000 / mo" },
+  { value: "50000", label: "50,000 / mo" },
+  { value: "75000", label: "75,000 / mo" },
+  { value: "100000", label: "1 Lakh / mo" },
+  { value: "150000", label: "1.5 Lakh / mo" },
+  { value: "250000", label: "2.5 Lakh / mo" },
+  { value: "500000", label: "5 Lakh / mo" },
 ];
 
 const FOUNDED_YEAR = 2017;
@@ -592,11 +592,12 @@ export function HomeView() {
                   </div>
                 </div>
                 <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                  {/* Budget — "0 to Any" inline range, both sides typeable in PKR;
-                      the chevron keeps the preset caps as one-tap shortcuts */}
+                  {/* Budget — "0 to Any" inline range, both sides typeable in PKR.
+                      The "Any" (max) side doubles as a permanent dropdown button:
+                      tap it to open the preset amounts, or just type a custom one. */}
                   <div ref={budgetBoxRef} className="relative w-full sm:w-auto sm:flex-1">
                     <div
-                      className="flex h-11 items-center rounded-2xl border border-border bg-card pl-3.5 pr-1"
+                      className="flex h-11 items-center rounded-2xl border border-border bg-card pl-3.5 pr-2"
                       aria-label={heroPurpose === "RENT" ? "Monthly rent budget range in PKR" : "Budget range in PKR"}
                     >
                       <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-muted-foreground" aria-hidden>
@@ -616,26 +617,33 @@ export function HomeView() {
                       <span className="shrink-0 text-[12px] text-muted-foreground" aria-hidden>
                         to
                       </span>
-                      <Input
-                        type="number"
-                        inputMode="numeric"
-                        min={0}
-                        value={heroBudgetMax}
-                        onChange={(e) => setHeroBudgetMax(e.target.value)}
-                        placeholder="Any"
-                        aria-label="Maximum budget in PKR"
-                        autoComplete="off"
-                        className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-1.5 text-center text-[13px] font-medium focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setBudgetOpen((o) => !o)}
-                        aria-expanded={budgetOpen}
-                        aria-label="Pick a preset budget"
-                        className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        <ChevronDown className={cn("h-4 w-4 transition-transform", budgetOpen && "rotate-180")} aria-hidden />
-                      </button>
+                      <div className="relative flex min-w-0 flex-1 items-center">
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          value={heroBudgetMax}
+                          onChange={(e) => {
+                            setBudgetOpen(false); // typing a custom amount — keep the list out of the way
+                            setHeroBudgetMax(e.target.value);
+                          }}
+                          onFocus={() => setBudgetOpen(true)}
+                          onClick={() => setBudgetOpen(true)}
+                          placeholder="Any"
+                          aria-label="Maximum budget in PKR — tap for preset options or type your own"
+                          aria-haspopup="listbox"
+                          aria-expanded={budgetOpen}
+                          autoComplete="off"
+                          className="h-full w-full min-w-0 rounded-none border-0 bg-transparent px-1.5 pr-5 text-center text-[13px] font-medium focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        />
+                        <ChevronDown
+                          className={cn(
+                            "pointer-events-none absolute right-0 h-4 w-4 text-muted-foreground transition-transform",
+                            budgetOpen && "rotate-180"
+                          )}
+                          aria-hidden
+                        />
+                      </div>
                     </div>
                     {(Number(heroBudgetMin) > 0 || Number(heroBudgetMax) > 0) && (
                       <p className="mt-1.5 pl-1 text-[11.5px] font-medium text-muted-foreground" aria-live="polite">
@@ -663,7 +671,7 @@ export function HomeView() {
                           }}
                           className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
                         >
-                          All budgets
+                          Any budget
                         </button>
                         {heroBudgets
                           .filter((b) => b.value !== "0")
@@ -680,7 +688,12 @@ export function HomeView() {
                               }}
                               className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
                             >
-                              {b.label}
+                              <span className="truncate">{b.label}</span>
+                              {heroPurpose === "SALE" && (
+                                <span className="ml-auto shrink-0 pl-3 text-[11px] font-medium tabular-nums text-muted-foreground">
+                                  {Number(b.value).toLocaleString("en-US")}
+                                </span>
+                              )}
                             </button>
                           ))}
                       </div>
