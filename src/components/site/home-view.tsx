@@ -285,16 +285,22 @@ export function HomeView() {
 
   /* ---------- hero search ---------- */
   const [heroType, setHeroType] = useState("ALL");
-  const [heroArea, setHeroArea] = useState("ALL");
-  const [heroBudget, setHeroBudget] = useState("0");
   const [heroPurpose, setHeroPurpose] = useState<HeroPurpose>("SALE");
   /* Size filter — manual number + unit (sqft / Marla), stored in the listing
      filters as a minimum area in sqft. */
   const [heroSize, setHeroSize] = useState("");
   const [heroSizeUnit, setHeroSizeUnit] = useState<SizeUnit>("marla");
-  /* Manual overrides — "Other area" free text + custom budget amount (PKR). */
-  const [heroAreaOther, setHeroAreaOther] = useState("");
-  const [heroBudgetCustom, setHeroBudgetCustom] = useState("");
+  /* Area — written directly in the box (manual), the chevron opens the preset
+     list as a shortcut. The typed text doubles as the keyword filter. */
+  const [heroAreaText, setHeroAreaText] = useState("");
+  /* Budget — inline "0 to Any" range, both sides typeable in PKR; the chevron
+     keeps the preset caps as one-tap shortcuts. */
+  const [heroBudgetMin, setHeroBudgetMin] = useState("");
+  const [heroBudgetMax, setHeroBudgetMax] = useState("");
+  const [areaOpen, setAreaOpen] = useState(false);
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const areaBoxRef = useRef<HTMLDivElement>(null);
+  const budgetBoxRef = useRef<HTMLDivElement>(null);
 
   const heroMinArea = (): number | null => {
     const n = Number(heroSize);
@@ -312,49 +318,56 @@ export function HomeView() {
     setHeroSizeUnit(next);
   };
 
-  /* Budget scales differ between sale (one-off) and rent (per month) — when
-     the picked value doesn't exist on the new scale, fall back to "any". */
+  /* Budget scales differ between sale (one-off) and rent (per month) — the
+     typed range is cleared when the purpose switches. */
   const switchHeroPurpose = (next: HeroPurpose) => {
     setHeroPurpose(next);
-    const list = next === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
-    if (!list.some((b) => b.value === heroBudget)) setHeroBudget("0");
-    // Custom budget amount means different things on the rent (monthly) vs buy
-    // (one-off) scale — start fresh when switching purpose.
-    if (heroBudget === "CUSTOM") {
-      setHeroBudget("0");
-      setHeroBudgetCustom("");
-    }
+    // Rent (monthly) and buy (one-off) live on different PKR scales — clear the
+    // typed range so a sale budget never leaks into a rent search.
+    setHeroBudgetMin("");
+    setHeroBudgetMax("");
     // Plots can't be rented — drop a selected plot category when switching to Rent
     if (next === "RENT" && PLOT_CATEGORY_SLUGS.has(heroType)) setHeroType("ALL");
   };
 
   const heroBudgets = heroPurpose === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
 
+  /* Close the chevron dropdowns on outside click or Escape. */
+  useEffect(() => {
+    if (!areaOpen && !budgetOpen) return;
+    const onDown = (e: Event) => {
+      const t = e.target as Node;
+      if (areaOpen && areaBoxRef.current && !areaBoxRef.current.contains(t)) setAreaOpen(false);
+      if (budgetOpen && budgetBoxRef.current && !budgetBoxRef.current.contains(t)) setBudgetOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setAreaOpen(false);
+        setBudgetOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("touchstart", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("touchstart", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [areaOpen, budgetOpen]);
+
   const heroSearch = () => {
-    const areaText = heroArea === "OTHER" ? heroAreaOther.trim() : heroArea !== "ALL" ? heroArea : "";
-    const maxPrice =
-      heroBudget === "CUSTOM"
-        ? Number(heroBudgetCustom) > 0
-          ? Number(heroBudgetCustom)
-          : null
-        : Number(heroBudget) > 0
-          ? Number(heroBudget)
-          : null;
-    if (heroArea === "OTHER" && !areaText) {
-      toast.error("Please write the area you want — e.g. Block C, Phase 2.");
-      return;
-    }
-    if (heroBudget === "CUSTOM" && maxPrice == null) {
-      toast.error("Please enter your budget amount in PKR.");
-      return;
-    }
+    const num = (v: string) => {
+      const n = Number(v);
+      return v.trim() !== "" && Number.isFinite(n) && n > 0 ? n : null;
+    };
     setFilters({
-      search: areaText,
+      search: heroAreaText.trim(),
       type: heroType,
       status: heroPurpose,
       beds: 0,
-      minPrice: null,
-      maxPrice,
+      minPrice: num(heroBudgetMin),
+      maxPrice: num(heroBudgetMax),
       minArea: heroMinArea(),
       sort: "newest",
     });
@@ -515,86 +528,164 @@ export function HomeView() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Select value={heroArea} onValueChange={setHeroArea}>
-                    <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
-                      {heroArea === "ALL" ? (
-                        <span>Area</span>
-                      ) : heroArea === "OTHER" ? (
-                        <span className="truncate">
-                          {heroAreaOther.trim() ? `Area: ${heroAreaOther.trim()}` : "Other area"}
-                        </span>
-                      ) : (
-                        <SelectValue placeholder="Area" />
-                      )}
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">All areas</SelectItem>
-                      {AREAS.map((a) => (
-                        <SelectItem key={a} value={a}>
-                          {a}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="OTHER">Other area — write your own</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Manual area — free text when "Other area" is picked */}
-                {heroArea === "OTHER" && (
-                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2">
+                  {/* Area — write it here, or open the chevron for the preset list */}
+                  <div ref={areaBoxRef} className="relative">
                     <Input
-                      value={heroAreaOther}
-                      onChange={(e) => setHeroAreaOther(e.target.value)}
-                      placeholder="Write the area — e.g. Block C, Phase 2"
-                      aria-label="Write your area"
+                      value={heroAreaText}
+                      onChange={(e) => setHeroAreaText(e.target.value)}
+                      onFocus={() => setAreaOpen(true)}
+                      placeholder="Area"
+                      aria-label="Area — write it, or pick from the list"
                       autoComplete="off"
-                      className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus-visible:ring-ring/40"
+                      className="h-11 w-full rounded-2xl border-border bg-card pr-10 text-[13px] font-medium focus-visible:ring-ring/40"
                     />
-                  </motion.div>
-                )}
-                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                  <Select value={heroBudget} onValueChange={setHeroBudget}>
-                    <SelectTrigger
-                      className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0 sm:w-auto sm:flex-1"
-                      aria-label={heroPurpose === "RENT" ? "Monthly rent budget" : "Budget"}
+                    <button
+                      type="button"
+                      onClick={() => setAreaOpen((o) => !o)}
+                      aria-expanded={areaOpen}
+                      aria-label="Pick an area from the list"
+                      className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
-                      {heroBudget === "0" ? <span>Budget</span> : <SelectValue placeholder="Budget" />}
-                    </SelectTrigger>
-                    <SelectContent>
-                      {heroBudgets.map((b) => (
-                        <SelectItem key={b.value} value={b.value}>
-                          {b.label}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="CUSTOM">+ Custom budget</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {/* Manual budget — exact PKR amount when "+ Custom budget" is picked */}
-                  {heroBudget === "CUSTOM" && (
-                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 w-full">
-                      <div className="relative">
-                        <Input
-                          type="number"
-                          inputMode="numeric"
-                          min={0}
-                          value={heroBudgetCustom}
-                          onChange={(e) => setHeroBudgetCustom(e.target.value)}
-                          placeholder="Enter your budget in PKR — e.g. 8500000"
-                          aria-label="Custom budget in PKR"
-                          autoComplete="off"
-                          className="h-11 w-full rounded-2xl border-border bg-card pr-14 text-[13px] font-medium focus-visible:ring-ring/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                        />
-                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                          PKR
-                        </span>
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", areaOpen && "rotate-180")} aria-hidden />
+                    </button>
+                    {areaOpen && (
+                      <div
+                        role="listbox"
+                        aria-label="Preset areas"
+                        className="absolute inset-x-0 top-[calc(100%+6px)] z-50 max-h-60 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-xl"
+                      >
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={heroAreaText === ""}
+                          onClick={() => {
+                            setHeroAreaText("");
+                            setAreaOpen(false);
+                          }}
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
+                        >
+                          All areas
+                        </button>
+                        {AREAS.filter((a) => a.toLowerCase().includes(heroAreaText.trim().toLowerCase())).map((a) => (
+                          <button
+                            key={a}
+                            type="button"
+                            role="option"
+                            aria-selected={heroAreaText === a}
+                            onClick={() => {
+                              setHeroAreaText(a);
+                              setAreaOpen(false);
+                            }}
+                            className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
+                          >
+                            {a}
+                          </button>
+                        ))}
+                        {heroAreaText.trim() !== "" &&
+                          !AREAS.some((a) => a.toLowerCase().includes(heroAreaText.trim().toLowerCase())) && (
+                            <p className="px-3 py-2 text-[12px] text-muted-foreground">
+                              Press Search to look in “{heroAreaText.trim()}”
+                            </p>
+                          )}
                       </div>
-                      {Number(heroBudgetCustom) > 0 && (
-                        <p className="mt-1.5 pl-1 text-[11.5px] font-medium text-muted-foreground" aria-live="polite">
-                          ≈ {formatPKR(Number(heroBudgetCustom), heroPurpose === "RENT")}
-                          {heroPurpose === "RENT" ? " per month" : " maximum"}
-                        </p>
-                      )}
-                    </motion.div>
-                  )}
+                    )}
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                  {/* Budget — "0 to Any" inline range, both sides typeable in PKR;
+                      the chevron keeps the preset caps as one-tap shortcuts */}
+                  <div ref={budgetBoxRef} className="relative w-full sm:w-auto sm:flex-1">
+                    <div
+                      className="flex h-11 items-center rounded-2xl border border-border bg-card pl-3.5 pr-1"
+                      aria-label={heroPurpose === "RENT" ? "Monthly rent budget range in PKR" : "Budget range in PKR"}
+                    >
+                      <span className="shrink-0 text-[11px] font-bold uppercase tracking-wide text-muted-foreground" aria-hidden>
+                        PKR
+                      </span>
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        value={heroBudgetMin}
+                        onChange={(e) => setHeroBudgetMin(e.target.value)}
+                        placeholder="0"
+                        aria-label="Minimum budget in PKR"
+                        autoComplete="off"
+                        className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-1.5 text-center text-[13px] font-medium focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <span className="shrink-0 text-[12px] text-muted-foreground" aria-hidden>
+                        to
+                      </span>
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        value={heroBudgetMax}
+                        onChange={(e) => setHeroBudgetMax(e.target.value)}
+                        placeholder="Any"
+                        aria-label="Maximum budget in PKR"
+                        autoComplete="off"
+                        className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent px-1.5 text-center text-[13px] font-medium focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setBudgetOpen((o) => !o)}
+                        aria-expanded={budgetOpen}
+                        aria-label="Pick a preset budget"
+                        className="flex h-9 w-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <ChevronDown className={cn("h-4 w-4 transition-transform", budgetOpen && "rotate-180")} aria-hidden />
+                      </button>
+                    </div>
+                    {(Number(heroBudgetMin) > 0 || Number(heroBudgetMax) > 0) && (
+                      <p className="mt-1.5 pl-1 text-[11.5px] font-medium text-muted-foreground" aria-live="polite">
+                        {Number(heroBudgetMin) > 0 && Number(heroBudgetMax) > 0
+                          ? `≈ ${formatPKR(Number(heroBudgetMin), heroPurpose === "RENT")} – ${formatPKR(Number(heroBudgetMax), heroPurpose === "RENT")}${heroPurpose === "RENT" ? " / month" : ""}`
+                          : Number(heroBudgetMin) > 0
+                            ? `≈ From ${formatPKR(Number(heroBudgetMin), heroPurpose === "RENT")}`
+                            : `≈ Up to ${formatPKR(Number(heroBudgetMax), heroPurpose === "RENT")}${heroPurpose === "RENT" ? " per month" : " maximum"}`}
+                      </p>
+                    )}
+                    {budgetOpen && (
+                      <div
+                        role="listbox"
+                        aria-label="Preset budgets"
+                        className="absolute inset-x-0 top-[calc(100%+6px)] z-50 max-h-60 overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-xl"
+                      >
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={heroBudgetMin === "" && heroBudgetMax === ""}
+                          onClick={() => {
+                            setHeroBudgetMin("");
+                            setHeroBudgetMax("");
+                            setBudgetOpen(false);
+                          }}
+                          className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
+                        >
+                          All budgets
+                        </button>
+                        {heroBudgets
+                          .filter((b) => b.value !== "0")
+                          .map((b) => (
+                            <button
+                              key={b.value}
+                              type="button"
+                              role="option"
+                              aria-selected={heroBudgetMin === "" && heroBudgetMax === b.value}
+                              onClick={() => {
+                                setHeroBudgetMin("");
+                                setHeroBudgetMax(b.value);
+                                setBudgetOpen(false);
+                              }}
+                              className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
+                            >
+                              {b.label}
+                            </button>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                   <Button
                     onClick={heroSearch}
                     className="sheen h-11 w-full rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95 sm:w-auto"

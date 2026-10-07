@@ -400,7 +400,14 @@ export function PropertiesView() {
               onValueChange={(v) => setFilters({ minPrice: Number(v) || null })}
             >
               <SelectTrigger className="h-11 w-[120px] rounded-full border-border bg-card text-[13px] focus:ring-0">
-                <SelectValue placeholder="Min price" />
+                {f.minPrice ?
+                  (PRICE_STEPS.some((s) => s.value === String(f.minPrice)) ? (
+                    <SelectValue placeholder="Min price" />
+                  ) : (
+                    <span className="truncate">Min: {formatPKR(f.minPrice).replace("PKR ", "")}</span>
+                  )) : (
+                    <span>Min price</span>
+                  )}
               </SelectTrigger>
               <SelectContent>
                 {PRICE_STEPS.map((s) => (
@@ -416,7 +423,14 @@ export function PropertiesView() {
               onValueChange={(v) => setFilters({ maxPrice: Number(v) || null })}
             >
               <SelectTrigger className="h-11 w-[120px] rounded-full border-border bg-card text-[13px] focus:ring-0">
-                <SelectValue placeholder="Max price" />
+                {f.maxPrice ?
+                  (PRICE_STEPS.some((s) => s.value === String(f.maxPrice)) ? (
+                    <SelectValue placeholder="Max price" />
+                  ) : (
+                    <span className="truncate">Max: {formatPKR(f.maxPrice).replace("PKR ", "")}</span>
+                  )) : (
+                    <span>Max price</span>
+                  )}
               </SelectTrigger>
               <SelectContent>
                 {PRICE_STEPS.map((s) => (
