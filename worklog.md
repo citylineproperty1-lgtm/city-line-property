@@ -1558,3 +1558,22 @@ Work Log:
 Stage Summary:
 - Clients can now write any area name (3 entry points) and any exact budget amount — flows validated end to end on mobile + desktop
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
+
+---
+Task ID: 74
+Agent: Z.ai Code (main session)
+Task: Owner — "do the option like this [screenshot: AREA (SQFT) 0 to Any] — one side is for manually and at one place is write area" → make manual typing INLINE in the hero fields (like the "0 to Any" pattern), not hidden behind an "Other" dropdown pick
+
+Work Log:
+- Reworked hero search card (home-view.tsx):
+  1) Area field = typeable Input directly in the box ("write area" in one place) + ChevronDown button on the right opening the preset AREAS list (filtered live by the typed text, "All areas" resets); no more "Other area" SelectItem / hidden second input
+  2) Budget field = inline "0 to Any" range pill exactly like the owner's screenshot: PKR label + min input (placeholder "0") + "to" + max input (placeholder "Any") + chevron with the preset caps (All budgets / Up to 50 Lakh / ... / rent scale /mo) as one-tap shortcuts; live hint line "≈ PKR 50 Lakh – PKR 2 Crore" / "From" / "Up to ... maximum / per month"
+  3) State replaced: heroArea/heroAreaOther/heroBudget/heroBudgetCustom → heroAreaText + heroBudgetMin/heroBudgetMax; heroSearch maps them to filters.search + minPrice/maxPrice (API already supports gte/lte); Buy↔Rent switch clears the typed range (different PKR scales); outside-click + Escape close both chevron lists
+- listings bar (properties-view.tsx): when hero sends a custom amount not in PRICE_STEPS (e.g. 85 Lakh, 2 Crore), Min/Max Select triggers showed BLANK → now fall back to formatted text "Min: 8.5 Lakh" / "Max: 2 Crore"
+- Verified (agent-browser): mobile 390 hero = [Category][Size|Marla][Area▾][PKR 0 to Any ▾][Search]; preset list opens with all 5 areas; picked "Etihad Town Phase 1" + typed 5000000→20000000 → hint "≈ PKR 50 Lakh – PKR 2 Crore" → Search → 2 listings + chips "Etihad Town Phase 1"/"Min 50 Lakh"/"Max 2 Crore"; free-typed "Block C Extension" + max 8500000 → bar Other-area mode + chip "Max 85 Lakh" + "Max: 85 Lakh" trigger; Rent switch clears range + presets become /mo scale; desktop 1280 pill+Search in one row; overflow 0; console clean; lint 0 errors
+- Commit 1562738 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Hero Area + Budget now type inline exactly like the owner's reference screenshot — manual first, presets one tap away via chevron
+- Requirement form + listings bar keep the Task-73 "Other area / custom" flows (still working); can be migrated to the same inline pattern later if owner wants
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
