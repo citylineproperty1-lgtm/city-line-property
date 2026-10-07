@@ -1446,3 +1446,4 @@ Work Log:
 Stage Summary:
 - Site now opens with an elegant branded splash: monogram + teal wordmark + tagline + animated progress line, fades into the app (~2.2s total); reduced-motion and click-to-skip respected
 - Pending from Task 65: DNS check cron job 441819 (15:00 PKT) auto-verifies citylineproperty.com.pk; NS already at Vercel per HosterPK, PKNIC zone publish pending
+- Task 65 DNS run 2 (15:00 PKT, job 441819): dig NS empty @8.8.8.8 AND @root-c1.pknic.pk — PKNIC still publishing. One short line sent to owner; retry job created 16:30 PKT (epoch 1791372600000). Runs used: 2 of 4 max.

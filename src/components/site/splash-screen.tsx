@@ -3,7 +3,7 @@
 /**
  * Branded splash screen — an elegant preloader shown when the website opens
  * (reference: Tranzlo-style intro). Monogram + wordmark centered on a clean
- * surface with a thin teal progress line underneath, then a soft fade into
+ * surface with a travelling teal wave line underneath, then a soft fade into
  * the app. Shown on every full page load; hash navigation never re-triggers
  * it because the SPA shell only mounts once.
  */
@@ -13,8 +13,21 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Monogram } from "./logo";
 import { BUSINESS } from "@/lib/business";
 
-const MIN_MS = 1600; // always on screen at least this long
-const MAX_MS = 3500; // never longer, even if some asset stalls
+const MIN_MS = 3000; // always on screen at least this long (owner request: 3s)
+const MAX_MS = 5000; // never longer, even if some asset stalls
+
+// Seamless sine-wave path: 40px wavelength, drawn 320px wide (8 periods) so a
+// 40px horizontal loop never shows an edge inside the 240px container.
+const WAVE_PATH =
+  "M0 8 Q10 1 20 8 T40 8 T60 8 T80 8 T100 8 T120 8 T140 8 T160 8 T180 8 T200 8 T220 8 T240 8 T260 8 T280 8 T300 8 T320 8";
+
+// Fade the wave out at both ends so it melts into the background.
+const FADE_MASK: React.CSSProperties = {
+  maskImage:
+    "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
+  WebkitMaskImage:
+    "linear-gradient(to right, transparent, black 14%, black 86%, transparent)",
+};
 
 export function SplashScreen() {
   const [minDone, setMinDone] = useState(false);
@@ -90,22 +103,62 @@ export function SplashScreen() {
               </p>
             </motion.div>
 
-            {/* thin progress line — fills left to right, Tranzlo-style */}
+            {/* travelling wave line — two layered teal waves in opposite
+                phase, fading out at both ends (owner request: wave style) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: reduce ? 0 : 0.35, duration: 0.4 }}
-              className="mt-8 h-[3px] w-44 overflow-hidden rounded-full bg-foreground/10 sm:w-52"
+              style={FADE_MASK}
+              className="relative mt-8 h-4 w-52 overflow-hidden text-primary sm:w-60"
             >
-              <motion.span
-                className="block h-full rounded-full bg-primary"
-                initial={{ width: "6%" }}
-                animate={{ width: "100%" }}
+              {/* back wave — slower, fainter, half-period phase shift */}
+              <motion.svg
+                aria-hidden
+                viewBox="0 0 320 16"
+                width={320}
+                height={16}
+                fill="none"
+                className="absolute left-0 top-0"
+                initial={reduce ? { x: -20 } : undefined}
+                animate={reduce ? undefined : { x: [-20, -60] }}
                 transition={{
-                  duration: reduce ? 0.35 : 1.4,
-                  ease: [0.65, 0, 0.35, 1],
+                  duration: 1.7,
+                  ease: "linear",
+                  repeat: Infinity,
                 }}
-              />
+              >
+                <path
+                  d={WAVE_PATH}
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  className="opacity-30"
+                />
+              </motion.svg>
+
+              {/* front wave — the main travelling line */}
+              <motion.svg
+                aria-hidden
+                viewBox="0 0 320 16"
+                width={320}
+                height={16}
+                fill="none"
+                className="absolute left-0 top-0"
+                animate={reduce ? undefined : { x: [0, -40] }}
+                transition={{
+                  duration: 1.15,
+                  ease: "linear",
+                  repeat: Infinity,
+                }}
+              >
+                <path
+                  d={WAVE_PATH}
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  strokeLinecap="round"
+                />
+              </motion.svg>
             </motion.div>
           </div>
         </motion.div>
