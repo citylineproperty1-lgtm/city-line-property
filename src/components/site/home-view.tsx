@@ -56,6 +56,7 @@ import {
   BedDouble,
   Sparkles,
   ArrowRight,
+  Pencil,
   type LucideIcon,
 } from "lucide-react";
 
@@ -301,6 +302,7 @@ export function HomeView() {
   const [budgetOpen, setBudgetOpen] = useState(false);
   const areaBoxRef = useRef<HTMLDivElement>(null);
   const budgetBoxRef = useRef<HTMLDivElement>(null);
+  const maxBudgetRef = useRef<HTMLInputElement>(null);
 
   const heroMinArea = (): number | null => {
     const n = Number(heroSize);
@@ -619,6 +621,7 @@ export function HomeView() {
                       </span>
                       <div className="relative flex min-w-0 flex-1 items-center">
                         <Input
+                          ref={maxBudgetRef}
                           type="number"
                           inputMode="numeric"
                           min={0}
@@ -672,6 +675,21 @@ export function HomeView() {
                           className="flex w-full items-center rounded-lg px-3 py-2 text-left text-[13px] font-medium hover:bg-muted"
                         >
                           Any budget
+                        </button>
+                        {/* Manual — same pattern as the Marla / sqft picker: pick
+                            this to write any exact amount by hand */}
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={false}
+                          onClick={() => {
+                            setBudgetOpen(false);
+                            maxBudgetRef.current?.focus();
+                          }}
+                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[13px] font-semibold text-primary hover:bg-muted"
+                        >
+                          <Pencil className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          Write amount manually
                         </button>
                         {heroBudgets
                           .filter((b) => b.value !== "0")
