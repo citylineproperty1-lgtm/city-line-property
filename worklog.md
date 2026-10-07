@@ -1392,3 +1392,17 @@ Stage Summary:
 - Admin password re-delivered in chat (8WDsPtxnpP$7DF for admin@citylineproperty.com / "admin" shorthand) — verified 200 against prod AND local
 - .env heal chain fully restored (.env + .env.supabase + /home/z/.clp-env-supabase); dev server healthy on Supabase
 - RISK: on next full container rebuild the /home/z backup is lost again and .env.supabase is gitignored by design — the webDevReview agent must recreate both from the worklog recipe if `rg -o "^[A-Z_]+" .env` shows no postgresql line
+
+---
+Task ID: 65
+Agent: Z.ai Code (main session)
+Task: Owner purchased domain citylineproperty.com.pk — document purchase + connection plan
+
+Work Log:
+- Owner bought citylineproperty.com.pk from HosterPK (order #6ac5f056c7b6f, Rs.4,499, term Oct 07 2026 - Oct 07 2028, 2yr PKNIC minimum)
+- Sandbox checked for Vercel access: no .vercel dir, no CLI token, no vercel binary — owner must add the domain in their own Vercel dashboard; agent can only verify DNS afterwards
+- Advised plan: (1) Vercel project Settings > Domains: add citylineproperty.com.pk + www; (2) HosterPK: set custom nameservers ns1.vercel-dns.com / ns2.vercel-dns.com (or support ticket if panel blocks .pk NS change); alternatively A @ 76.76.21.21 + CNAME www cname.vercel-dns.com; (3) propagation 1h-48h (PKNIC), SSL auto by Vercel; (4) set vercel.app -> .com.pk redirect after
+- NEXT SESSION: when owner says DNS is set, verify with dig/nslookup (NS records + A/CNAME), confirm https loads and padlock, then advise vercel.app redirect
+
+Stage Summary:
+- Domain registered: citylineproperty.com.pk (HosterPK, expires Oct 2028); connection to Vercel pending owner dashboard steps; .com variant not purchased (optional future add)
