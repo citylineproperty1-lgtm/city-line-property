@@ -56,7 +56,7 @@ export function ContactView() {
         <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
           Contact
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <h1 className="mt-2 text-[30px] font-semibold tracking-tight text-foreground sm:text-5xl">
           Let&rsquo;s talk <span className="text-gradient-animated">property.</span>
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">

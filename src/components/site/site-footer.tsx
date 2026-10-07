@@ -46,8 +46,8 @@ export function SiteFooter() {
       {/* Brand gradient hairline at the very top */}
       <div aria-hidden className="gradient-hairline absolute inset-x-0 top-0" />
 
-      <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.6fr_1.25fr_1fr_1fr_1.2fr]">
+      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className="grid gap-8 sm:gap-10 md:grid-cols-2 lg:grid-cols-[1.6fr_1.25fr_1fr_1fr_1.2fr]">
           {/* Brand */}
           <div>
             <Logo size="md" withWordmark tagline tone="dark" />

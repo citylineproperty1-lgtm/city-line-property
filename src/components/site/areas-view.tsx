@@ -113,7 +113,7 @@ export function AreasIndexView() {
           <MapPin className="h-4 w-4" />
           Area guides
         </p>
-        <h1 className="mt-3 max-w-xl text-3xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-[44px]">
+        <h1 className="mt-3 max-w-xl text-[26px] font-bold leading-[1.1] tracking-tight text-foreground sm:text-[44px]">
           Five areas. <span className="text-brand-gradient">Known street by street.</span>
         </h1>
         <p className="mt-4 max-w-lg text-[14.5px] leading-relaxed text-muted-foreground">
@@ -291,8 +291,8 @@ export function AreaDetailView({ slug }: { slug: string }) {
   // Unknown slug → friendly not-found.
   if (!area) {
     return (
-      <div className="mx-auto max-w-3xl bg-background px-4 py-16 sm:px-6">
-        <div className="rounded-3xl border border-border bg-card p-10 text-center">
+      <div className="mx-auto max-w-3xl bg-background px-4 py-10 sm:px-6">
+        <div className="rounded-3xl border border-border bg-card p-6 text-center sm:p-10">
           <MapPin className="mx-auto h-8 w-8 text-muted-foreground" />
           <p className="mt-3 text-[14px] text-muted-foreground">That area guide doesn&rsquo;t exist.</p>
           <Button
@@ -357,7 +357,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
               </span>
             )}
           </p>
-          <h1 className="mt-3 text-3xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-[42px]">
+          <h1 className="mt-3 text-[26px] font-bold leading-[1.08] tracking-tight text-foreground sm:text-[42px]">
             {area.name}
           </h1>
           <p className="mt-3 text-[16px] font-medium text-accent-foreground">{area.tagline}</p>
@@ -613,7 +613,7 @@ export function AreaDetailView({ slug }: { slug: string }) {
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
           </div>
         ) : listings.items.length === 0 ? (
-          <div className="mt-6 rounded-3xl border border-border bg-card p-10 text-center">
+          <div className="mt-6 rounded-3xl border border-border bg-card p-6 text-center sm:p-10">
             <Building2 className="mx-auto h-8 w-8 text-muted-foreground" />
             <p className="mt-3 text-[14px] font-semibold text-foreground">
               No published listings in this area right now

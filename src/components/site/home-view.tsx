@@ -359,8 +359,8 @@ export function HomeView() {
         aria-label="City Line Property — your key to the city"
       >
 
-        <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-12 sm:px-6 sm:pt-16">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-9 sm:px-6 sm:pb-14 sm:pt-16">
+          <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
             {/* Left — copy + search */}
             <div>
               <motion.span
@@ -373,7 +373,7 @@ export function HomeView() {
                 Real Estate Office · Etihad Town, Lahore
               </motion.span>
 
-              <h1 className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight text-foreground sm:text-6xl">
+              <h1 className="mt-5 text-[31px] font-bold leading-[1.06] tracking-tight text-foreground sm:text-6xl">
                 <span className="sr-only">
                   City Line Property — real estate agency in Etihad Town, Lahore. Buy, sell and
                   rent property with only 1% commission.
@@ -401,7 +401,7 @@ export function HomeView() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55, duration: 0.55, ease: "easeOut" }}
-                className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base"
+                className="mt-4 max-w-xl text-[13.5px] leading-relaxed text-muted-foreground sm:mt-5 sm:text-base"
               >
                 <span className="font-semibold text-accent-foreground">Only 1% commission.</span>{" "}
                 Direct dealing — no hidden margin, no middlemen. Buy, sell or rent
@@ -672,10 +672,10 @@ export function HomeView() {
           ].map((s) => (
             <div
               key={s.label}
-              className="glass rounded-2xl border border-border px-5 py-6 text-center shadow-[0_18px_50px_-30px_rgba(15,118,110,0.28)] sm:px-6 sm:py-7"
+              className="glass rounded-2xl border border-border px-4 py-5 text-center shadow-[0_18px_50px_-30px_rgba(15,118,110,0.28)] sm:px-6 sm:py-7"
             >
               <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{s.label}</p>
-              <p className="mt-1.5 text-[26px] font-bold leading-none tracking-tight text-foreground sm:text-[30px]">
+              <p className="mt-1.5 text-[23px] font-bold leading-none tracking-tight text-foreground sm:text-[30px]">
                 {s.value}
               </p>
               <p className="mt-2 text-[11.5px] font-medium leading-snug text-muted-foreground">{s.sub}</p>
@@ -687,14 +687,14 @@ export function HomeView() {
 
       {/* ================= EXPLORE ETIHAD TOWN ================= */}
       <section
-        className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24"
+        className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-24"
         aria-label="Explore Etihad Town — Phase 1 and Phase 2"
       >
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Where we work</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              <h2 className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
                 Explore Etihad Town.
               </h2>
             </div>
@@ -704,7 +704,7 @@ export function HomeView() {
             </p>
           </motion.div>
 
-          <div className="mt-9 grid gap-5 md:grid-cols-2">
+          <div className="mt-6 grid gap-5 sm:mt-9 md:grid-cols-2">
             {EXPLORE_AREAS.map((g) => {
               const count = areaCounts[g.name] ?? 0;
               return (
@@ -713,7 +713,7 @@ export function HomeView() {
                   variants={pop}
                   whileHover={{ y: -4 }}
                   onClick={() => exploreArea(g.name)}
-                  className="lift group relative block h-[340px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-[380px]"
+                  className="lift group relative block h-[248px] w-full overflow-hidden rounded-[1.75rem] text-left shadow-[0_30px_70px_-32px_rgba(15,23,42,0.45)] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-[380px]"
                   aria-label={`Explore properties in ${g.name}`}
                 >
                   <Image
@@ -733,7 +733,7 @@ export function HomeView() {
                       Our office here
                     </span>
                   )}
-                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7">
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
                     <h3 className="text-[22px] font-bold tracking-tight text-white sm:text-2xl">{g.name}</h3>
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
                       {g.goodFor.map((tag) => (
@@ -780,12 +780,12 @@ export function HomeView() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">What we deal in</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h2 className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
               Seven ways we can help you.
             </h2>
           </motion.div>
 
-          <div className="mt-9 grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-9 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-4">
             {cats.map((c) => {
               const Icon = CATEGORY_ICONS[c.icon] ?? Building2;
               const count = typeCounts[c.slug] ?? 0;
@@ -796,7 +796,7 @@ export function HomeView() {
                   whileHover={{ y: -5 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => browseType(c.slug)}
-                  className="cat-card sheen group flex flex-col items-start rounded-2xl p-5 text-left"
+                  className="cat-card sheen group flex flex-col items-start rounded-2xl p-4 text-left sm:p-5"
                   style={
                     {
                       "--cat": c.color,
@@ -835,7 +835,7 @@ export function HomeView() {
               whileHover={{ y: -5 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate({ name: "contact" })}
-              className="sheen group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-5 text-left shadow-[0_10px_28px_-14px_rgba(15,118,110,0.55)] transition-shadow duration-300 hover:shadow-[0_22px_44px_-14px_rgba(15,118,110,0.65)]"
+              className="sheen group flex flex-col items-start rounded-2xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-4 text-left sm:p-5 shadow-[0_10px_28px_-14px_rgba(15,118,110,0.55)] transition-shadow duration-300 hover:shadow-[0_22px_44px_-14px_rgba(15,118,110,0.65)]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/25 text-white transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:rotate-6">
                 <Phone className="h-5 w-5" />
@@ -852,7 +852,7 @@ export function HomeView() {
       </section>
 
       {/* ================= FEATURED LISTINGS ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Featured listings">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6 sm:pt-20" aria-label="Featured listings">
         <motion.div
           {...{ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: viewportOnce, transition: { duration: 0.5, ease: "easeOut" } }}
           className="flex items-end justify-between gap-4"
@@ -860,7 +860,7 @@ export function HomeView() {
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Handpicked for you</p>
             <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h2 className="mt-2 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
               Featured listings
             </h2>
           </div>
@@ -883,7 +883,7 @@ export function HomeView() {
         >
           {!featuredLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
+                <div key={i} className="w-[272px] shrink-0 sm:w-[350px]">
                   <PropertyCardSkeleton />
                 </div>
               ))
@@ -894,7 +894,7 @@ export function HomeView() {
                 </div>
               )
               : featured.map((p) => (
-                <motion.div key={p.id} variants={item} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
+                <motion.div key={p.id} variants={item} className="w-[272px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
                 </motion.div>
               ))}
@@ -913,7 +913,7 @@ export function HomeView() {
       </section>
 
       {/* ================= LATEST LISTINGS ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Latest listings">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6 sm:pt-20" aria-label="Latest listings">
         <motion.div
           {...{ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: viewportOnce, transition: { duration: 0.5, ease: "easeOut" } }}
           className="flex items-end justify-between gap-4"
@@ -921,7 +921,7 @@ export function HomeView() {
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Just added to the board</p>
             <span aria-hidden className="brand-gradient mt-1.5 block h-0.5 w-10 rounded-full" />
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h2 className="mt-2 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
               Latest listings
             </h2>
           </div>
@@ -944,14 +944,14 @@ export function HomeView() {
         >
           {!latestLoaded
             ? Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="w-[320px] shrink-0 sm:w-[350px]">
+                <div key={i} className="w-[272px] shrink-0 sm:w-[350px]">
                   <PropertyCardSkeleton />
                 </div>
               ))
             : latest.length === 0
               ? null
               : latest.map((p) => (
-                <motion.div key={p.id} variants={item} className="w-[320px] shrink-0 snap-start sm:w-[350px]">
+                <motion.div key={p.id} variants={item} className="w-[272px] shrink-0 snap-start sm:w-[350px]">
                   <PropertyCard property={p} />
                 </motion.div>
               ))}
@@ -973,12 +973,12 @@ export function HomeView() {
       <PriceListLead />
 
       {/* ================= AREAS (real interactive map) ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Explore the areas on the map">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6 sm:pt-20" aria-label="Explore the areas on the map">
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-[13px] font-semibold uppercase tracking-wider text-accent-foreground">On the map</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              <h2 className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
                 Real streets. Real files.
               </h2>
             </div>
@@ -1021,11 +1021,11 @@ export function HomeView() {
 
       {/* ================= WHY US ================= */}
       <section className="w-full bg-mesh" aria-label="Why choose City Line Property">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-20">
           <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
             <motion.div variants={item} className="text-center">
               <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">Why City Line</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              <h2 className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
                 Property, minus the games.
               </h2>
             </motion.div>
@@ -1034,7 +1034,7 @@ export function HomeView() {
             <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {WHY_US.map((w) => (
                 <motion.div key={w.title} variants={item} className="h-full">
-                  <TiltCard className="glass-strong lift h-full rounded-3xl border border-white/70 dark:border-white/10 p-6 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)]">
+                  <TiltCard className="glass-strong lift h-full rounded-3xl border border-white/70 dark:border-white/10 p-5 shadow-[0_16px_44px_-24px_rgba(15,23,42,0.25)] sm:p-6">
                     <span className="brand-gradient flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-[0_8px_18px_-8px_rgba(15,118,110,0.6)]">
                       <w.icon className="h-5 w-5" />
                     </span>
@@ -1053,12 +1053,12 @@ export function HomeView() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={viewportOnce}>
           <motion.div variants={item} className="text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">How a deal works</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h2 className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
               Four steps. Zero surprises.
             </h2>
           </motion.div>
 
-          <div className="relative mt-12">
+          <div className="relative mt-10 sm:mt-12">
             {/* connecting line — draws itself on scroll */}
             <motion.div
               initial={{ scaleX: 0 }}
@@ -1077,10 +1077,10 @@ export function HomeView() {
               aria-hidden
             />
 
-            <ol className="grid gap-10 sm:grid-cols-4 sm:gap-4">
+            <ol className="grid gap-8 sm:grid-cols-4 sm:gap-4">
               {PROCESS_STEPS.map((s, i) => (
                 <motion.li key={s.title} variants={item} className="relative flex gap-5 sm:flex-col sm:items-center sm:gap-0 sm:text-center">
-                  <span className="brand-gradient relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-extrabold text-white shadow-[0_8px_20px_-6px_rgba(15,118,110,0.6)] ring-4 ring-ring/15">
+                  <span className="brand-gradient relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-extrabold text-white sm:h-14 sm:w-14 shadow-[0_8px_20px_-6px_rgba(15,118,110,0.6)] ring-4 ring-ring/15">
                     {i + 1}
                   </span>
                   <div className="sm:mt-5">
@@ -1098,7 +1098,7 @@ export function HomeView() {
       </section>
 
       {/* ================= REQUIREMENT FORM ================= */}
-      <section className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-20" aria-label="Post your requirement">
+      <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6 sm:pt-20" aria-label="Post your requirement">
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr]">
           <motion.div
             variants={container}
@@ -1109,7 +1109,7 @@ export function HomeView() {
             <motion.p variants={item} className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
               Post your requirement
             </motion.p>
-            <motion.h2 variants={item} className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <motion.h2 variants={item} className="mt-1 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
               Tell us once — we call you back.
             </motion.h2>
             <motion.p variants={item} className="mt-3 max-w-md text-[14.5px] leading-relaxed text-muted-foreground">
@@ -1145,7 +1145,7 @@ export function HomeView() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="rounded-3xl border border-border bg-card p-6 shadow-[0_30px_70px_-30px_rgba(15,23,42,0.3)] sm:p-8"
+            className="rounded-3xl border border-border bg-card p-5 shadow-[0_30px_70px_-30px_rgba(15,23,42,0.3)] sm:p-8"
           >
             <RequirementForm />
           </motion.div>
@@ -1155,29 +1155,29 @@ export function HomeView() {
 
       {/* ================= FINAL CTA BAND ================= */}
       <section className="w-full bg-mesh-dark text-white" aria-label="Visit our office">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-20">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="glass-dark relative overflow-hidden rounded-3xl border border-white/10 p-8 text-center sm:p-10"
+            className="glass-dark relative overflow-hidden rounded-3xl border border-white/10 p-6 text-center sm:p-10"
           >
             <div className="relative">
               <span className="mx-auto flex w-fit">
-                <Monogram px={64} />
+                <Monogram px={56} />
               </span>
-              <h2 className="mx-auto mt-6 max-w-2xl text-2xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2 className="mx-auto mt-5 max-w-2xl text-[22px] font-bold tracking-tight text-white sm:mt-6 sm:text-4xl">
                 Visit our office — <span className="text-[#5EB9A9]">151-C, Etihad Town Phase 1</span>
               </h2>
               <p className="mx-auto mt-3 max-w-md text-[14.5px] leading-relaxed text-[#C7EAE2]">
                 Bring your requirement over a cup of chai. Direct dealing, honest advice
                 and the same 1% commission — face to face.
               </p>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
                 <Button
                   asChild
-                  className="brand-gradient sheen h-12 rounded-full px-7 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(0,0,0,0.45)] hover:opacity-95"
+                  className="brand-gradient sheen h-11 rounded-full px-6 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(0,0,0,0.45)] hover:opacity-95 sm:h-12 sm:px-7"
                 >
                   <a href={`tel:${BUSINESS.telPrimary}`}>
                     <Phone className="mr-2 h-4 w-4" />

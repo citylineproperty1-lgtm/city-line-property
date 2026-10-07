@@ -219,7 +219,7 @@ export function PropertiesView() {
           <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
             Etihad Town &amp; enclaves
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-foreground sm:text-4xl">
             Browse listings
           </h1>
           <p className="mt-2 text-[15px] text-muted-foreground">
@@ -447,7 +447,7 @@ export function PropertiesView() {
 
       {/* Results */}
       {error ? (
-        <div className="mt-10 flex flex-col items-center rounded-2xl border border-border bg-card py-16 text-center">
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-border bg-card py-10 text-center sm:py-16">
           <SearchX className="h-10 w-10 text-muted-foreground" />
           <p className="mt-4 text-[15px] font-medium text-foreground">{error}</p>
           <Button onClick={load} variant="outline" className="mt-5 h-10 rounded-full text-sm">
@@ -464,7 +464,7 @@ export function PropertiesView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-primary/30 bg-accent/40 py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-primary/30 bg-accent/40 py-12 text-center sm:py-20"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
             <SearchX className="h-6 w-6 text-muted-foreground" />

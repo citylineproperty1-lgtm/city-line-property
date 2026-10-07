@@ -34,7 +34,7 @@ export function AboutView() {
         <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
           About City Line
         </p>
-        <h1 className="mt-2 text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
+        <h1 className="mt-2 text-[30px] font-semibold leading-tight tracking-tight text-foreground sm:text-5xl">
           The 1% office of
           <br />
           <span className="text-brand-gradient">
@@ -133,7 +133,7 @@ export function AboutView() {
       <section className="pt-20">
         <motion.div
           {...fadeUp}
-          className="grid gap-8 rounded-3xl border border-primary/20 bg-gradient-to-br from-accent/70 to-card p-8 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.4)] sm:p-10 lg:grid-cols-[1.2fr_1fr]"
+          className="grid gap-8 rounded-3xl border border-primary/20 bg-gradient-to-br from-accent/70 to-card p-6 shadow-[0_24px_60px_-30px_rgba(15,118,110,0.4)] sm:p-10 lg:grid-cols-[1.2fr_1fr]"
         >
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-accent-foreground">
@@ -204,7 +204,7 @@ export function AboutView() {
       <section className="pt-20">
         <motion.div
           {...fadeUp}
-          className="grid gap-10 rounded-3xl border border-border bg-card/70 p-8 backdrop-blur sm:p-12 lg:grid-cols-2"
+          className="grid gap-10 rounded-3xl border border-border bg-card/70 p-6 backdrop-blur sm:p-12 lg:grid-cols-2"
         >
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -255,7 +255,7 @@ export function AboutView() {
       <section className="pb-4 pt-20">
         <motion.div
           {...fadeUp}
-          className="grid gap-6 rounded-3xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-8 text-center shadow-[0_30px_70px_-30px_rgba(15,118,110,0.6)] sm:p-10"
+          className="grid gap-6 rounded-3xl bg-[linear-gradient(135deg,#0F766E_0%,#0B5B54_60%,#084C46_100%)] p-6 text-center shadow-[0_30px_70px_-30px_rgba(15,118,110,0.6)] sm:p-10"
         >
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-10">
             <span className="inline-flex items-center gap-2 text-lg font-bold text-white">

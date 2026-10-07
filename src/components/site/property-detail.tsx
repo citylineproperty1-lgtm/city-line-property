@@ -300,7 +300,7 @@ export function PropertyDetailView({ id }: { id: string }) {
                     Verified listing
                   </span>
                 </div>
-                <h1 className="mt-3 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                <h1 className="mt-3 text-[21px] font-semibold tracking-tight text-foreground sm:text-3xl">
                   {property.title}
                 </h1>
                 <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -372,7 +372,7 @@ export function PropertyDetailView({ id }: { id: string }) {
               </div>
             </div>
 
-            <p className="mt-5 text-3xl font-semibold tracking-tight tabular-nums text-foreground">
+            <p className="mt-5 text-[25px] font-semibold tracking-tight tabular-nums text-foreground sm:text-3xl">
               {formatPKR(property.price, isRent)}
               {isRent && (
                 <span className="ml-1 text-sm font-normal text-muted-foreground">

@@ -64,7 +64,7 @@ export function SavedView() {
           <Heart className="h-5 w-5 fill-[#E5484D] text-[#E5484D]" />
         </span>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="text-[26px] font-semibold tracking-tight text-foreground sm:text-4xl">
             Saved properties
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -103,7 +103,7 @@ export function SavedView() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border bg-muted/60 py-20 text-center"
+          className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border bg-muted/60 py-12 text-center sm:py-20"
         >
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
             <Heart className="h-6 w-6 text-muted-foreground" />

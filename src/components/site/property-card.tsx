@@ -135,7 +135,7 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
       </div>
 
       {/* Body */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         <CategoryChip type={property.type} />
         <h3 className="mt-2 line-clamp-1 text-[15px] font-medium text-foreground transition-colors group-hover:text-accent-foreground">
           {property.title}
