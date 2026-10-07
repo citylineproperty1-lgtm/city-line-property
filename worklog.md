@@ -1577,3 +1577,22 @@ Stage Summary:
 - Hero Area + Budget now type inline exactly like the owner's reference screenshot — manual first, presets one tap away via chevron
 - Requirement form + listings bar keep the Task-73 "Other area / custom" flows (still working); can be migrated to the same inline pattern later if owner wants
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
+
+---
+Task ID: 75
+Agent: Z.ai Code (main session)
+Task: Owner — "[screenshot: dark 'Any ▾' pill] at this place show permanent Any button that client select and it will show options like 5000000 and more"
+
+Work Log:
+- Budget pill max side ("Any") is now a permanent dropdown trigger (home-view.tsx):
+  - Chevron moved INSIDE the max input (pointer-events-none, reads as "Any ⌄"); onFocus/onClick opens the preset list; separate chevron button at pill end removed
+  - Typing a custom amount auto-closes the list (typing = custom, list stays out of the way)
+  - Preset list relabelled: first item "Any budget" (clears both); presets show label + raw amount right-aligned — "50 Lakh | 5,000,000", "1 Crore | 10,000,000", "2 Crore | 20,000,000", "3 Crore | 30,000,000", "5 Crore | 50,000,000", "10 Crore | 100,000,000"; rent scale shows "25,000 / mo" … "5 Lakh / mo"
+  - HERO_BUDGETS / HERO_RENT_BUDGETS labels simplified ("Up to X" → "X") — only consumed by this list
+- Verified (agent-browser): tap Any → list opens with amounts; pick "50 Lakh" → max=5000000 + hint "≈ Up to PKR 50 Lakh maximum"; type 7500000 → list closes + hint "≈ Up to PKR 75 Lakh maximum"; Search → 2 listings + "Max: 75 Lakh" bar label; desktop 1280 pill reads "PKR 0 to Any ⌄"; mobile 390 overflow 0; console clean; lint 0 errors
+- Commit pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- "Any" is now an obvious tappable dropdown showing PKR amounts (owner's ask), manual typing preserved on both min and max sides
+- Requirement form still uses old pick-Other/custom flow (unchanged, works); can be migrated later if owner asks
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
