@@ -1410,3 +1410,21 @@ Stage Summary:
 - NEXT SESSION CHECKLIST: (1) `dig NS citylineproperty.com.pk +short` — success = ns1/ns2.vercel-dns.com; (2) then `curl -sI https://www.citylineproperty.com.pk` expect 200 + valid TLS; (3) confirm apex 308 -> www; (4) tell owner site is live + advise Vercel Domains Edit -> redirect citylineproperty.vercel.app -> www.citylineproperty.com.pk (308) for SEO; (5) if still HosterPK NS after 48-72h, owner should bump ticket #5998127.
 - Task 65 update 2 (13:45 PKT): HosterPK support (Waqar Ali, ticket #5998127) confirmed NS updated to ns1/ns2.vercel-dns.com at 13:40 PKT. Verified from sandbox: PKNIC authoritative (root-c1.pknic.pk) returns NXDOMAIN — domain not yet published in .com.pk zone (normal; PKNIC pushes zone periodically). Vercel side already configured. One-time cron dns-check-citylineproperty (441805) scheduled 17:30 PKT today to auto-verify (dig NS -> curl https -> report to owner + worklog; retries 3x, final tomorrow 10:00 PKT).
 - Task 65 update 3 (14:05 PKT): owner asked for a check after 14:00 PKT. Replaced 17:30 one-time cron with dns-check-citylineproperty job 441819 at 15:00 PKT (epoch millis expr 1791367200000 — NOTE: gateway rejects naive datetime exprs; epoch millis is the reliable format). Retry ladder in job message: 16:30 -> 18:30 -> next morning 10:00 PKT, max 4 runs, brief one-liner to owner on misses, full confirmation + worklog + job deletion on success. PKNIC still NXDOMAIN as of 14:00 PKT.
+
+---
+Task ID: 66
+Agent: Z.ai Code (main session)
+Task: Remove every "Any" word from search UIs — bare field-name triggers everywhere (user request)
+
+Work Log:
+- Hero: Area + Budget triggers now conditional bare spans (Category pattern from Task 63); first options renamed Any area->All areas, Any budget/Any rent->All budgets (HERO_BUDGETS + HERO_RENT_BUDGETS)
+- Requirement form: same treatment (Area/Budget bare triggers, All areas/All budgets)
+- Listings bar: beds Any beds->All beds + bare "Beds" trigger; PRICE_STEPS[0] Any->All prices; min/max unset option labels Min: Any->Min price, Max: Any->Max price; area trigger bare "Area"; added missing aria-labels (Category/Area) to listings selects
+- grep verify: 0 "Any" left in src/components/site/*.tsx; lint 0 errors
+- E2E: hero combos = Category/Size unit/Area/Budget bare; Area dropdown = All areas + real areas; listings bar = Category/Area/Beds/Min price/Max price bare; JS-click Search -> #/properties?status=sale -> 26 PKR price tags; 0 console errors
+- INCIDENT (7th .env clobber): dev API returned {"error":"Failed to load properties"} — .env reset to SQLite AND both backups (.env.supabase, /home/z/.clp-env-supabase) wiped by container resync. Restored dual pooler URLs from worklog recipe, recreated both backups (chmod 600), dev restart -> 15 live listings. NOTE: prod response key is "properties" (not "items") — parse scripts must use d["properties"]
+- Commit 42a1d40 pushed (Vercel auto-deploy)
+
+Stage Summary:
+- Search UIs now show only field names (Category/Size/Area/Budget/Beds/Min price/Max price) with All-* reset options; zero "Any" wording anywhere
+- .env heal chain rebuilt again; LOCAL dev healthy on Supabase; PROD verified working throughout (key=properties)
