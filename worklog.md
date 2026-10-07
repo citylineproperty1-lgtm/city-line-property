@@ -1462,3 +1462,20 @@ Work Log:
 Stage Summary:
 - Splash now: monogram + teal wordmark + tagline + dual travelling wave line; minimum 3s on screen, tap-to-skip, fades out ~3.55s
 - DNS: PKNIC publish pending; next auto-check 16:30 PKT via webDevReview agent handoff (cron tool unavailable in main-session toolset this turn)
+
+---
+Task ID: 69
+Agent: Z.ai Code (main session)
+Task: Owner reports page cannot scroll up/down + wants white "City Line" on splash + taller wave
+
+Work Log:
+- ROOT CAUSE of frozen scroll found: SplashScreen set document.body.style.overflow="hidden" in the timers effect whose cleanup only ran on unmount/[reduce] change — but the component stays mounted for the whole SPA session, so the lock NEVER released on the live site (commits 1e4a5b4 + f506a7f both shipped it). Owner's report reproduced exactly
+- FIX: scroll lock moved to a dedicated effect keyed on `done` (visibility) — locks while splash visible, releases the moment it hides (including tap-to-skip). Verified: after splash, body overflow=visible; scrollTo(0,800)→scrollY 800, back to 0; note: CSS scroll-behavior:smooth makes synchronous scrollY reads read mid-animation (2px false alarm) — use behavior:'instant' in tests
+- Redesign per owner: splash bg now deep-teal gradient (from-[#115E56] via-[#0B443C] to-[#05201C]), wordmark + tagline WHITE, halo white/10; wave amplitude doubled (viewBox 320x20, control points ±6px vs ±3.5px, container h-5), waves white (front 2.5px, back 2px @40%)
+- Verified: lint 0 errors; screenshot /tmp/splash-dark.png shows dark teal splash + white lockup + tall braided wave; splash exits ~3.5s; 0 console errors
+- Commit 5d56971 pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- CRITICAL regression fixed: live site scrolling restored (was frozen since splash shipped — owner reported it)
+- Splash: dark-teal brand moment, white lockup, taller dual white waves, 3s min, tap-to-skip
+- DNS: PKNIC publish still pending after run 2 (15:00 PKT); webDevReview agent owns the retry ladder (16:30 PKT next)
