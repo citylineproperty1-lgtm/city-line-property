@@ -16,7 +16,7 @@ import { useAppStore } from "@/lib/store";
 import { formatPKR } from "@/lib/format";
 import { AREAS, MARLA_SQFT, formatMinArea, type SizeUnit } from "@/lib/business";
 import { CATEGORIES, PLOT_CATEGORY_SLUGS, categoryLabel, type CategoryDef, type Property } from "@/lib/types";
-import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucide-react";
+import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRICE_STEPS = [
@@ -187,7 +187,13 @@ export function PropertiesView() {
     e.preventDefault();
   };
 
-  const activeArea = AREAS.find((a) => a === f.search) ?? "ALL";
+  // Known area name → that area; any other non-empty search text → manual
+  // "Other area" mode; empty → ALL. `otherAreaMode` keeps the manual input
+  // open right after picking "Other area" (search is still empty at that point).
+  const [otherAreaMode, setOtherAreaMode] = useState(false);
+  const activeArea = otherAreaMode
+    ? "OTHER"
+    : AREAS.find((a) => a === f.search) ?? (f.search.trim() ? "OTHER" : "ALL");
 
   const chips: { label: string; clear: () => void }[] = [];
   if (f.search) chips.push({ label: `"${f.search}"`, clear: () => setFilters({ search: "" }) });
@@ -351,9 +357,15 @@ export function PropertiesView() {
             </div>
 
             {/* area */}
-            <Select value={activeArea} onValueChange={(v) => setFilters({ search: v === "ALL" ? "" : v })}>
+            <Select
+              value={activeArea}
+              onValueChange={(v) => {
+                setOtherAreaMode(v === "OTHER");
+                setFilters({ search: v === "ALL" ? "" : v === "OTHER" ? f.search : v });
+              }}
+            >
               <SelectTrigger className="h-11 w-[160px] rounded-full border-border bg-card text-[13px] focus:ring-0" aria-label="Area">
-                {activeArea === "ALL" ? <span>Area</span> : <SelectValue placeholder="Area" />}
+                {activeArea === "ALL" ? <span>Area</span> : activeArea === "OTHER" ? <span>Other area</span> : <SelectValue placeholder="Area" />}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All areas</SelectItem>
@@ -362,6 +374,7 @@ export function PropertiesView() {
                     {a}
                   </SelectItem>
                 ))}
+                <SelectItem value="OTHER">Other area — write your own</SelectItem>
               </SelectContent>
             </Select>
 
@@ -415,6 +428,32 @@ export function PropertiesView() {
             </Select>
           </div>
         </div>
+
+        {/* Manual area — free text when "Other area" is picked (filters live) */}
+        {activeArea === "OTHER" && (
+          <div className="mt-3 flex items-center gap-2.5 rounded-full border border-border bg-muted px-4">
+            <MapPin className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <Input
+              value={f.search}
+              onChange={(e) => setFilters({ search: e.target.value })}
+              placeholder="Write the area — e.g. Block C, Phase 2"
+              aria-label="Write your area"
+              autoComplete="off"
+              autoFocus
+              className="h-10 flex-1 rounded-full border-0 bg-transparent px-0 text-[13px] shadow-none focus-visible:ring-0"
+            />
+            {f.search && (
+              <button
+                type="button"
+                onClick={() => setFilters({ search: "" })}
+                className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+                aria-label="Clear written area"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* active chips */}
         {chips.length > 0 && (
@@ -478,7 +517,10 @@ export function PropertiesView() {
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Button
-              onClick={resetFilters}
+              onClick={() => {
+                setOtherAreaMode(false);
+                resetFilters();
+              }}
               className="brand-gradient h-11 rounded-full px-6 text-sm font-medium text-white shadow-[0_6px_16px_-6px_rgba(15,118,110,0.65)] hover:opacity-95"
             >
               Clear all filters

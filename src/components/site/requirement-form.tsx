@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { CATEGORIES, PLOT_CATEGORY_SLUGS, type LeadInput } from "@/lib/types";
 import { AREAS, waLink } from "@/lib/business";
+import { formatPKR } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Loader2, Send, CheckCircle2, MessageCircle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
@@ -69,6 +70,9 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
   const [purpose, setPurpose] = useState<RequirementPurpose>("BUY");
   const [area, setArea] = useState("ALL");
   const [budget, setBudget] = useState("0");
+  /* Manual overrides — "Other area" free text + custom budget amount (PKR). */
+  const [areaOther, setAreaOther] = useState("");
+  const [budgetCustom, setBudgetCustom] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +85,12 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     setPurpose(next);
     const list = next === "RENT" ? RENT_BUDGETS : BUDGETS;
     if (!list.some((b) => b.value === budget)) setBudget("0");
+    // Custom budget amount means different things on the rent (monthly) vs buy
+    // (one-off) scale — start fresh when switching purpose.
+    if (budget === "CUSTOM") {
+      setBudget("0");
+      setBudgetCustom("");
+    }
     // Plots can't be rented — drop a selected plot category when switching to Rent
     if (next === "RENT" && PLOT_CATEGORY_SLUGS.has(category)) setCategory("ALL");
   };
@@ -93,6 +103,8 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
     setPurpose("BUY");
     setArea("ALL");
     setBudget("0");
+    setAreaOther("");
+    setBudgetCustom("");
     setMessage("");
     setError(null);
     setWaLinkOut(null);
@@ -111,13 +123,26 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
       return;
     }
 
-    const budgetNum = Number(budget);
+    // Manual area — free text replaces the "Other area" pick
+    const areaOut = area === "OTHER" ? areaOther.trim() : area !== "ALL" ? area : undefined;
+    if (area === "OTHER" && !areaOut) {
+      setError("Please write the area you are looking in (e.g. Block C, Phase 2).");
+      return;
+    }
+    const budgetNum = budget === "CUSTOM" ? Number(budgetCustom) : Number(budget);
+    if (budget === "CUSTOM" && !(budgetNum > 0)) {
+      setError("Please enter your budget amount in PKR.");
+      return;
+    }
     const purposeWord = purpose === "BUY" ? "buy" : "rent";
-    const budgetLabel = budgets.find((b) => b.value === budget)?.label;
+    const budgetLabel =
+      budget === "CUSTOM"
+        ? formatPKR(budgetNum, purpose === "RENT")
+        : budgets.find((b) => b.value === budget)?.label;
     const brief =
       message.trim() ||
       `I'm looking to ${purposeWord} ${category === "ALL" ? "property" : CATEGORIES.find((c) => c.slug === category)?.name.toLowerCase() ?? category}` +
-        `${area !== "ALL" ? ` in ${area}` : ""}` +
+        `${areaOut ? ` in ${areaOut}` : ""}` +
         `${budgetNum > 0 ? (purpose === "RENT" ? `, rent up to ${budgetLabel}` : `, budget around ${budgetLabel}`) : ""}. Please call me back.`;
 
     setSending(true);
@@ -130,7 +155,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           phone: phone.trim(),
           email: email.trim() || undefined,
           category: category !== "ALL" ? category : undefined,
-          area: area !== "ALL" ? area : undefined,
+          area: areaOut || undefined,
           budget: budgetNum > 0 ? budgetNum : undefined,
           message: brief,
           source,
@@ -264,7 +289,15 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           <Label className="text-[13px] text-muted-foreground">Area</Label>
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Preferred area">
-              {area === "ALL" ? <span>Area</span> : <SelectValue placeholder="Preferred area" />}
+              {area === "ALL" ? (
+                <span>Area</span>
+              ) : area === "OTHER" ? (
+                <span className="truncate">
+                  {areaOther.trim() ? `Area: ${areaOther.trim()}` : "Other area"}
+                </span>
+              ) : (
+                <SelectValue placeholder="Preferred area" />
+              )}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All areas</SelectItem>
@@ -273,8 +306,20 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
                   {a}
                 </SelectItem>
               ))}
+              <SelectItem value="OTHER">Other area — write your own</SelectItem>
             </SelectContent>
           </Select>
+          {/* Manual area — free text when "Other area" is picked */}
+          {area === "OTHER" && (
+            <Input
+              value={areaOther}
+              onChange={(e) => setAreaOther(e.target.value)}
+              placeholder="Write the area — e.g. Block C, Phase 2"
+              aria-label="Write your area"
+              autoComplete="off"
+              className="mt-2 h-11 rounded-xl border-border bg-muted text-sm focus-visible:ring-ring/40"
+            />
+          )}
         </div>
       </div>
 
@@ -319,8 +364,36 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
                 {b.label}
               </SelectItem>
             ))}
+            <SelectItem value="CUSTOM">+ Custom budget</SelectItem>
           </SelectContent>
         </Select>
+        {/* Manual budget — exact PKR amount when "+ Custom budget" is picked */}
+        {budget === "CUSTOM" && (
+          <div className="mt-2">
+            <div className="relative">
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                value={budgetCustom}
+                onChange={(e) => setBudgetCustom(e.target.value)}
+                placeholder="Enter your budget in PKR — e.g. 8500000"
+                aria-label="Custom budget in PKR"
+                autoComplete="off"
+                className="h-11 rounded-xl border-border bg-muted pr-14 text-sm focus-visible:ring-ring/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                PKR
+              </span>
+            </div>
+            {Number(budgetCustom) > 0 && (
+              <p className="mt-1.5 text-[11.5px] font-medium text-muted-foreground" aria-live="polite">
+                ≈ {formatPKR(Number(budgetCustom), purpose === "RENT")}
+                {purpose === "RENT" ? " per month" : ""}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-1.5">

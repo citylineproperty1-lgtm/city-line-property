@@ -20,6 +20,8 @@ import { RequirementForm } from "@/components/site/requirement-form";
 import { PriceListLead } from "@/components/site/price-list-lead";
 import { useAppStore } from "@/lib/store";
 import { AREAS, AREA_COORDS, BUSINESS, MARLA_SQFT, OFFICE_COORD, waLink, type SizeUnit } from "@/lib/business";
+import { formatPKR } from "@/lib/format";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { areaSlug, areaBySlug } from "@/lib/areas";
 import {
@@ -290,6 +292,9 @@ export function HomeView() {
      filters as a minimum area in sqft. */
   const [heroSize, setHeroSize] = useState("");
   const [heroSizeUnit, setHeroSizeUnit] = useState<SizeUnit>("marla");
+  /* Manual overrides — "Other area" free text + custom budget amount (PKR). */
+  const [heroAreaOther, setHeroAreaOther] = useState("");
+  const [heroBudgetCustom, setHeroBudgetCustom] = useState("");
 
   const heroMinArea = (): number | null => {
     const n = Number(heroSize);
@@ -313,6 +318,12 @@ export function HomeView() {
     setHeroPurpose(next);
     const list = next === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
     if (!list.some((b) => b.value === heroBudget)) setHeroBudget("0");
+    // Custom budget amount means different things on the rent (monthly) vs buy
+    // (one-off) scale — start fresh when switching purpose.
+    if (heroBudget === "CUSTOM") {
+      setHeroBudget("0");
+      setHeroBudgetCustom("");
+    }
     // Plots can't be rented — drop a selected plot category when switching to Rent
     if (next === "RENT" && PLOT_CATEGORY_SLUGS.has(heroType)) setHeroType("ALL");
   };
@@ -320,13 +331,30 @@ export function HomeView() {
   const heroBudgets = heroPurpose === "RENT" ? HERO_RENT_BUDGETS : HERO_BUDGETS;
 
   const heroSearch = () => {
+    const areaText = heroArea === "OTHER" ? heroAreaOther.trim() : heroArea !== "ALL" ? heroArea : "";
+    const maxPrice =
+      heroBudget === "CUSTOM"
+        ? Number(heroBudgetCustom) > 0
+          ? Number(heroBudgetCustom)
+          : null
+        : Number(heroBudget) > 0
+          ? Number(heroBudget)
+          : null;
+    if (heroArea === "OTHER" && !areaText) {
+      toast.error("Please write the area you want — e.g. Block C, Phase 2.");
+      return;
+    }
+    if (heroBudget === "CUSTOM" && maxPrice == null) {
+      toast.error("Please enter your budget amount in PKR.");
+      return;
+    }
     setFilters({
-      search: heroArea !== "ALL" ? heroArea : "",
+      search: areaText,
       type: heroType,
       status: heroPurpose,
       beds: 0,
       minPrice: null,
-      maxPrice: Number(heroBudget) > 0 ? Number(heroBudget) : null,
+      maxPrice,
       minArea: heroMinArea(),
       sort: "newest",
     });
@@ -489,7 +517,15 @@ export function HomeView() {
                   </div>
                   <Select value={heroArea} onValueChange={setHeroArea}>
                     <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
-                      {heroArea === "ALL" ? <span>Area</span> : <SelectValue placeholder="Area" />}
+                      {heroArea === "ALL" ? (
+                        <span>Area</span>
+                      ) : heroArea === "OTHER" ? (
+                        <span className="truncate">
+                          {heroAreaOther.trim() ? `Area: ${heroAreaOther.trim()}` : "Other area"}
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Area" />
+                      )}
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ALL">All areas</SelectItem>
@@ -498,9 +534,23 @@ export function HomeView() {
                           {a}
                         </SelectItem>
                       ))}
+                      <SelectItem value="OTHER">Other area — write your own</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+                {/* Manual area — free text when "Other area" is picked */}
+                {heroArea === "OTHER" && (
+                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2">
+                    <Input
+                      value={heroAreaOther}
+                      onChange={(e) => setHeroAreaOther(e.target.value)}
+                      placeholder="Write the area — e.g. Block C, Phase 2"
+                      aria-label="Write your area"
+                      autoComplete="off"
+                      className="h-11 w-full rounded-2xl border-border bg-card text-[13px] font-medium focus-visible:ring-ring/40"
+                    />
+                  </motion.div>
+                )}
                 <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <Select value={heroBudget} onValueChange={setHeroBudget}>
                     <SelectTrigger
@@ -515,8 +565,36 @@ export function HomeView() {
                           {b.label}
                         </SelectItem>
                       ))}
+                      <SelectItem value="CUSTOM">+ Custom budget</SelectItem>
                     </SelectContent>
                   </Select>
+                  {/* Manual budget — exact PKR amount when "+ Custom budget" is picked */}
+                  {heroBudget === "CUSTOM" && (
+                    <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 w-full">
+                      <div className="relative">
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          value={heroBudgetCustom}
+                          onChange={(e) => setHeroBudgetCustom(e.target.value)}
+                          placeholder="Enter your budget in PKR — e.g. 8500000"
+                          aria-label="Custom budget in PKR"
+                          autoComplete="off"
+                          className="h-11 w-full rounded-2xl border-border bg-card pr-14 text-[13px] font-medium focus-visible:ring-ring/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        />
+                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                          PKR
+                        </span>
+                      </div>
+                      {Number(heroBudgetCustom) > 0 && (
+                        <p className="mt-1.5 pl-1 text-[11.5px] font-medium text-muted-foreground" aria-live="polite">
+                          ≈ {formatPKR(Number(heroBudgetCustom), heroPurpose === "RENT")}
+                          {heroPurpose === "RENT" ? " per month" : " maximum"}
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
                   <Button
                     onClick={heroSearch}
                     className="sheen h-11 w-full rounded-2xl brand-gradient px-6 text-sm font-semibold text-white shadow-[0_8px_22px_-8px_rgba(15,118,110,0.7)] hover:opacity-95 sm:w-auto"
