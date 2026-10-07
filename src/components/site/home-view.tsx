@@ -188,7 +188,7 @@ const EXPLORE_AREAS = ["etihad-town-phase-1", "etihad-town-phase-2"]
   .filter((a): a is NonNullable<typeof a> => Boolean(a));
 
 const HERO_BUDGETS = [
-  { value: "0", label: "Any budget" },
+  { value: "0", label: "All budgets" },
   { value: "5000000", label: "Up to 50 Lakh" },
   { value: "10000000", label: "Up to 1 Crore" },
   { value: "20000000", label: "Up to 2 Crore" },
@@ -208,7 +208,7 @@ const PURPOSE_TABS: { value: HeroPurpose; label: string; icon: LucideIcon }[] = 
 
 /* Monthly rent scale for the hero budget dropdown (Etihad Town rentals). */
 const HERO_RENT_BUDGETS = [
-  { value: "0", label: "Any rent" },
+  { value: "0", label: "All budgets" }, // rent scale — value "0" = no cap
   { value: "25000", label: "Up to 25,000 / mo" },
   { value: "50000", label: "Up to 50,000 / mo" },
   { value: "75000", label: "Up to 75,000 / mo" },
@@ -489,10 +489,10 @@ export function HomeView() {
                   </div>
                   <Select value={heroArea} onValueChange={setHeroArea}>
                     <SelectTrigger className="h-11 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0" aria-label="Area">
-                      <SelectValue placeholder="Area" />
+                      {heroArea === "ALL" ? <span>Area</span> : <SelectValue placeholder="Area" />}
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ALL">Any area</SelectItem>
+                      <SelectItem value="ALL">All areas</SelectItem>
                       {AREAS.map((a) => (
                         <SelectItem key={a} value={a}>
                           {a}
@@ -507,7 +507,7 @@ export function HomeView() {
                       className="h-11 flex-1 rounded-2xl border-border bg-card text-[13px] font-medium focus:ring-0"
                       aria-label={heroPurpose === "RENT" ? "Monthly rent budget" : "Budget"}
                     >
-                      <SelectValue placeholder="Budget" />
+                      {heroBudget === "0" ? <span>Budget</span> : <SelectValue placeholder="Budget" />}
                     </SelectTrigger>
                     <SelectContent>
                       {heroBudgets.map((b) => (

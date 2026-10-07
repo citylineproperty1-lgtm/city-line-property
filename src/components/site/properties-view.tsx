@@ -20,7 +20,7 @@ import { Search, SlidersHorizontal, X, SearchX, RotateCcw, Loader2 } from "lucid
 import { cn } from "@/lib/utils";
 
 const PRICE_STEPS = [
-  { value: "0", label: "Any" },
+  { value: "0", label: "All prices" },
   // Monthly rent scale (hero Rent filter lands here)
   { value: "25000", label: "25,000" },
   { value: "50000", label: "50,000" },
@@ -301,7 +301,7 @@ export function PropertiesView() {
 
             {/* category */}
             <Select value={f.type} onValueChange={(v) => setFilters({ type: v })}>
-              <SelectTrigger className="h-11 w-[150px] rounded-full border-border bg-card text-[13px] focus:ring-0">
+              <SelectTrigger className="h-11 w-[150px] rounded-full border-border bg-card text-[13px] focus:ring-0" aria-label="Category">
                 {f.type === "ALL" ? <span>Category</span> : <SelectValue placeholder="Category" />}
               </SelectTrigger>
               <SelectContent>
@@ -352,8 +352,8 @@ export function PropertiesView() {
 
             {/* area */}
             <Select value={activeArea} onValueChange={(v) => setFilters({ search: v === "ALL" ? "" : v })}>
-              <SelectTrigger className="h-11 w-[160px] rounded-full border-border bg-card text-[13px] focus:ring-0">
-                <SelectValue placeholder="Area" />
+              <SelectTrigger className="h-11 w-[160px] rounded-full border-border bg-card text-[13px] focus:ring-0" aria-label="Area">
+                {activeArea === "ALL" ? <span>Area</span> : <SelectValue placeholder="Area" />}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All areas</SelectItem>
@@ -370,10 +370,10 @@ export function PropertiesView() {
               onValueChange={(v) => setFilters({ beds: Number(v) })}
             >
               <SelectTrigger className="h-11 w-[110px] rounded-full border-border bg-card text-[13px] focus:ring-0">
-                <SelectValue placeholder="Beds" />
+                {String(f.beds) === "0" ? <span>Beds</span> : <SelectValue placeholder="Beds" />}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Any beds</SelectItem>
+                <SelectItem value="0">All beds</SelectItem>
                 {[1, 2, 3, 4, 5, 6].map((b) => (
                   <SelectItem key={b} value={String(b)}>
                     {b}+ beds
@@ -392,7 +392,7 @@ export function PropertiesView() {
               <SelectContent>
                 {PRICE_STEPS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>
-                    {s.value === "0" ? "Min: Any" : `Min: ${s.label}`}
+                    {s.value === "0" ? "Min price" : `Min: ${s.label}`}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -408,7 +408,7 @@ export function PropertiesView() {
               <SelectContent>
                 {PRICE_STEPS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>
-                    {s.value === "0" ? "Max: Any" : `Max: ${s.label}`}
+                    {s.value === "0" ? "Max price" : `Max: ${s.label}`}
                   </SelectItem>
                 ))}
               </SelectContent>

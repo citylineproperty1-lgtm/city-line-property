@@ -20,7 +20,7 @@ import { Loader2, Send, CheckCircle2, MessageCircle, RotateCcw } from "lucide-re
 import { toast } from "sonner";
 
 const BUDGETS: { value: string; label: string }[] = [
-  { value: "0", label: "Any budget" },
+  { value: "0", label: "All budgets" },
   { value: "2500000", label: "25 Lakh" },
   { value: "5000000", label: "50 Lakh" },
   { value: "7500000", label: "75 Lakh" },
@@ -35,7 +35,7 @@ const BUDGETS: { value: string; label: string }[] = [
 /* Monthly rent scale — shown when purpose is Rent (the buy scale above
    doesn't make sense for monthly rentals). */
 const RENT_BUDGETS: { value: string; label: string }[] = [
-  { value: "0", label: "Any rent" },
+  { value: "0", label: "All budgets" }, // rent scale — value "0" = no cap
   { value: "15000", label: "15,000 / mo" },
   { value: "25000", label: "25,000 / mo" },
   { value: "50000", label: "50,000 / mo" },
@@ -264,10 +264,10 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
           <Label className="text-[13px] text-muted-foreground">Area</Label>
           <Select value={area} onValueChange={setArea}>
             <SelectTrigger className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0" aria-label="Preferred area">
-              <SelectValue placeholder="Preferred area" />
+              {area === "ALL" ? <span>Area</span> : <SelectValue placeholder="Preferred area" />}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">Any area</SelectItem>
+              <SelectItem value="ALL">All areas</SelectItem>
               {AREAS.map((a) => (
                 <SelectItem key={a} value={a}>
                   {a}
@@ -311,7 +311,7 @@ export function RequirementForm({ source = "REQUIREMENT" }: { source?: LeadInput
             className="h-11 w-full rounded-xl border-border bg-muted text-sm focus:ring-0"
             aria-label={purpose === "RENT" ? "Monthly rent budget" : "Budget"}
           >
-            <SelectValue placeholder="Your budget" />
+            {budget === "0" ? <span>Budget</span> : <SelectValue placeholder="Your budget" />}
           </SelectTrigger>
           <SelectContent>
             {budgets.map((b) => (
