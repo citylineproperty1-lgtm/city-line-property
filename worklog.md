@@ -1497,3 +1497,4 @@ Stage Summary:
 - Splash final design: dark-teal brand surface + white lockup + thin white progress line (reference style); wave code removed
 - .env heal chain rebuilt after 8th clobber; dev healthy
 - DNS: run 4 of 4 auto-check at 18:30 PKT (webDevReview agent owns creation per worklog Task 65 run 3 note)
+- Task 65 DNS run 4 (18:51 PKT, manual on owner request): NXDOMAIN everywhere — 8.8.8.8, 1.1.1.1, 9.9.9.9, PKNIC root-c1 AND root-c2; no TLS. ~5h since HosterPK NS change; still inside PKNIC's normal 24-48h batch window. FINAL auto-check (run 5) created as one-time job 442373 at Oct 8 10:00 PKT (epoch 1791435600000) with owner-action instructions (bump HosterPK ticket #5998127 if still NXDOMAIN). Automated ladder complete after run 5.
