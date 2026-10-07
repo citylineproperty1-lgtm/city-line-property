@@ -14,6 +14,7 @@ import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
 import { AdminView } from "@/components/site/admin-view";
 import { ContactBubble } from "@/components/site/contact-bubble";
 import { ScrollProgress } from "@/components/site/scroll-progress";
+import { SplashScreen } from "@/components/site/splash-screen";
 import {
   useAppStore,
   hashToView,
@@ -116,6 +117,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <SplashScreen />
       <ScrollProgress />
       <SiteHeader />
       <main className="flex-1">
