@@ -1447,3 +1447,18 @@ Stage Summary:
 - Site now opens with an elegant branded splash: monogram + teal wordmark + tagline + animated progress line, fades into the app (~2.2s total); reduced-motion and click-to-skip respected
 - Pending from Task 65: DNS check cron job 441819 (15:00 PKT) auto-verifies citylineproperty.com.pk; NS already at Vercel per HosterPK, PKNIC zone publish pending
 - Task 65 DNS run 2 (15:00 PKT, job 441819): dig NS empty @8.8.8.8 AND @root-c1.pknic.pk — PKNIC still publishing. One short line sent to owner; retry job created 16:30 PKT (epoch 1791372600000). Runs used: 2 of 4 max.
+
+---
+Task ID: 68
+Agent: Z.ai Code (main session)
+Task: Owner request — splash loading line into wave style + 3s minimum; plus cron DNS run 2 for citylineproperty.com.pk
+
+Work Log:
+- DNS run 2 (15:00 PKT, job 441819): dig NS empty @8.8.8.8 AND @root-c1.pknic.pk, curl no TLS — PKNIC zone still not published (normal batching). Retry planned 16:30 PKT (epoch 1791372600000); NOTE cron gateway tool was unavailable in this turn's function set — retry job creation delegated to webDevReview-15min agent (job 441906 reads worklog; instructions in Task 65 update 3 message). Runs used: 2 of 4 max
+- 15:00 PKT cron agent-turn had already implemented the wave in the working tree (uncommitted): dual-layer travelling sine waves (front 2.5px full-opacity + back 2px 30%-opacity, opposite phase, 40px wavelength), seamless -40px/-one-wavelength loops (1.15s / 1.7s linear infinite), edge fade mask, MIN_MS 3000 / MAX_MS 5000
+- Verified: lint 0 errors; screenshot /tmp/splash-wave.png shows elegant braided wave under wordmark; reload → wait ~5.1s → snapshot 54 home matches, no role=status splash left; console only pre-existing scroll-position warning
+- Commit f506a7f pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Splash now: monogram + teal wordmark + tagline + dual travelling wave line; minimum 3s on screen, tap-to-skip, fades out ~3.55s
+- DNS: PKNIC publish pending; next auto-check 16:30 PKT via webDevReview agent handoff (cron tool unavailable in main-session toolset this turn)
