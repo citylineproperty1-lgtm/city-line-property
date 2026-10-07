@@ -1498,3 +1498,21 @@ Stage Summary:
 - .env heal chain rebuilt after 8th clobber; dev healthy
 - DNS: run 4 of 4 auto-check at 18:30 PKT (webDevReview agent owns creation per worklog Task 65 run 3 note)
 - Task 65 DNS run 4 (18:51 PKT, manual on owner request): NXDOMAIN everywhere — 8.8.8.8, 1.1.1.1, 9.9.9.9, PKNIC root-c1 AND root-c2; no TLS. ~5h since HosterPK NS change; still inside PKNIC's normal 24-48h batch window. FINAL auto-check (run 5) created as one-time job 442373 at Oct 8 10:00 PKT (epoch 1791435600000) with owner-action instructions (bump HosterPK ticket #5998127 if still NXDOMAIN). Automated ladder complete after run 5.
+
+---
+Task ID: 71
+Agent: Z.ai Code (main session)
+Task: Owner: "do the mobile view good, present now is not looking good"
+
+Work Log:
+- Mobile audit at 390x844 (agent-browser set viewport): screenshots of hero, office band, stats, area cards, featured listings, footer; also listings view + header overflow check (header 390/390 = no overflow; listings 2-col filter grid OK; footer OK)
+- ROOT CAUSE of ragged hero card: shadcn select.tsx (new-york 2025) SelectTrigger base = w-fit — hero Category/Area/Budget triggers shrank to text width on mobile (Category 106px, Area 78px measured). Requirement form already w-full; listings bar uses fixed widths (fine)
+- FIX in home-view.tsx: Category + Area triggers +w-full; Budget trigger flex-1 -> w-full sm:w-auto sm:flex-1; Budget/Search row mt-2 flex gap-2 -> mt-2 flex flex-col gap-2 sm:flex-row; Search button +w-full sm:w-auto
+- Result: mobile hero = clean vertical stack (Category / Size+Marla / Area / Budget / full-width Search); desktop = 3 equal columns + Budget+Search row (also cleaner than before, triggers now fill columns)
+- Verified: lint 0 errors; mobile screenshot /tmp/mobile-hero-fixed.png; desktop screenshot /tmp/desktop-hero-check.png; no horizontal overflow
+- Commit pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Mobile hero card fixed (the visible complaint); desktop hero also improved
+- Contact bubble auto-open after 9s reviewed — by design, dismissible, session-aware; left as-is
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373)
