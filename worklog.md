@@ -1664,3 +1664,22 @@ Work Log:
 Stage Summary:
 - Run 6 @ 12:18 PKT: PKNIC done / Vercel zone still REFUSED / owner action required once: vercel.com > project > Settings > Domains > Add citylineproperty.com.pk + www.citylineproperty.com.pk
 - Once added: zone activates + SSL auto-issues, monitor will detect A record, verify HTTPS 200, notify, then self-delete
+
+---
+Task ID: 79
+Agent: Z.ai Code (main session)
+Task: DOMAIN LIVE — full saga resolved; owner switched DNS method in Vercel, zone activated, cert issued, site live on .com.pk
+
+Work Log:
+- Owner's 3rd screenshot showed "Failed To Generate Cert" + "DNS zone not enabled ... Cannot solve dns-01 ACME cert challenge" — error CHANGED from "Invalid Configuration" = owner had successfully switched DNS method (Use Vercel Nameservers) per my instructions; remaining issue was Vercel backend zone-activation lag
+- Dig re-check minutes later: ns1/ns2.vercel-dns.com now NOERROR (was REFUSED for ~22h) — zone ENABLED
+- Records live: www + apex A → 64.29.17.1 / 216.198.79.65 (Vercel's new IP range); Google 8.8.8.8 resolves too
+- HTTPS verified: https://www.citylineproperty.com.pk = HTTP/2 200 (server: Vercel, HSTS present); https://citylineproperty.com.pk = 308 → www (exactly as configured)
+- TLS cert: Let's Encrypt (CN=www.citylineproperty.com.pk), issued Oct 8 06:33 GMT (zone live ~1h earlier), valid to Jan 6 2027 — "Failed To Generate Cert" self-healed once zone was enabled
+- agent-browser visual check: hero renders fully (Buy/Rent tabs, Category/Size/Area, PKR 0-to-Any budget pill from Tasks 74–76, 15 live listings, chat bubble) — all features intact on the new domain
+- DELETED monitor job 443997 (mission complete)
+
+Stage Summary:
+- ROOT CAUSE of the 22h+ outage after PKNIC delegation: domains were added to Vercel in external-DNS mode (DNS Records/CNAME method) while NS pointed at vercel-dns.com — deadlock (Vercel waited for records at HosterPK which was no longer authoritative; Vercel NS refused = no zone). FIX: Vercel dashboard → domain → "Vercel DNS" tab → "Use Vercel Nameservers"
+- SITE NOW LIVE at https://www.citylineproperty.com.pk with valid SSL; apex 308→www
+- Remaining follow-ups: (1) set 308/Vercel redirect citylineproperty.vercel.app → www.citylineproperty.com.pk for SEO; (2) update business constants/anywhere vercel.app referenced; (3) consider Google Search Console + sitemap submission for the new domain
