@@ -1701,3 +1701,19 @@ Stage Summary:
 - Canonical SEO signals now 100% on the new domain in production
 - Pending owner action: set the 308 redirect on the vercel.app domain in the Vercel dashboard (dashboard-only, cannot be done from repo)
 - Pending owner (optional, anytime): GSC — add property https://www.citylineproperty.com.pk → verify with existing google file → submit new sitemap URL
+
+---
+Task ID: 81
+Agent: Z.ai Code (main session)
+Task: Owner completed vercel.app 308 redirect → full domain migration verified complete
+
+Work Log:
+- Owner set redirect in Vercel dashboard (after a small detour: initially opened Edit on the two .com.pk rows — guided to scroll to the vercel.app row)
+- Verified live (curl): https://citylineproperty.vercel.app → HTTP/2 308 → https://www.citylineproperty.com.pk/ ✓; deep path /#/properties → 308 → www ✓; www → 200 ✓; apex → 308 → www ✓
+- Domain funnel final state: vercel.app (308) + apex (308) → www.citylineproperty.com.pk (200, valid Let's Encrypt cert) — single canonical entry point for users AND Google
+- Domain saga fully closed: PKNIC registration → NS delegation → Vercel zone activation ("Use Vercel Nameservers") → SSL → all-domain 308 funnel → SEO canonicals swapped in code (a7f76ae)
+- Only optional leftover (owner, anytime): GSC — add property https://www.citylineproperty.com.pk, verify with existing googled05288ec0718046a.html, submit new sitemap URL
+
+Stage Summary:
+- DOMAIN MIGRATION 100% COMPLETE — every address lands on https://www.citylineproperty.com.pk with SSL
+- webDevReview cron 444041 continues 15-min patrols
