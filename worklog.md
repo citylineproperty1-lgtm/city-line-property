@@ -1596,3 +1596,21 @@ Stage Summary:
 - "Any" is now an obvious tappable dropdown showing PKR amounts (owner's ask), manual typing preserved on both min and max sides
 - Requirement form still uses old pick-Other/custom flow (unchanged, works); can be migrated later if owner asks
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
+
+---
+Task ID: 76
+Agent: Z.ai Code (main session)
+Task: Owner — "do this like marla and sq ft option, when we click it will also show manually" [screenshot: Any ⌄ pill] → visible manual-write option inside the Any budget dropdown
+
+Work Log:
+- Added "✏️ Write amount manually" as the 2nd item in the Any budget preset list (home-view.tsx, brand-teal + Pencil icon): clicking closes the list and focuses the max input so the client types any exact PKR amount — same pattern as the Marla/sqft picker (options + manual in one place)
+- Added maxBudgetRef attached to the max Input (shadcn Input forwards refs)
+- ENV INCIDENT #10 (worst yet): sandbox was rebuilt overnight → .env clobbered to SQLite one-liner AND both backups gone (.env.supabase + /home/z/.clp-env-supabase deleted; repo.tar gone). API returned 0 properties (empty local SQLite). RECOVERED: found full connection strings in the surviving /tmp/my-project/.env copy (Sep 22) → restored .env + recreated BOTH backups (chmod 600) → clean restart (unset DATABASE_URL DIRECT_URL subshell) → 15 properties back, admin endpoint 401 (owner changed seed password — expected). LESSON: /tmp/my-project survives rebuilds — add it to the recovery ladder in .zscripts/dev.sh heal (todo: check .env.supabase → /home/z/.clp-env-supabase → /tmp/my-project/.env)
+- NOTE: platform auto-sync bot had committed the Task 76 code yesterday 21:04 PKT as UUID-message commit e900f19 (unpushed) — amended message to proper conventional text (6501d5a) and pushed. Watch for UUID-named commits after sessions; amend before push when content is ours
+- Verified (agent-browser): Any dropdown shows Any budget / Write amount manually / 50 Lakh 5,000,000 / 1 Crore 10,000,000 / ...; click manual → list closes + max input focused (activeElement) + typed 20000000 → hint "≈ Up to PKR 1 Crore..." wait actually 2 Crore; Search → 8 listings + "Max: 2 Crore" chip/bar; desktop 1280 pill unchanged; mobile overflow 0; console clean; lint 0 errors
+- Commit 6501d5a pushed origin/main (Vercel auto-deploy)
+
+Stage Summary:
+- Any budget dropdown now = options + visible manual-write entry (owner's ask); typing still works directly
+- Local DB restored to Supabase (15 live listings); backups recreated; heal-script ladder should learn the /tmp fallback (small follow-up)
+- DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
