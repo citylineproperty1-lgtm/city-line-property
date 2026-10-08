@@ -23,7 +23,7 @@ const inter = Inter({
 // /api routes, so nothing the user sees is ever stale.
 export const revalidate = 60;
 
-const SITE = "https://citylineproperty.vercel.app";
+const SITE = "https://www.citylineproperty.com.pk";
 
 const TITLE =
   "City Line Property — Real Estate in Etihad Town, Lahore | 1% Commission";

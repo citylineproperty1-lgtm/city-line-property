@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://citylineproperty.vercel.app/sitemap.xml
+Sitemap: https://www.citylineproperty.com.pk/sitemap.xml

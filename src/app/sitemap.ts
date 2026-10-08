@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
-const SITE = "https://citylineproperty.vercel.app";
+const SITE = "https://www.citylineproperty.com.pk";
 
 // Render at request time (never at build) — edge-cached 1h via next.config.
 export const dynamic = "force-dynamic";

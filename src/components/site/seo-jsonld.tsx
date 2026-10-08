@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 
-const SITE = "https://citylineproperty.vercel.app";
+const SITE = "https://www.citylineproperty.com.pk";
 
 const AREAS = [
   "Etihad Town Phase 1",
