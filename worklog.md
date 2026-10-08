@@ -1648,3 +1648,19 @@ Stage Summary:
 - PKNIC side DONE (delegation live at registry since between Oct 7 18:51 and Oct 8 pre-10:00); Vercel side PENDING (zone REFUSED)
 - Owner needs one dashboard action: vercel.com → project → Settings → Domains → verify/refresh both domains
 - Monitor job 443997 auto-announces when https://www.citylineproperty.com.pk goes live
+---
+Task ID: 78
+Agent: Z.ai Code (cron job 443997 run 6 + owner "time is over now")
+Task: Domain monitor run 6 — owner says the 24-48h window is over, check now
+
+Work Log:
+- PKNIC root (root-c1.pknic.pk): still NOERROR + delegation published (ns1/ns2.vercel-dns.com, TTL 86400) — registry side FINAL and correct
+- Vercel NS (198.51.44.13/198.51.45.13 direct): REFUSED for NS and A — zone NOT activated on Vercel side (same as run 5a)
+- Google 8.8.8.8: SERVFAIL (resolvers correctly find delegation but authority refuses) — expected while zone inactive
+- Diagnosis after 24-48h with PKNIC done: bottleneck is 100% Vercel — most likely citylineproperty.com.pk was never added (or added with wrong method) in project Settings > Domains, so Vercel never created the DNS zone
+- No Vercel CLI/token in sandbox — cannot activate zone ourselves; owner must click Add in vercel.com dashboard
+- Job 443997 KEPT (runs every 30 min); site not live yet
+
+Stage Summary:
+- Run 6 @ 12:18 PKT: PKNIC done / Vercel zone still REFUSED / owner action required once: vercel.com > project > Settings > Domains > Add citylineproperty.com.pk + www.citylineproperty.com.pk
+- Once added: zone activates + SSL auto-issues, monitor will detect A record, verify HTTPS 200, notify, then self-delete
