@@ -543,26 +543,16 @@
     0 18px 40px -14px var(--cat-glow);
 }
 
-/* ---------- Brand monogram: animated aurora-glass tile ---------- */
+/* ---------- Brand monogram: gold-logo tile ---------- */
 
-/* Tile: panning multi-stop emerald/cyan aurora + inset glass ring. */
+/* Tile: clean white plaque that lets the gold emblem shine, with a warm
+   gold ring + soft amber elevation (matches the new Cityline gold brand). */
 .clp-logo-tile {
   position: relative;
-  background: linear-gradient(135deg, #24c6b0 0%, #0d9488 26%, #0f766e 52%, #0b5b54 76%, #0e7490 100%);
-  background-size: 240% 240%;
-  animation: clp-aurora 6s ease-in-out infinite;
+  background: #ffffff;
   box-shadow:
-    0 2px 10px -2px rgba(15, 118, 110, 0.5),
-    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
-}
-@keyframes clp-aurora {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+    0 2px 10px -2px rgba(196, 148, 38, 0.45),
+    inset 0 0 0 1.5px rgba(212, 165, 48, 0.4);
 }
 
 /* Fixed glassmorphism highlight across the top-left face of the tile. */

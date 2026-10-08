@@ -17,7 +17,7 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/logo.png", sizes: "192x192", type: "image/png" },
       { src: "/logo.png", sizes: "512x512", type: "image/png" },
-      { src: "/logo.svg", sizes: "any", type: "image/svg+xml" },
+      { src: "/logo-mark.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

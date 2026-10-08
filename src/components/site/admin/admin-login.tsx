@@ -76,7 +76,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
         <div className="rounded-3xl border border-border bg-card p-7 shadow-[0_10px_40px_rgba(0,0,0,0.07)] sm:p-8">
           <div className="flex flex-col items-center text-center">
             <div className="rounded-2xl border border-border bg-card p-1.5 shadow-sm">
-              <Image src="/logo.png" alt="City Line Property logo" width={52} height={52} className="h-13 w-13 rounded-xl" />
+              <Image src="/logo-mark.png" alt="City Line Property logo" width={52} height={52} className="h-13 w-13 rounded-xl" />
             </div>
             <h1 className="mt-4 text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               City Line Property
