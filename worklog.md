@@ -1732,3 +1732,19 @@ Work Log:
 Stage Summary:
 - https://www.citylineproperty.com.pk/ is now a VERIFIED GSC property (HTML-file method)
 - Old vercel.app property still exists in GSC — harmless; can be removed later once new property accumulates data
+
+---
+Task ID: 83
+Agent: Z.ai Code (main session)
+Task: Owner submitted sitemap + Request Indexing → DOMAIN MIGRATION CHAPTER FULLY CLOSED. Final 8-point health check all green.
+
+Work Log:
+- Owner completed the last two GSC steps: sitemap.xml submitted for https://www.citylineproperty.com.pk/ + Request Indexing for homepage
+- FINAL HEALTH CHECK 14:35 PKT (all green): (1) www 200 in 0.94s (2) apex 308→www (3) vercel.app 308→www (4) SSL valid to Jan 6 2027 (Let's Encrypt) (5) sitemap.xml 200 (6) robots.txt points sitemap at new domain (7) canonical = new domain (8) /api/properties returns live Supabase listings
+- Domain saga end-to-end: HosterPK purchase → NS change ticket #5998127 → PKNIC delegation publish (24-48h) → Vercel zone deadlock diagnosed (external-DNS mode vs Vercel NS) → owner switched to "Use Vercel Nameservers" → zone REFUSED→NOERROR → SSL auto-issued → 308 funnel (apex+vercel.app→www) → SEO canonicals swapped (a7f76ae) → GSC verify + sitemap + indexing
+- webDevReview cron 444041 (15-min) continues autonomous patrols
+
+Stage Summary:
+- citylineproperty.com.pk is the live, verified, fully SEO-wired official domain of City Line Property
+- What to expect: Google re-indexes over days~2 weeks; old vercel.app GSC property can be removed later; SSL auto-renews
+- Next development phases continue via webDevReview patrol (styling polish, features per worklog backlog)
