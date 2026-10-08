@@ -1765,3 +1765,21 @@ Work Log:
 Stage Summary:
 - Official gold branding now live across the entire site (header, footer, splash, home tiles, favicon, PWA icons, admin login)
 - Old teal animated monogram fully retired; brand lockup text unchanged
+
+---
+Task ID: 84-b
+Agent: Z.ai Code (main session)
+Task: Owner "yes, anything else?" → close the last logo gap: WhatsApp link-preview card (og:image) still drew the OLD teal design with NO emblem — Task 84's site-UI rebrand had missed src/app/opengraph-image.tsx
+
+Work Log:
+- Root cause: layout.tsx og:image/twitter:image → /opengraph-image route; that ImageResponse card was still hard-coded teal #0F766E with a text-only design (no emblem) — exactly the stale card in the owner's WhatsApp screenshot
+- Pipeline: PIL → public/logo-mark.png resized 224px + 96-color quantize (83KB→19KB) → base64 data URL → new src/lib/og-emblem.ts (embedded constant, no runtime fs/edge concerns for satori <img>)
+- opengraph-image.tsx rewritten: gold gradient accent bar (#E3B94E→#C49426→#A87B16), official emblem on white plaque tile w/ gold shadow (mirrors header .clp-logo-tile), gold pill badge, gold "ONLY 1% COMMISSION" gradient badge, same headline/tagline/areas/phone content
+- lint 0 errors → commit be22349 pushed → Vercel live in <2min
+- VERIFIED: /opengraph-image 200 (107KB new vs 52KB old), downloaded PNG visually confirmed gold emblem card; live homepage 200 + og:image meta resolves to new build hash; /logo.png 200; agent-browser local homepage render OK (header emblem, hero, OUR OFFICE card)
+- Ops: webDevReview cron was EMPTY again → recreated as job 444512 (fixed_rate 900s, mandatory description + full project context + simple-English owner rule + env ladder)
+
+Stage Summary:
+- The gold logo now appears in EVERY brand surface incl. the WhatsApp/Facebook/X link-preview card — Task 84 fully closed
+- Known cache caveat: WhatsApp may show the old card for already-shared links until its og cache refreshes (new shares get the new card immediately; can also re-post the link)
+- Patrol continues via cron 444512
