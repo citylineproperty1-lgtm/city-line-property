@@ -1683,3 +1683,21 @@ Stage Summary:
 - ROOT CAUSE of the 22h+ outage after PKNIC delegation: domains were added to Vercel in external-DNS mode (DNS Records/CNAME method) while NS pointed at vercel-dns.com — deadlock (Vercel waited for records at HosterPK which was no longer authoritative; Vercel NS refused = no zone). FIX: Vercel dashboard → domain → "Vercel DNS" tab → "Use Vercel Nameservers"
 - SITE NOW LIVE at https://www.citylineproperty.com.pk with valid SSL; apex 308→www
 - Remaining follow-ups: (1) set 308/Vercel redirect citylineproperty.vercel.app → www.citylineproperty.com.pk for SEO; (2) update business constants/anywhere vercel.app referenced; (3) consider Google Search Console + sitemap submission for the new domain
+
+---
+Task ID: 80
+Agent: Z.ai Code (main session)
+Task: Owner said "yes" → SEO domain migration: swap all hardcoded URLs vercel.app → www.citylineproperty.com.pk + guide owner through vercel.app 308 redirect
+
+Work Log:
+- Grep found 4 hardcoded old-domain references: src/app/layout.tsx (metadataBase), src/app/sitemap.ts (SITE), src/components/site/seo-jsonld.tsx (SITE/@graph ids), public/robots.txt (Sitemap directive) — all switched to https://www.citylineproperty.com.pk
+- GSC verification file public/googled05288ec0718046a.html already in repo → same token works for verifying the NEW domain property in Search Console (no code change needed)
+- lint 0 errors → commit a7f76ae pushed → Vercel auto-deploy
+- LIVE verification on new domain: robots.txt Sitemap → www.citylineproperty.com.pk/sitemap.xml ✓; sitemap.xml <loc> = new domain ✓; canonical link tag = https://www.citylineproperty.com.pk/ ✓; og:url = new domain ✓; 0 "vercel.app" occurrences in rendered HTML ✓
+- Recreated missing webDevReview cron (fixed_rate 900s, job 444041) with mandatory prompt + project context (domain, env ladder, business constants, simple-English owner rule)
+- Owner-side steps given (simple English): Vercel → project → Settings → Domains → Edit on citylineproperty.vercel.app → Redirect to www.citylineproperty.com.pk, status 308 → Save → test vercel.app jumps to .com.pk
+
+Stage Summary:
+- Canonical SEO signals now 100% on the new domain in production
+- Pending owner action: set the 308 redirect on the vercel.app domain in the Vercel dashboard (dashboard-only, cannot be done from repo)
+- Pending owner (optional, anytime): GSC — add property https://www.citylineproperty.com.pk → verify with existing google file → submit new sitemap URL
