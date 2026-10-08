@@ -1783,3 +1783,16 @@ Stage Summary:
 - The gold logo now appears in EVERY brand surface incl. the WhatsApp/Facebook/X link-preview card — Task 84 fully closed
 - Known cache caveat: WhatsApp may show the old card for already-shared links until its og cache refreshes (new shares get the new card immediately; can also re-post the link)
 - Patrol continues via cron 444512
+
+---
+Task ID: 85
+Agent: Z.ai Code (main session)
+Task: Owner: "we adjust the loading page time upto 3 sec, now reduce it to 2 sec now"
+
+Work Log:
+- splash-screen.tsx: MIN_MS 3000→2000; progress bar animation 2.8s→1.8s (still completes just before the hold ends); comments updated
+- lint 0 → commit 524b6b4 pushed → Vercel deploy
+- agent-browser verified locally: splash visible at ~1s (bar ~70%), homepage fully revealed by ~2.8s (2s hold + 0.55s fade)
+
+Stage Summary:
+- Splash now holds 2s (owner's new timing); tap-to-skip and load-ready logic unchanged; MAX_MS safety cap still 5s
