@@ -1630,3 +1630,21 @@ Work Log:
 Stage Summary:
 - Domain PUBLISHED at .pk registry — the long NXDOMAIN saga is over; remaining steps (Vercel zone pickup + SSL + global resolver spread) are fully automatic
 - Local env restored to Supabase this morning (Task 76 notes); 15 live listings healthy
+
+---
+Task ID: 78
+Agent: Z.ai Code (main session)
+Task: Owner — "time is over now" → manual DNS run 6 (after 24-48h PKNIC window ended) + set up ongoing monitor
+
+Work Log:
+- Run 6 (Oct 8 12:15 PKT): PKNIC root (root-c1.pknic.pk) authoritative: citylineproperty.com.pk 86400 IN NS ns1/ns2.vercel-dns.com — delegation STILL published, stable ✅
+- ns1.vercel-dns.com (198.51.44.13, rDNS dns1.p13.nsone.net) still returns REFUSED (not NXDOMAIN) for the zone → Vercel has NOT activated/served the DNS zone yet, ~22.5h after NS change at HosterPK (Oct 7 13:40 PKT)
+- 8.8.8.8 / 1.1.1.1 = SERVFAIL (EDE 22 no reachable authority / 23 REFUSED at delegation) — resolvers correctly following the new delegation and hitting the refusing Vercel NS; google.com.pk control = NOERROR (sandbox DNS fine)
+- vercel.app still 200; no vercel CLI / token / .vercel folder in sandbox → cannot activate the zone from our side
+- CONCLUSION: remaining blocker is 100% on Vercel side zone activation. If domain was added to the Vercel project earlier, dashboard "Refresh" on the domain (or remove + re-add) forces NS re-check and zone activation; if never added, it must be added now (Settings → Domains → add citylineproperty.com.pk + www)
+- Deleted stale one_time job 442373 (check done manually); created fixed_rate monitor job 443997 every 30 min: digs NS+A, curls https://www → on 200 notifies owner in simple English + worklog + deletes itself; until then posts one-line status
+
+Stage Summary:
+- PKNIC side DONE (delegation live at registry since between Oct 7 18:51 and Oct 8 pre-10:00); Vercel side PENDING (zone REFUSED)
+- Owner needs one dashboard action: vercel.com → project → Settings → Domains → verify/refresh both domains
+- Monitor job 443997 auto-announces when https://www.citylineproperty.com.pk goes live
