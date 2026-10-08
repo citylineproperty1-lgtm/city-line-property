@@ -1614,3 +1614,19 @@ Stage Summary:
 - Any budget dropdown now = options + visible manual-write entry (owner's ask); typing still works directly
 - Local DB restored to Supabase (15 live listings); backups recreated; heal-script ladder should learn the /tmp fallback (small follow-up)
 - DNS: final auto-check Oct 8 10:00 PKT (job 442373) pending
+
+---
+Task ID: 77
+Agent: Z.ai Code (main session)
+Task: Owner — "check domain now" → manual DNS run 5a (ahead of the 10:00 PKT scheduled final check)
+
+Work Log:
+- BREAKTHROUGH: PKNIC registry (root-c1.pknic.pk) NOW PUBLISHES the delegation: citylineproperty.com.PK 86400 IN NS ns1.vercel-dns.com + ns2.vercel-dns.com (status NOERROR — the name exists; ticket #5998127 done its job / PKNIC propagated on own schedule)
+- Google 8.8.8.8 = SERVFAIL, Cloudflare 1.1.1.1 = SERVFAIL/empty → resolvers still clearing the old negative cache + spreading the new delegation (normal, hours not days)
+- Vercel NS (198.51.44.13) = REFUSED → Vercel has not yet detected the delegation; once it does, their NS start serving + SSL cert auto-issues (automatic, typically ≤ 24 h)
+- TLS probe via --resolve 76.76.21.21: handshake dropped by Vercel edge = no cert for the SNI yet (consistent with REFUSED — nothing broken)
+- No owner action needed; 10:00 PKT job 442373 re-checks NS → then https+TLS → notifies + deletes itself
+
+Stage Summary:
+- Domain PUBLISHED at .pk registry — the long NXDOMAIN saga is over; remaining steps (Vercel zone pickup + SSL + global resolver spread) are fully automatic
+- Local env restored to Supabase this morning (Task 76 notes); 15 live listings healthy
