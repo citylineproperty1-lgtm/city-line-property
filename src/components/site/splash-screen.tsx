@@ -13,7 +13,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Monogram } from "./logo";
 import { BUSINESS } from "@/lib/business";
 
-const MIN_MS = 3000; // always on screen at least this long (owner request: 3s)
+const MIN_MS = 2000; // always on screen at least this long (owner request: 2s)
 const MAX_MS = 5000; // never longer, even if some asset stalls
 
 export function SplashScreen() {
@@ -96,7 +96,7 @@ export function SplashScreen() {
               </p>
             </motion.div>
 
-            {/* thin progress line — fills smoothly across the 3s hold, in the
+            {/* thin progress line — fills smoothly across the 2s hold, in the
                 style of the owner's original reference (Tranzlo intro) */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -109,7 +109,7 @@ export function SplashScreen() {
                 initial={{ width: "4%" }}
                 animate={{ width: "100%" }}
                 transition={{
-                  duration: reduce ? 0.35 : 2.8,
+                  duration: reduce ? 0.35 : 1.8,
                   ease: [0.22, 0.61, 0.36, 1],
                 }}
               />
