@@ -1748,3 +1748,20 @@ Stage Summary:
 - citylineproperty.com.pk is the live, verified, fully SEO-wired official domain of City Line Property
 - What to expect: Google re-indexes over days~2 weeks; old vercel.app GSC property can be removed later; SSL auto-renews
 - Next development phases continue via webDevReview patrol (styling polish, features per worklog backlog)
+
+---
+Task ID: 84
+Agent: Z.ai Code (main session)
+Task: Owner uploaded official GOLD logo ("Logo city line.png") → replace the old teal monogram everywhere
+
+Work Log:
+- PIL asset pipeline from upload/Logo city line.png (1254×1254): measured emblem circle geometry via gold-pixel row/column scans (emblem y=222–741, center 627,482; text sits y≈760–845 — first crop attempt caught the text, recropped emblem-only) → public/logo-mark.png (emblem 512²), public/logo.png (full 512²), public/logo-192.png (full 192²), src/app/icon.png (emblem favicon); deleted stale public/logo.svg
+- Code: logo.tsx Monogram rewritten (teal aurora SVG-house tile → white plaque + gold ring + official emblem via next/image; glass+shimmer kept); globals.css .clp-logo-tile restyled white/gold (aurora keyframes removed); layout.tsx icons + manifest.ts updated (logo.svg refs removed, maskable emblem added); admin-login switched to emblem
+- Verified locally (agent-browser): header desktop + mobile 390px, footer dark-tone lockup, splash screen — all show the gold emblem; lint 0
+- Commit 100f505 pushed → Vercel deploy → LIVE verified: /logo-mark.png 200, header + OUR OFFICE card show gold emblem
+- 🔧 TOOLING LESSON: terminal display layer ate literal "[m" sequences in tool output (looks like incomplete ANSI reset) — splash-screen.tsx line `const [minDone, setMinDone]` displayed as `const inDone, setMinDone]` and masqueraded as a syntax error for an hour; raw-byte hexdump (python bytes) proved the file was always valid. Never trust displayed "[" stripping — verify with bytes before repairing "corrupted" files
+- Also: WhatsApp Business guidance delivered to owner (website link on profile, business hours 10–8, greeting + away message copy-paste texts with website link)
+
+Stage Summary:
+- Official gold branding now live across the entire site (header, footer, splash, home tiles, favicon, PWA icons, admin login)
+- Old teal animated monogram fully retired; brand lockup text unchanged
