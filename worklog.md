@@ -1717,3 +1717,18 @@ Work Log:
 Stage Summary:
 - DOMAIN MIGRATION 100% COMPLETE — every address lands on https://www.citylineproperty.com.pk with SSL
 - webDevReview cron 444041 continues 15-min patrols
+
+---
+Task ID: 82
+Agent: Z.ai Code (main session)
+Task: GSC verification for new domain — owner's first attempt with "Domain name provider" (TXT) failed as predicted (no TXT in Vercel DNS); guided to URL-prefix property + HTML file method → OWNERSHIP AUTO VERIFIED
+
+Work Log:
+- Owner attempted Domain-property TXT verification → failed ("couldn't find verification token in TXT records" — DNS zone is in Vercel, no TXT added)
+- Redirected to: Add property → URL prefix → https://www.citylineproperty.com.pk/ → HTML file method → existing public/googled05288ec0718046a.html already live (verified 200 + exact content) → GSC showed same account token → "Ownership auto verified" ✅
+- No code/deploy needed — reused the Task 31 verification file (token is per-Google-account, valid across properties)
+- Remaining owner step: Sitemaps → submit sitemap.xml for the new property (+ optional Request Indexing for homepage)
+
+Stage Summary:
+- https://www.citylineproperty.com.pk/ is now a VERIFIED GSC property (HTML-file method)
+- Old vercel.app property still exists in GSC — harmless; can be removed later once new property accumulates data
