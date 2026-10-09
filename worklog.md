@@ -1796,3 +1796,24 @@ Work Log:
 
 Stage Summary:
 - Splash now holds 2s (owner's new timing); tap-to-skip and load-ready logic unchanged; MAX_MS safety cap still 5s
+
+---
+Task ID: 86
+Agent: Z.ai Code (main session)
+Task: Owner: "do SEO — if anyone searches property / property estate / every property-related search, our website comes on top"
+
+Work Log:
+- 🚨 INCIDENT first: local repo had been rolled back to an old Task-75 snapshot (reflog truncated, worklog/splash/og-emblem/env all old, dev.log gone, dev server down, cron wiped). GitHub+Vercel were untouched (origin/main = 70d6e38). Recovery: `git fetch && git reset --hard origin/main`; env ladder rebuilt to all 3 copies from /tmp/my-project/.env (the only survivor); dev.sh restarted; local 200 + APIs 200
+- dev.sh env-heal now has level 3: /tmp/my-project/.env (the pending small todo — proved critical today)
+- SEO upgrades shipped (commit b6b6ec0):
+  - layout.tsx: keyword-first title "Property & Real Estate in Etihad Town, Lahore — City Line Property | 1% Commission"; description now opens with "Trusted property dealer in Etihad Town, Lahore"; keywords +7 (property in Lahore, Cityline Property typo-variant, plots/houses Etihad Town variants, etc.)
+  - seo-jsonld.tsx: FAQPage node (5 Q&As) + WebSite SearchAction → /#/properties?q={search_term_string}; alternateName array adds "Cityline Property"
+  - NEW src/lib/faq.ts: single source of FAQ content for schema + visible section (Google requires visible markup)
+  - seo-content.tsx: new keyword paragraph (property dealer near Raiwind Road, Cityline Property alias, overseas Pakistanis); visible FAQ accordion (shadcn) below the link columns
+- Verified: lint 0; local title/FAQPage/visible FAQ; agent-browser accordion opens; LIVE after push: homepage 200 + new title + FAQPage in HTML; sitemap still new-domain; cron recreated as 446895 (rolled-back jobs wiped again)
+
+Stage Summary:
+- All on-page/technical SEO now complete: canonical domain, sitemap/robots, RealEstateAgent+WebSite+ItemList+FAQPage JSON-LD, SearchAction, OG/Twitter cards, keyword-first meta, crawlable keyword content, FAQ
+- HONEST expectation set for owner: single word "property" is owned by Zameen/OLX/Graana (no agency outranks them); winnable battles are "property + area/dealer/commission" long-tails which the new content targets; rankings need days–weeks
+- Owner-side levers (told to owner): Google Business Profile (biggest local win), Facebook page posts, Google reviews, re-request indexing in GSC
+- Ops: cron 446895 active; env ladder 3/3; recover-from-rollback procedure documented in cron prompt
