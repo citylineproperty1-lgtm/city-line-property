@@ -26,9 +26,9 @@ export const revalidate = 60;
 const SITE = "https://www.citylineproperty.com.pk";
 
 const TITLE =
-  "City Line Property — Real Estate in Etihad Town, Lahore | 1% Commission";
+  "Property & Real Estate in Etihad Town, Lahore — City Line Property | 1% Commission";
 const DESCRIPTION =
-  "Buy, sell & rent property in Etihad Town, Lahore — plots, houses & apartments in Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block. Only 1% commission.";
+  "Trusted property dealer in Etihad Town, Lahore — buy, sell or rent plots, houses & apartments in Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block. Only 1% commission.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -36,7 +36,12 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   keywords: [
     "City Line Property",
-    "city line property lahore",
+    "Cityline Property",
+    "cityline property lahore",
+    "property in Lahore",
+    "property dealer in Lahore",
+    "property dealer in Etihad Town",
+    "property for sale in Etihad Town",
     "Etihad Town Phase 1",
     "Etihad Town Phase 2",
     "property in Etihad Town",
@@ -46,7 +51,9 @@ export const metadata: Metadata = {
     "1% commission property Lahore",
     "1 percent commission property dealer",
     "plots for sale Etihad Town",
+    "plots for sale in Etihad Town Phase 1",
     "houses for sale Lahore",
+    "houses for sale Etihad Town",
     "houses for rent Etihad Town",
     "apartments for rent Lahore",
     "commercial property Etihad Town",

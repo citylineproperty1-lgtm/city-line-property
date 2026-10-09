@@ -124,16 +124,19 @@ cd "$PROJECT_DIR"
 # `set -e` aborts this script and leaves the dev server DOWN. Restore the
 # real config before anything runs.
 if ! grep -q '^DATABASE_URL="postgresql://' "$PROJECT_DIR/.env" 2>/dev/null; then
-	echo "[ENV-HEAL] .env missing or reset to the SQLite template — restoring Supabase config"
-	if [ -f "$PROJECT_DIR/.env.supabase" ]; then
-		cp "$PROJECT_DIR/.env.supabase" "$PROJECT_DIR/.env"
-		echo "[ENV-HEAL] restored from $PROJECT_DIR/.env.supabase"
-	elif [ -f "/home/z/.clp-env-supabase" ]; then
-		cp "/home/z/.clp-env-supabase" "$PROJECT_DIR/.env"
-		echo "[ENV-HEAL] restored from /home/z/.clp-env-supabase"
-	else
-		echo "[ENV-HEAL] WARNING: no canonical copy found — Supabase APIs will fail until .env is restored manually (see worklog.md Task 57)"
-	fi
+        echo "[ENV-HEAL] .env missing or reset to the SQLite template — restoring Supabase config"
+        if [ -f "$PROJECT_DIR/.env.supabase" ]; then
+                cp "$PROJECT_DIR/.env.supabase" "$PROJECT_DIR/.env"
+                echo "[ENV-HEAL] restored from $PROJECT_DIR/.env.supabase"
+        elif [ -f "/home/z/.clp-env-supabase" ]; then
+                cp "/home/z/.clp-env-supabase" "$PROJECT_DIR/.env"
+                echo "[ENV-HEAL] restored from /home/z/.clp-env-supabase"
+        elif [ -f "/tmp/my-project/.env" ]; then
+                cp "/tmp/my-project/.env" "$PROJECT_DIR/.env"
+                echo "[ENV-HEAL] restored from /tmp/my-project/.env (ladder level 3)"
+        else
+                echo "[ENV-HEAL] WARNING: no canonical copy found — Supabase APIs will fail until .env is restored manually (see worklog.md Task 57)"
+        fi
 fi
 # ────────────────────────────────────────────────────────────────────────────
 

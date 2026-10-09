@@ -1,4 +1,11 @@
 import { db } from "@/lib/db";
+import { FAQS } from "@/lib/faq";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const AREAS = [
   "Etihad Town Phase 1",
@@ -62,6 +69,14 @@ export async function SeoContent() {
             Royal Enclave, Premier Enclave and Overseas Block — with only{" "}
             <strong className="font-semibold text-foreground">1% commission</strong>, direct
             dealing and no hidden margin or middlemen.
+          </p>
+          <p>
+            Searching for a trusted <strong className="font-semibold text-foreground">property
+            dealer near Raiwind Road, Lahore</strong>? Cityline Property — also known as City
+            Line Property — serves families, investors and overseas Pakistanis who want to buy,
+            sell or rent property in Etihad Town Lahore without stress. Every listing is verified
+            by our team, files are transferred with proper documentation, and every deal closes at
+            just 1% commission.
           </p>
           <p>
             Browse our {total > 0 ? `${total} ` : ""}verified listings or call us at{" "}
@@ -132,6 +147,28 @@ export async function SeoContent() {
               </ul>
             </div>
           )}
+        </div>
+
+        <div className="mt-10">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+            Frequently Asked Questions
+          </h3>
+          <Accordion
+            type="single"
+            collapsible
+            className="mt-3 rounded-xl border border-border bg-background px-4"
+          >
+            {FAQS.map((f, i) => (
+              <AccordionItem key={f.q} value={`faq-${i}`} className="last:border-b-0">
+                <AccordionTrigger className="text-left text-sm font-semibold text-foreground hover:no-underline">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
 
         <p className="mt-8 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">

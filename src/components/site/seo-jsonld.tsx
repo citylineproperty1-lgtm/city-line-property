@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { FAQS } from "@/lib/faq";
 
 const SITE = "https://www.citylineproperty.com.pk";
 
@@ -140,8 +141,25 @@ export async function SeoJsonLd() {
     {
       "@type": "WebSite",
       name: "City Line Property",
-      alternateName: "City Line Property Lahore",
+      alternateName: ["Cityline Property", "City Line Property Lahore"],
       url: SITE,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${SITE}/#/properties?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      name: "City Line Property — Frequently Asked Questions",
+      mainEntity: FAQS.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
     },
     ...(items.length
       ? [
