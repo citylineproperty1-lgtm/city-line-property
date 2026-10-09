@@ -1817,3 +1817,21 @@ Stage Summary:
 - HONEST expectation set for owner: single word "property" is owned by Zameen/OLX/Graana (no agency outranks them); winnable battles are "property + area/dealer/commission" long-tails which the new content targets; rankings need days–weeks
 - Owner-side levers (told to owner): Google Business Profile (biggest local win), Facebook page posts, Google reviews, re-request indexing in GSC
 - Ops: cron 446895 active; env ladder 3/3; recover-from-rollback procedure documented in cron prompt
+
+---
+Task ID: 86-a
+Agent: Z.ai Code (main session)
+Task: Owner pasted Brave Search screenshot: "city line property" doesn't show our site on top — "what is this"
+
+Work Log:
+- Screenshot was search.brave.com (NOT Google). Explained: Brave/Bing have separate indexes; a 1-day-old domain takes weeks there. Top Brave results were 10-20yr-old US sites (ctlineproperties.com, Zillow)
+- Live rank checks via web_search skill:
+  - "City Line Property Lahore Etihad Town" → #1 = citylineproperty.vercel.app (old URL still holds rank, 308s to new site), #2/#5 = owner's Instagram (@citylineproperty1), then Zameen/etihadtown.com.pk
+  - "citylineproperty.com.pk" → #1 = www.citylineproperty.com.pk (new domain already indexed + ranking), #2 = vercel.app
+  - Bing top results: no citylineproperty yet (expected — feeds Brave)
+- Discovery: owner has TWO Instagram accounts (@citylineproperty, @citylineproperty1) — both ranking; advised adding website link to both bios
+- No code changes. Guidance: brand ranking moves vercel.app→.com.pk automatically via 308 over days~weeks; GBP + social bio links accelerate
+
+Stage Summary:
+- Site IS in Google (new domain ranks for its own name already); Brave absence is normal for a new domain, not a fault
+- Next patrol: keep monitoring brand-query ranking; consider adding Bing Webmaster Tools (submission) as future SEO step
