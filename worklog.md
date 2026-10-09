@@ -1835,3 +1835,21 @@ Work Log:
 Stage Summary:
 - Site IS in Google (new domain ranks for its own name already); Brave absence is normal for a new domain, not a fault
 - Next patrol: keep monitoring brand-query ranking; consider adding Bing Webmaster Tools (submission) as future SEO step
+
+---
+Task ID: 87
+Agent: Z.ai Code (main session)
+Task: Owner created GA4 stream and delivered Measurement ID G-1JLS4S6NSX (screenshot: Web stream details, "data collection isn't active" warning) → install analytics on the website
+
+Work Log:
+- NEW src/lib/analytics.ts: safe trackEvent helper (window.gtag no-op guard) + trackWhatsAppClick/trackCallClick presets
+- layout.tsx: GA4 via next/script strategy="afterInteractive" (gtag.js src + inline config G-1JLS4S6NSX) — keeps Lighthouse green; GA4 enhanced measurement handles SPA hash-route page_views via history events
+- contact-bubble.tsx: Call button → call_click, WhatsApp button → whatsapp_click (location param) — the two actions the owner asked to see counted
+- lint 0 → commit 00c856e pushed → Vercel live
+- VERIFIED LIVE: homepage HTML contains googletagmanager.com/gtag/js?id=G-1JLS4S6NSX + inline config; agent-browser on https://www.citylineproperty.com.pk: dataLayer populated (4 entries), window.gtag = function — end-to-end working
+- cron wiped again (3rd time, sandbox rollbacks) → recreated as job 446992 before this task
+
+Stage Summary:
+- GA4 collecting from now; owner's "data collection isn't active" banner clears within 24-48h once Google sees hits
+- Owner told: Realtime report to self-test (open site on phone → watch live), Events report for whatsapp_click/call_click
+- Future (patrol backlog): track property detail views (view_item), unlock-gate submits (generate_lead), link GA4↔GSC, Bing Webmaster submission
