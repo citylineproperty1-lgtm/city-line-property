@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone, X } from "lucide-react";
 import { BUSINESS, telLink, waLink } from "@/lib/business";
+import { trackCallClick, trackWhatsAppClick } from "@/lib/analytics";
 import { WhatsAppIcon } from "@/components/site/whatsapp-button";
 
 const AUTO_KEY = "clp_contact_card_auto"; // sessionStorage flag
@@ -138,6 +139,7 @@ export function ContactBubble() {
               <div className="mt-3.5 grid grid-cols-2 gap-2">
                 <a
                   href={telLink()}
+                  onClick={() => trackCallClick("contact-bubble")}
                   className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-primary text-[12.5px] font-semibold text-primary-foreground shadow-[0_8px_20px_-8px_rgba(15,118,110,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
                   aria-label={`Call ${BUSINESS.phonePrimary}`}
                 >
@@ -148,6 +150,7 @@ export function ContactBubble() {
                   href={waLink(WA_GREETING)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClick("contact-bubble")}
                   className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-[#22C55E] text-[12.5px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(34,197,94,0.7)] transition-transform hover:-translate-y-0.5 active:scale-95"
                   aria-label="Chat with us on WhatsApp"
                 >

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -24,6 +25,9 @@ const inter = Inter({
 export const revalidate = 60;
 
 const SITE = "https://www.citylineproperty.com.pk";
+
+/** Google Analytics 4 — owner's web stream (Measurement ID). */
+const GA4_ID = "G-1JLS4S6NSX";
 
 const TITLE =
   "Property & Real Estate in Etihad Town, Lahore — City Line Property | 1% Commission";
@@ -131,6 +135,19 @@ export default function RootLayout({
         </SeoGate>
         {/* Structured data: RealEstateAgent + WebSite + featured listings */}
         <SeoJsonLd />
+        {/* Google Analytics 4 (G-1JLS4S6NSX) — afterInteractive keeps Lighthouse green */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA4_ID}');
+          `}
+        </Script>
         <Toaster position="top-center" richColors />
       </body>
     </html>
