@@ -1853,3 +1853,23 @@ Stage Summary:
 - GA4 collecting from now; owner's "data collection isn't active" banner clears within 24-48h once Google sees hits
 - Owner told: Realtime report to self-test (open site on phone → watch live), Events report for whatsapp_click/call_click
 - Future (patrol backlog): track property detail views (view_item), unlock-gate submits (generate_lead), link GA4↔GSC, Bing Webmaster submission
+
+---
+Task ID: 88
+Agent: Z.ai Code (main session)
+Task: Owner: "hi, now check seo of website, and all other things" — full SEO audit + site health check
+
+Work Log:
+- Rollback hygiene found & fixed: local HEAD 2e429a8 vs origin 6fb03b8 (same Task-87 commit committed twice in parallel sessions — tiny divergence: modes + junk file). git reset --hard origin/main. Removed tracked 542KB junk file "--width" from repo (commit 06e2b5f). Atticked 22 orphan untracked WIP files (agent-view/compare-view/insights-view/digest-view/command-palette + /api posts|agents|insights|newsletter|testimonials + lib/posts/db-snapshot + logo.svg) to /home/z/.clp-attic/batch-2026-10-12/ — confirmed committed app references none of them (local dev routes now = live routes)
+- LIVE SEO AUDIT — all green: title/description/keywords (24) keyword-first ✅; canonical ✅; robots meta index,follow ✅; OG+Twitter cards (gold emblem card 106KB) ✅; sitemap.xml (lastmod 2026-10-09) ✅; robots.txt + Sitemap line ✅; JSON-LD single @graph with RealEstateAgent(+address/geo/5 areas/hours) + WebSite+SearchAction+EntryPoint + FAQPage(5 Q&A) + ItemList(4 listings) ✅; GA4 G-1JLS4S6NSX gtag+config in HTML, dataLayer live (4 entries), window.gtag=function ✅; HSTS ✅; TLS to 2027-01-06 ✅; APIs (properties/stats/categories/settings) all 200 ✅
+- FOUND & FIXED (commit 3aeb155): (1) duplicate H1 in crawled HTML — splash screen title was h1, demoted to div (hero keeps the single h1); live re-verify: 1 h1 ✅; (2) missing security headers — added site-wide in next.config.ts: X-Content-Type-Options nosniff, X-Frame-Options SAMEORIGIN, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy; live re-verify: all 4 present ✅
+- Image alt audit: hero + 2 area images have descriptive alt; 5 logo repeats intentionally alt="" (correct a11y — visible brand text adjacent). No change needed
+- Live rank checks via web_search (Bing-ish aggregator index, NOT Google): brand query "Cityline Property Lahore" → #1 = owner's Instagram @citylineproperty1 ✅; "City Line Property Lahore Etihad Town" → our site ABSENT (was #1 via vercel.app on Oct 9) — aggregator index churn, uncontrollable; quoted "City Line Property"+"Etihad Town" → only US namesakes. Redirect vercel.app→www 308 ✅ works. Google truth source = owner's GSC (owner confirmed "URL is on Google" on Oct 9). Honest note: this API's index ≠ Google; no action possible from our side beyond GSC resubmit
+- agent-browser QA on LIVE: desktop render ✅ (gold brand, hero, search card), Listings route ✅ 15 listings from /api/properties, filters ✅, contact bubble (Call/WhatsApp/hours) ✅, FAQ accordion opens ✅ (JS click — Playwright actionability blocked by 3px scroll-progress bar, not a real bug), footer NAP line ✅, mobile 390px: no h-overflow, 1 h1, footer present, hamburger nav ✅, zero console errors / page errors
+- Ops: patrol cron wiped AGAIN (4th rollback) → recreated as job 453618 (fixed_rate 900s, webDevReview, full context + rollback recovery + Task-88 state)
+
+Stage Summary:
+- On-page/technical SEO: 100% of controllable factors green; two real defects found and fixed live (duplicate H1, missing security headers)
+- Rankings: Instagram holds brand query #1 on aggregator index; Google status must be read from owner's GSC (only trusted source); Bing/Brave-type indexes churn — resubmission + GBP remain owner levers
+- Repo now exactly mirrors live (no orphan routes); junk file removed; attic preserves WIP history
+- Next patrol backlog: IndexNow ping (Bing), GA4 view_item/generate_lead events, Etihad Town informational content (payment-plan style, no invented prices), Bing Webmaster guide for owner
