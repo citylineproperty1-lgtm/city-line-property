@@ -88,9 +88,12 @@ export function SplashScreen() {
               className="flex flex-col items-center"
             >
               <Monogram px={64} />
-              <h1 className="mt-5 text-[26px] font-extrabold leading-none tracking-tight text-white sm:text-[30px]">
+              {/* div (not h1): the page's single h1 belongs to the hero below;
+                  keeping the splash title non-heading avoids duplicate-h1 in
+                  the crawled HTML (SEO). */}
+              <div className="mt-5 text-[26px] font-extrabold leading-none tracking-tight text-white sm:text-[30px]">
                 {BUSINESS.name}
-              </h1>
+              </div>
               <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-[0.34em] text-white/60">
                 {BUSINESS.taglineUpper}
               </p>
