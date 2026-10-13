@@ -166,8 +166,8 @@ export function AdminLogin({ onSuccess }: { onSuccess: (admin: AdminUser) => voi
         <p className="mt-5 text-center text-[12px] leading-relaxed text-neutral-400 dark:text-neutral-500">
           Authorized personnel only · All actions are logged
           <br />
-          You stay signed in for 7 days on this device — sign out anytime from
-          the panel.
+          You stay signed in for 1 day (24 hours) on this device — sign out
+          anytime from the panel.
         </p>
       </motion.div>
     </div>

@@ -7,7 +7,9 @@ import crypto from "node:crypto";
 import { db } from "./db";
 
 const COOKIE_NAME = "clp_admin";
-const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
+// Owner policy: 1 day (24h) per device. Cookies never sync between devices,
+// so each phone/laptop signs in separately and its session dies 24h later.
+const MAX_AGE_SECONDS = 60 * 60 * 24; // 1 day
 const SECRET = process.env.ADMIN_SESSION_SECRET || "dev-only-secret-change-me";
 
 export interface SessionAdmin {
@@ -78,12 +80,13 @@ export async function createSession(admin: SessionAdmin): Promise<void> {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    // Durable 7-day cookie (matches the signed token's exp). Previously this
+    // Durable 1-day cookie (matches the signed token's exp). Previously this
     // was a session-scoped cookie AND every pagehide/background fired a
     // logout beacon — on phones, an auto screen-lock or an app switch
     // (WhatsApp, etc.) revoked the session within seconds, which the owner
     // experienced as "admin logs out after 30s". Now only the explicit
-    // "Sign out" button ends the session early.
+    // "Sign out" button ends the session early; otherwise the device is
+    // remembered for 24h (owner-set policy, per device).
     maxAge: MAX_AGE_SECONDS,
     secure: process.env.NODE_ENV === "production", // live runs https; sandbox dev is http
   });

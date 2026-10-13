@@ -108,14 +108,14 @@ export function AdminView() {
     };
   }, []);
 
-  // Session policy (relaxed after owner feedback): the signed cookie is
-  // durable for 7 days, so phone screen-locks and app switches no longer
+  // Session policy (owner-set): the signed cookie is durable for 1 day
+  // (24h) per device, so phone screen-locks and app switches no longer
   // kill the session. The panel previously fired a logout beacon on
   // pagehide / navigating away — on mobile that revoking fired within
   // seconds (screen auto-lock ≈ 30s), locking the owner out mid-work.
   // Now the ONLY way out is the explicit "Sign out" button (which still
   // revokes the token server-side), or the cookie/token expiring after
-  // 7 days (any 401 flips back to the login screen).
+  // 24 hours (any 401 flips back to the login screen).
 
   const logout = async () => {
     try {
