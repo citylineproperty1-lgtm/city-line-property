@@ -604,7 +604,8 @@ export function AdminListingDrawer({
             <Label className="text-[12px] text-neutral-500 dark:text-neutral-400">
               Photos{" "}
               <span className="text-neutral-400 dark:text-neutral-500">
-                · drag to reorder — first image is the cover
+                · drag to reorder — first image is the cover · uploaded photos
+                get the CLP watermark automatically (copy protection)
               </span>
             </Label>
             {form.images.length > 0 && (
