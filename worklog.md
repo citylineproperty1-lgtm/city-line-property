@@ -1997,3 +1997,26 @@ Stage Summary:
 - CLP-117 cover is now the annotated plot-map (Combined 7.66 Marla, Plot A 3.66, Plot B 4, Parking ~117 ft wide). 7 photos total; price 9.3 crore / 2,087 sqft unchanged from Task 93.
 - NOTE: the annotation says "approx 1,724 sq ft at 225 sq ft per marla" while the site's listing card math uses the site-wide 272.4 sqft/marla convention (2,087 sqft, 44,562/sqft). Owner has not asked to change site math — flagged in report; change only if owner confirms.
 - Commits: 6f9e784 (image only; data changes live in Supabase, no deploy needed).
+
+---
+Task ID: 95
+Agent: main session (Z.ai Code)
+Task: Owner request — Zameen-style copy protection: bake a CLP symbol/watermark into listing images
+
+Work Log:
+- Discovered admin drawer posts to /api/admin/upload which DID NOT EXIST (latent 404 — owner uploads would have failed); MediaFile table + public /api/media/[id] serve route already existed unused
+- Built watermark lockup asset (assets/wm-lockup.png, 480×61, 21KB): translucent dark pill + golden logo-mark (white→alpha piecewise conversion) + "City Line Property · citylineproperty.com.pk" (DejaVu bold); embedded as base64 in src/lib/watermark-lockup.ts (font-independent, Vercel-safe)
+- New src/app/api/admin/upload/route.ts (nodejs runtime, guardAdmin): FormData file → validate mime/10MB → sharp EXIF rotate → flatten → cap 1920px → composite lockup (clamp w*0.30, 150–480px; margin 2.5%/3%) → JPEG q82 progressive mozjpeg → stored base64 in MediaFile → returns { path: "/api/media/<id>" } (immutable edge cache)
+- One-time PIL batch watermarked all 23 existing photos in public/images/properties/ (same geometry); verified visually + pixel-diff
+- PNG bloat fix: 4 photographic PNGs (plot-commercial-1, plot-residential-1, apartment-ext-1, commercial-hall-1) converted to JPEG q82 (1803→229KB etc., ~4.5MB total saved); 9 listings' images arrays updated .png→.jpg (CLP-101..106, 110, 115, 116); old PNGs deleted
+- Admin drawer Photos label now documents the auto-watermark
+- E2E test with minted session (owner password untouched): upload → 200 {path} → served JPEG carries watermark (pixel-verified + visual) → test row deleted, session revoked
+- bun run lint clean; commit f8731b0 → push → Vercel deploy
+- Live verification: watermarked jpg byte-identical (md5) to local; old .png URLs 404; new .jpg 200; API returns .jpg refs; detail page renders ✅
+
+Stage Summary:
+- Every listing photo — existing 23 + all future admin uploads — now carries the branded CLP watermark baked into pixels (copy protection, Zameen-style).
+- Bonus fix: /api/admin/upload now exists (was a latent 404) — admin photo uploads actually work for the first time.
+- Page-weight win: photographic PNGs → JPEG (~4.5MB lighter).
+- Note: drawer "add by URL" images can't be watermarked (external files) — flagged to owner.
+- Commit: f8731b0. Unstaged leftovers in tree (logo-mark.png, analytics.ts, faq.ts, og-emblem.ts, dev.pid) belong to the parallel cron patrol session — left untouched.
