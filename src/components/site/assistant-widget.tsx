@@ -15,11 +15,36 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mic, Send, Sparkles, Square, X } from "lucide-react";
+import { Mic, MicOff, Send, Sparkles, Square, X } from "lucide-react";
 import { formatPKR } from "@/lib/format";
 import type { Property } from "@/lib/types";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+// A voice-input problem, shown as a dismissible alert inside the chat.
+type MicError = { text: string; hint?: string };
+
+/** Friendly, fix-oriented message for a browser-blocked microphone. */
+function blockedMicError(): MicError {
+  if (typeof navigator === "undefined") {
+    return { text: "Microphone is blocked for this site — please type instead." };
+  }
+  const ua = navigator.userAgent || "";
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (/Macintosh/.test(ua) && (navigator.maxTouchPoints ?? 0) > 1);
+  return isIOS
+    ? {
+        text: "Microphone is blocked for this site.",
+        hint:
+          "To fix: open the Settings app → Safari (or your browser) → Microphone → Allow, then reload this page. You can also just type below — the same assistant answers.",
+      }
+    : {
+        text: "Microphone is blocked for this site.",
+        hint:
+          "To fix: tap the lock (🔒) icon next to the web address → Permissions → Microphone → Allow, then reload. You can also just type below — the same assistant answers.",
+      };
+}
 
 // ---- browser-native speech recognition (free, no server ASR needed) ----
 // Chrome/Edge/Android ship it built-in; when absent we fall back to
@@ -59,7 +84,7 @@ export function AssistantWidget() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [mutated, setMutated] = useState(false);
   const [recording, setRecording] = useState(false);
-  const [micError, setMicError] = useState("");
+  const [micError, setMicError] = useState<MicError | null>(null);
 
   const listRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -72,7 +97,7 @@ export function AssistantWidget() {
   // keep the message list scrolled to the bottom
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [msgs, busy, cards]);
+  }, [msgs, busy, cards, micError]);
 
   // detect admin session when the panel opens (server still enforces anyway)
   useEffect(() => {
@@ -91,12 +116,12 @@ export function AssistantWidget() {
   }, [open]);
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, displayAs?: string) => {
       const message = text.trim();
       if (!message || busy) return;
-      setMicError("");
+      setMicError(null);
       setInput("");
-      setMsgs((m) => [...m, { role: "user", content: message }]);
+      setMsgs((m) => [...m, { role: "user", content: displayAs ?? message }]);
       setBusy(true);
       try {
         const res = await fetch("/api/assistant/chat", {
@@ -132,13 +157,25 @@ export function AssistantWidget() {
     [busy, msgs]
   );
 
+  // Keep a ref to `send` so voice handlers never fire with a stale closure.
+  const sendRef = useRef(send);
+  useEffect(() => {
+    sendRef.current = send;
+  }, [send]);
+
+  // auto-dismiss voice error alerts so they never look like a broken UI
+  useEffect(() => {
+    if (!micError) return;
+    const t = setTimeout(() => setMicError(null), 10_000);
+    return () => clearTimeout(t);
+  }, [micError]);
+
   // ---- voice input ----------------------------------------------------
   // 1st choice: browser speech recognition (works live, zero cost).
   // Fallback: record + server transcription (/api/assistant/voice).
   const startNativeSpeech = useCallback((): boolean => {
     const SR = getSpeechRecognition();
     if (!SR) return false;
-    setMicError("");
     try {
       const rec = new SR();
       rec.lang = navigator.language?.startsWith("en") ? navigator.language : "en-US";
@@ -148,17 +185,28 @@ export function AssistantWidget() {
       rec.onresult = (e) => {
         const transcript = e.results?.[0]?.[0]?.transcript ?? "";
         if (transcript.trim()) {
-          setMsgs((m) => [...m, { role: "user", content: `🎙️ "${transcript}"` }]);
-          void send(transcript);
+          void sendRef.current(transcript, `🎙️ "${transcript}"`);
         }
       };
       rec.onerror = (e) => {
         setRecording(false);
-        setMicError(
-          e.error === "not-allowed"
-            ? "Microphone blocked — allow mic access to speak."
-            : "Did not catch that — tap the mic and try again."
-        );
+        const err = e.error;
+        if (err === "aborted") return; // user pressed stop — stay quiet
+        if (err === "not-allowed" || err === "service-not-allowed") {
+          setMicError(blockedMicError());
+        } else if (err === "no-speech") {
+          setMicError({
+            text: "I didn't hear anything — tap the mic and speak a little louder.",
+          });
+        } else if (err === "audio-capture") {
+          setMicError({ text: "No microphone found on this device — please type instead." });
+        } else if (err === "network") {
+          setMicError({
+            text: "Voice service had a network problem — try again, or type your question.",
+          });
+        } else {
+          setMicError({ text: "Did not catch that — tap the mic and try again." });
+        }
       };
       rec.onend = () => setRecording(false);
       recogRef.current = rec;
@@ -168,11 +216,29 @@ export function AssistantWidget() {
     } catch {
       return false;
     }
-  }, [send]);
+  }, []);
 
   const startRecording = useCallback(async () => {
+    setMicError(null);
+    // Voice APIs need a secure context (https) — say so instead of failing oddly.
+    if (typeof window !== "undefined" && !window.isSecureContext) {
+      setMicError({
+        text: "Voice input needs a secure connection — please type your question below.",
+      });
+      return;
+    }
+    // Pre-check permission where supported (Chrome/Edge/Android): if the site
+    // setting is already "deny", show the fix immediately — no recording flash.
+    try {
+      const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
+      if (perm.state === "denied") {
+        setMicError(blockedMicError());
+        return;
+      }
+    } catch {
+      /* Firefox/Safari don't support mic permission queries — just continue */
+    }
     if (startNativeSpeech()) return;
-    setMicError("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
@@ -198,43 +264,15 @@ export function AssistantWidget() {
           const vr = await fetch("/api/assistant/voice", { method: "POST", body: fd });
           const vd = await vr.json();
           if (vd.text) {
-            setMsgs((m) => [...m, { role: "user", content: `🎙️ "${vd.text}"` }]);
-            // reuse the chat pipeline with the transcript
-            setInput("");
-            setBusy(true);
-            try {
-              const res = await fetch("/api/assistant/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  message: vd.text,
-                  history: msgs.filter((_, i) => i > 0).slice(-12),
-                }),
-              });
-              const data = await res.json();
-              if (data.reply) {
-                setMsgs((m) => [...m, { role: "assistant", content: data.reply }]);
-                if (Array.isArray(data.properties)) setCards(data.properties);
-                if (data.action === "add_listing" || data.action === "remove_listing") {
-                  setMutated(true);
-                }
-              } else {
-                setMsgs((m) => [
-                  ...m,
-                  { role: "assistant", content: data.error ?? "Try again please." },
-                ]);
-              }
-            } catch {
-              setMsgs((m) => [
-                ...m,
-                { role: "assistant", content: "Connection problem — please try again." },
-              ]);
-            }
+            // same pipeline as typed text — one user bubble, one reply
+            void sendRef.current(vd.text, `🎙️ "${vd.text}"`);
           } else {
-            setMicError(vd.error ?? "Could not hear you — try again.");
+            setMicError({
+              text: vd.error ?? "Could not hear you — try again, or type instead.",
+            });
           }
         } catch {
-          setMicError("Voice input failed — please type instead.");
+          setMicError({ text: "Voice input failed — please type instead." });
         } finally {
           setBusy(false);
         }
@@ -242,10 +280,21 @@ export function AssistantWidget() {
       recorderRef.current = rec;
       rec.start();
       setRecording(true);
-    } catch {
-      setMicError("Microphone not available — please type instead.");
+    } catch (e) {
+      const name = (e as DOMException | undefined)?.name;
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setMicError(blockedMicError());
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        setMicError({ text: "No microphone found on this device — please type instead." });
+      } else if (name === "NotReadableError") {
+        setMicError({
+          text: "The microphone is busy in another app — close it and try again.",
+        });
+      } else {
+        setMicError({ text: "Microphone not available — please type instead." });
+      }
     }
-  }, [msgs, startNativeSpeech]);
+  }, [startNativeSpeech]);
 
   const stopRecording = useCallback(() => {
     if (recogRef.current) {
@@ -405,8 +454,24 @@ export function AssistantWidget() {
               )}
 
               {micError && (
-                <div className="rounded-xl bg-destructive/10 px-3 py-2 text-[12px] text-destructive">
-                  {micError}
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 rounded-2xl bg-destructive/10 px-3 py-2.5 ring-1 ring-destructive/20"
+                >
+                  <MicOff className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" aria-hidden />
+                  <div className="min-w-0 flex-1 text-[12px] leading-relaxed text-destructive">
+                    <p className="font-semibold">{micError.text}</p>
+                    {micError.hint && (
+                      <p className="mt-0.5 text-destructive/80">{micError.hint}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setMicError(null)}
+                    aria-label="Dismiss voice message"
+                    className="-mr-0.5 -mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-destructive/60 transition-colors hover:bg-destructive/15 hover:text-destructive"
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden />
+                  </button>
                 </div>
               )}
             </div>
