@@ -15,14 +15,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mic, MicOff, Send, Sparkles, Square, X } from "lucide-react";
+import { Mic, MicOff, RefreshCw, Send, Sparkles, Square, X } from "lucide-react";
 import { formatPKR } from "@/lib/format";
 import type { Property } from "@/lib/types";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 // A voice-input problem, shown as a dismissible alert inside the chat.
-type MicError = { text: string; hint?: string };
+type MicError = {
+  text: string;
+  hint?: string;
+  action?: { label: string; onClick: () => void };
+};
 
 /** Friendly, fix-oriented message for a browser-blocked microphone. */
 function blockedMicError(): MicError {
@@ -37,13 +41,66 @@ function blockedMicError(): MicError {
     ? {
         text: "Microphone is blocked for this site.",
         hint:
-          "To fix: open the Settings app → Safari (or your browser) → Microphone → Allow, then reload this page. You can also just type below — the same assistant answers.",
+          "To fix: open the Settings app → Safari (or your browser) → Microphone → Allow, then REFRESH this page. You can also just type below — the same assistant answers.",
       }
     : {
         text: "Microphone is blocked for this site.",
         hint:
-          "To fix: tap the lock (🔒) icon next to the web address → Permissions → Microphone → Allow, then reload. You can also just type below — the same assistant answers.",
+          "To fix: tap the lock (🔒) icon next to the web address → Permissions → Microphone → Allow. On Windows also check Settings → Privacy → Microphone. Then REFRESH the page (F5). You can also just type below — the same assistant answers.",
       };
+}
+
+type MicPermissionState = "granted" | "prompt" | "denied" | "unsupported";
+
+async function queryMicPermission(): Promise<MicPermissionState> {
+  try {
+    const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
+    return perm.state as MicPermissionState;
+  } catch {
+    return "unsupported"; // Firefox/Safari — no mic permission query
+  }
+}
+
+/** Ask for the mic once. null = mic works; otherwise the DOMException name. */
+async function probeMicHardware(): Promise<string | null> {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((t) => t.stop());
+    return null;
+  } catch (e) {
+    return (e as DOMException | undefined)?.name ?? "UnknownError";
+  }
+}
+
+/**
+ * Find out WHY voice failed and give the exact fix.
+ *
+ * Known Chromium quirk: after the site permission is changed to Allow, the
+ * speech engine can stay "stale denied" until the page is reloaded — the mic
+ * really is allowed (getUserMedia succeeds) but SpeechRecognition keeps
+ * saying not-allowed. In that case we offer a one-tap refresh.
+ */
+async function diagnoseMicFailure(): Promise<MicError> {
+  const perm = await queryMicPermission();
+  const gum = await probeMicHardware();
+  if (gum === null) {
+    // Hardware + browser permission are fine — only the speech engine failed.
+    return {
+      text: "Microphone is allowed — it just needs a page refresh to start.",
+      hint: "Tap the button below, then tap the mic again.",
+      action: { label: "Refresh page", onClick: () => window.location.reload() },
+    };
+  }
+  if (perm === "denied" || gum === "NotAllowedError" || gum === "SecurityError") {
+    return blockedMicError();
+  }
+  if (gum === "NotReadableError") {
+    return { text: "The microphone is busy in another app — close it and try again." };
+  }
+  if (gum === "NotFoundError" || gum === "OverconstrainedError") {
+    return { text: "No microphone found on this device — please type instead." };
+  }
+  return blockedMicError();
 }
 
 // ---- browser-native speech recognition (free, no server ASR needed) ----
@@ -193,7 +250,9 @@ export function AssistantWidget() {
         const err = e.error;
         if (err === "aborted") return; // user pressed stop — stay quiet
         if (err === "not-allowed" || err === "service-not-allowed") {
-          setMicError(blockedMicError());
+          // Don't trust the label — probe the real mic state and tell the
+          // user the exact fix (may just be a refresh after allowing).
+          void diagnoseMicFailure().then(setMicError);
         } else if (err === "no-speech") {
           setMicError({
             text: "I didn't hear anything — tap the mic and speak a little louder.",
@@ -228,11 +287,12 @@ export function AssistantWidget() {
       return;
     }
     // Pre-check permission where supported (Chrome/Edge/Android): if the site
-    // setting is already "deny", show the fix immediately — no recording flash.
+    // setting is already "deny", diagnose and show the exact fix — no
+    // recording flash.
     try {
       const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
       if (perm.state === "denied") {
-        setMicError(blockedMicError());
+        setMicError(await diagnoseMicFailure());
         return;
       }
     } catch {
@@ -463,6 +523,15 @@ export function AssistantWidget() {
                     <p className="font-semibold">{micError.text}</p>
                     {micError.hint && (
                       <p className="mt-0.5 text-destructive/80">{micError.hint}</p>
+                    )}
+                    {micError.action && (
+                      <button
+                        onClick={micError.action.onClick}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-destructive px-3 py-1 text-[11px] font-bold text-white transition-colors hover:bg-destructive/85"
+                      >
+                        <RefreshCw className="h-3 w-3" aria-hidden />
+                        {micError.action.label}
+                      </button>
                     )}
                   </div>
                   <button
