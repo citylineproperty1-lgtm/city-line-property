@@ -52,6 +52,25 @@ function blockedMicError(): MicError {
 
 type MicPermissionState = "granted" | "prompt" | "denied" | "unsupported";
 
+/** Brave browser detection — Brave blocks the Google speech engine. */
+async function isBrave(): Promise<boolean> {
+  try {
+    const brave = (navigator as Navigator & { brave?: { isBrave?: () => Promise<boolean> } })
+      .brave;
+    return !!(brave && (await brave.isBrave?.()));
+  } catch {
+    return false;
+  }
+}
+
+function braveMicError(): MicError {
+  return {
+    text: "Brave browser blocks the voice engine (its privacy rules).",
+    hint:
+      "Voice works in Chrome, Edge, or Samsung Internet — or just type below, the same assistant answers.",
+  };
+}
+
 async function queryMicPermission(): Promise<MicPermissionState> {
   try {
     const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
@@ -75,6 +94,10 @@ async function probeMicHardware(): Promise<string | null> {
 /**
  * Find out WHY voice failed and give the exact fix.
  *
+ * Brave: its privacy rules block the Google speech engine entirely —
+ * SpeechRecognition always errors there ("Leo/Ethereum/Solana" browser),
+ * even with the mic allowed. No setting fixes it; say so honestly.
+ *
  * Known Chromium quirk: after the site permission is changed to Allow, the
  * speech engine can stay "stale denied" until the page is reloaded — the mic
  * really is allowed (getUserMedia succeeds) but SpeechRecognition keeps
@@ -85,6 +108,7 @@ async function diagnoseMicFailure(): Promise<MicError> {
   const gum = await probeMicHardware();
   if (gum === null) {
     // Hardware + browser permission are fine — only the speech engine failed.
+    if (await isBrave()) return braveMicError();
     return {
       text: "Microphone is allowed — it just needs a page refresh to start.",
       hint: "Tap the button below, then tap the mic again.",
@@ -249,23 +273,27 @@ export function AssistantWidget() {
         setRecording(false);
         const err = e.error;
         if (err === "aborted") return; // user pressed stop — stay quiet
-        if (err === "not-allowed" || err === "service-not-allowed") {
-          // Don't trust the label — probe the real mic state and tell the
-          // user the exact fix (may just be a refresh after allowing).
-          void diagnoseMicFailure().then(setMicError);
-        } else if (err === "no-speech") {
-          setMicError({
-            text: "I didn't hear anything — tap the mic and speak a little louder.",
-          });
-        } else if (err === "audio-capture") {
-          setMicError({ text: "No microphone found on this device — please type instead." });
-        } else if (err === "network") {
-          setMicError({
-            text: "Voice service had a network problem — try again, or type your question.",
-          });
-        } else {
-          setMicError({ text: "Did not catch that — tap the mic and try again." });
-        }
+        void (async () => {
+          if (err === "not-allowed" || err === "service-not-allowed") {
+            // Don't trust the label — probe the real mic state and tell the
+            // user the exact fix (Brave, or a refresh after allowing).
+            setMicError(await diagnoseMicFailure());
+          } else if (err === "network" && (await isBrave())) {
+            setMicError(braveMicError());
+          } else if (err === "no-speech") {
+            setMicError({
+              text: "I didn't hear anything — tap the mic and speak a little louder.",
+            });
+          } else if (err === "audio-capture") {
+            setMicError({ text: "No microphone found on this device — please type instead." });
+          } else if (err === "network") {
+            setMicError({
+              text: "Voice service had a network problem — try again, or type your question.",
+            });
+          } else {
+            setMicError({ text: "Did not catch that — tap the mic and try again." });
+          }
+        })();
       };
       rec.onend = () => setRecording(false);
       recogRef.current = rec;
