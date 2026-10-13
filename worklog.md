@@ -2280,3 +2280,24 @@ Stage Summary:
 - Mic failure diagnosis is now complete and layered: site permission / OS privacy / engine-stale / Brave / busy / no-device — each with its own terminal-correct message.
 - For the owner on Chrome+Windows: the remaining blocker is almost certainly Windows mic privacy (or antivirus) — the message now walks them through it by name. If "Let desktop apps access your microphone" is already ON and it still fails, the laptop mic may be disabled in Windows Sound settings or physically broken (screen is cracked; older hardware).
 - Typing remains fully functional everywhere (offline brain + live AI both answer text).
+
+---
+Task ID: 109
+Agent: Z.ai Code (main)
+Task: Owner tested mic on web.whatsapp.com in the SAME browser — mic WORKS there and "they firstly take permission" → WhatsApp's flow proves hardware/OS/browser recording all fine; our site must copy that flow.
+
+Work Log:
+- Diagnosis from the WhatsApp data point: mic hardware ✓, Windows privacy ✓, browser recording (getUserMedia) ✓. Difference: WhatsApp asks permission FIRST then records; it never uses Chrome's speech engine (SR needs Google speech servers). So our SR failure was either the stale-denied state OR the engine/network — not permissions.
+- assistant-widget.tsx restructured to the WhatsApp-style flow:
+  1. click mic → getUserMedia probe FIRST (this is what pops Chrome's Allow dialog, exactly like WhatsApp, and a successful gUM clears Chromium's stale-denied SR state — the documented workaround)
+  2. gUM fails → diagnoseMicFailure(gumErr) with the layered messages (site-deny / OS-block / busy / no-device / Brave)
+  3. gUM OK → speech engine; if SR still says not-allowed → ONE silent auto-retry after 350ms (Chromium often starts on 2nd attempt after gUM) → still failing → honest engineDead message ("Microphone is working, but the voice engine did not start")
+  4. network error → Brave-aware network message
+  5. new wantVoiceRef guards retries (recogRef gets cleared by onend — first implementation silently swallowed both the retry and the error; caught by E2E test B, fixed, re-verified)
+  6. stopRecording sets wantVoiceRef=false so pending retries never resurrect after user stop
+- QA: lint clean; agent-browser E2E: fresh-denied → site message ✓; granted+engine-fail → retry → engineDead message ✓; Brave → Brave message ✓; text chat regression (CLP-110 query → full correct answer) ✓.
+- Commit (explicit path) → push → Vercel auto-deploy.
+
+Stage Summary:
+- Voice now follows the exact permission UX the owner recognized from WhatsApp: Allow popup first, then listening. If the engine itself is unavailable (network blocks Google speech service), the assistant says so honestly and invites typing.
+- Remaining unknown for the owner: whether their network reaches Chrome's speech service. If the new flow still fails, the message will now say "voice engine did not start" — that means network/engine, NOT their settings, and typing remains the answer.
