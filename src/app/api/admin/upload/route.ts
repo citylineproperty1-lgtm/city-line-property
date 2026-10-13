@@ -11,11 +11,11 @@ export const dynamic = "force-dynamic";
  * Admin image upload — bakes the CLP watermark into the pixels.
  *
  * Like zameen.com, every listing photo carries the brand mark so downloaded
- * copies stay branded: a semi-transparent golden CLP logo + light-weight
- * "City Line Property" wordmark + the "citylineproperty.com.pk" address
- * line — rotated 45° DIAGONAL and centered (owner spec), sized so the
- * diagonal always fits the frame. The watermark is part of the stored
- * image — it cannot be stripped by copying the file.
+ * copies stay branded: a light-weight, semi-transparent white "City Line
+ * Property" text line — rotated 45° DIAGONAL and centered (owner spec),
+ * sized so the diagonal always fits the frame. No logo, no domain — text
+ * only. The watermark is part of the stored image — it cannot be stripped
+ * by copying the file.
  *
  * Pipeline: EXIF rotate → flatten → cap 1920px → composite watermark →
  * JPEG q82 progressive → stored in the MediaFile table (base64) and served
