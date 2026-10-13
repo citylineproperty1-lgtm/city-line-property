@@ -11,10 +11,11 @@ export const dynamic = "force-dynamic";
  * Admin image upload — bakes the CLP watermark into the pixels.
  *
  * Like zameen.com, every listing photo carries the brand mark so downloaded
- * copies stay branded: a translucent dark pill with the golden CLP logo +
- * "City Line Property · citylineproperty.com.pk" is composited into the
- * bottom-right corner at upload time. The watermark is part of the stored
- * image — it cannot be stripped by copying the file.
+ * copies stay branded: a semi-transparent golden CLP logo + "City Line
+ * Property" wordmark (soft shadow, no background pill) is composited into
+ * the CENTER of the image at upload time — same proportional size and
+ * placement on every photo. The watermark is part of the stored image —
+ * it cannot be stripped by copying the file.
  *
  * Pipeline: EXIF rotate → flatten → cap 1920px → composite watermark →
  * JPEG q82 progressive → stored in the MediaFile table (base64) and served
@@ -64,18 +65,16 @@ export async function POST(req: NextRequest) {
     const w = meta.width ?? MAX_WIDTH;
     const h = meta.height ?? Math.round((meta.width ?? 1) * 1.0);
 
-    // 2) Watermark geometry — identical rules to the one-time batch script
-    //    that watermarked the existing repo photos (.zscripts/tmp batch).
-    const lockupW = Math.min(480, Math.max(150, Math.round(w * 0.3)));
+    // 2) Watermark geometry — Zameen-style CENTER placement, identical rules
+    //    to the one-time batch script that watermarked the existing photos.
+    const lockupW = Math.min(520, Math.max(170, Math.round(w * 0.34)));
     const lockup = await sharp(lockupBuffer)
       .resize({ width: lockupW })
       .png()
       .toBuffer();
     const lm = await sharp(lockup).metadata();
-    const marginX = Math.round(w * 0.025);
-    const marginBottom = Math.round(h * 0.03);
-    const left = Math.max(0, w - lockupW - marginX);
-    const top = Math.max(0, h - (lm.height ?? 1) - marginBottom);
+    const left = Math.round((w - lockupW) / 2);
+    const top = Math.round((h - (lm.height ?? 1)) / 2);
 
     // 3) Bake + encode.
     const out = await sharp(resized)
