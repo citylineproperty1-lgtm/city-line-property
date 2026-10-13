@@ -2247,3 +2247,20 @@ Stage Summary:
 - Voice errors now tell the TRUTH per case: blocked vs needs-refresh vs busy vs no-device, each with the exact fix; the refresh-needed case (owner's) is one tap away from fixed.
 - Owner likely just needs to REFRESH the page after allowing mic — the new message + button make that obvious.
 - Server-side ASR confirmed unavailable on public Z.ai API (404) — do not revisit without a different provider.
+
+---
+Task ID: 107
+Agent: Z.ai Code (main)
+Task: Owner sent Chrome-style site-settings screenshot (Microphone: Allow) but voice STILL errors → identify the browser and stop the wrong advice loop.
+
+Work Log:
+- Screenshot forensics: permissions list contains "Leo AI chat", "Ethereum", "Solana", "Cardano" → these are BRAVE browser features, not Chrome. Owner is on Brave with mic Allow set — so permission is NOT the problem.
+- Root cause: Brave's privacy rules block the Google speech engine entirely; webkitSpeechRecognition always errors there (not-allowed/network) regardless of permission. Our previous "needs refresh" message looped forever in Brave (mic probe succeeds → wrong advice).
+- Verified alternatives first: public Z.ai ASR already ruled out (404 with auth, Task 106) → no server transcription path → honest messaging is correct.
+- assistant-widget.tsx: isBrave() detection (navigator.brave.isBrave) + braveMicError() ("Brave browser blocks the voice engine — voice works in Chrome, Edge, or Samsung Internet — or just type below"). Wired: diagnoseMicFailure() now returns Brave message when mic is fine but engine dead; SR onerror also routes network-in-Brave → Brave message (Brave often fires "network" instead of "not-allowed").
+- QA: lint clean; agent-browser E2E with faked navigator.brave + granted permission + fake gUM (owner's exact stack) → Brave message shows ✓; regression: non-Brave stale case still shows refresh fix ✓; truly-blocked still shows lock-icon steps ✓.
+- Commit (explicit path) → push → Vercel auto-deploy.
+
+Stage Summary:
+- Voice errors now terminal-correct per browser: Brave = honest "use Chrome/Edge or type"; Chrome stale = one-tap refresh; blocked = lock-icon + Windows steps; busy/no-device = own messages.
+- For the OWNER's own use: voice needs Chrome/Edge on desktop, or Chrome/Samsung Internet on Android — Brave will never do SR without upstream changes. Typing works everywhere.
