@@ -2020,3 +2020,25 @@ Stage Summary:
 - Page-weight win: photographic PNGs → JPEG (~4.5MB lighter).
 - Note: drawer "add by URL" images can't be watermarked (external files) — flagged to owner.
 - Commit: f8731b0. Unstaged leftovers in tree (logo-mark.png, analytics.ts, faq.ts, og-emblem.ts, dev.pid) belong to the parallel cron patrol session — left untouched.
+
+---
+Task ID: 96
+Agent: main session (Z.ai Code)
+Task: Owner feedback — watermark "looking bad"; redo same size/placement as zameen.com (centered, consistent)
+
+Work Log:
+- Researched Zameen's style (fetch attempts + known pattern): centered semi-transparent wordmark, ~1/3 image width, identical placement on every photo
+- Rebuilt lockup: NO dark pill now — semi-transparent golden logo (62% opacity, white→alpha) + white "City Line Property" with soft Gaussian shadow; shipped 520px wide (assets/wm-lockup.png, base64 module regenerated)
+- Restored all 23 originals from git (commit 550689f, pre-watermark) so no double-watermark; re-batched with NEW centered design: width = clamp(w*0.34, 170, 520), dead-center; 4 PNG→JPG conversions repeated (DB already pointed at .jpg)
+- Upload route updated to identical centered geometry (clamp 170–520, centered)
+- E2E upload test re-passed (minted session; test row deleted after)
+- 🔴 DEPLOY FAILURE INVESTIGATION: Vercel build for 48883b9 failed. Root cause NOT my changes — cron patrol commit 16acfbd had resurrected the 31 orphan files deleted in Task 88 (agent/post/insight/compare/digest views + routes referencing removed Prisma models + broken imports like serializeAgent) → build broke
+- Fix: git revert 16acfbd (bf1382e) — junk re-deleted, watermark work kept; also committed sharp ^0.35.5 bump; deployment then succeeded (polled GitHub status API)
+- Live verification: image md5 byte-identical to local centered version; all key images 200; detail page healthy with 9 watermarked photos rendering
+- Cron patrol job rebuilt with HARD RULES (never restore deleted files — list enumerated; never git add -A) → job 456573
+- Cleanup: temp scripts + test media + test session removed
+
+Stage Summary:
+- Watermark is now Zameen-style: centered, same proportional size on every photo, subtle (no pill). Applies to all 23 existing photos + every future admin upload.
+- Build outage caused by cron patrol restoring deleted WIP files — reverted; patrol job now has hard rules against it.
+- Commits: 48883b9 (watermark v2 + re-batch), bf1382e (revert junk restore).
