@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { serializeProperty } from "@/lib/serialize";
 import { getSessionAdmin, type SessionAdmin } from "@/lib/auth";
 import { formatPKR } from "@/lib/format";
+import { ensureZaiConfig } from "@/lib/zai-config";
 import ZAI from "z-ai-web-dev-sdk";
 
 export const runtime = "nodejs";
@@ -444,6 +445,7 @@ export async function POST(req: NextRequest) {
   const admin = await getSessionAdmin();
 
   try {
+    await ensureZaiConfig();
     const zai = await ZAI.create();
     const messages: ChatMsg[] = [
       { role: "assistant", content: systemPrompt(admin) },

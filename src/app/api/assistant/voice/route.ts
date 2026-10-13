@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ensureZaiConfig } from "@/lib/zai-config";
 import ZAI from "z-ai-web-dev-sdk";
 
 export const runtime = "nodejs";
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await ensureZaiConfig();
     const buf = Buffer.from(await file.arrayBuffer());
     const zai = await ZAI.create();
     const result = await zai.audio.asr.create({ file_base64: buf.toString("base64") });
