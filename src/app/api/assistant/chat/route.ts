@@ -307,7 +307,7 @@ async function runAdd(
     const m = /^CLP-(\d+)$/.exec(r.reference);
     if (m) maxRef = Math.max(maxRef, Number(m[1]));
   }
-  let row = null;
+  let row: { reference: string; title: string; price: number } | null = null;
   for (let attempt = 0; attempt < 5 && !row; attempt++) {
     try {
       row = await db.property.create({
@@ -403,7 +403,7 @@ function systemPrompt(admin: SessionAdmin | null): string {
 Business facts: 1% commission only; office 151-C Etihad Town Phase 1, Lahore; phones 0309 4499940 and 0321 8422109; open Mon-Sun 10AM-8PM; areas served: Etihad Town Phase 1, Etihad Town Phase 2, Royal Enclave, Premier Enclave, Overseas Block.
 Admin signed in: ${
     admin
-      ? `YES (${admin.username}) — you may add/remove listings for this user.`
+      ? `YES (${admin.name || admin.email}) — you may add/remove listings for this user.`
       : "NO — mutation actions will be denied; if the user asks to add/remove, tell them to sign in to the Admin panel first."
   }
 
