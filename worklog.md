@@ -2226,3 +2226,24 @@ Stage Summary:
 - Voice errors are now self-explanatory and self-healing UI (fix steps + dismiss + 10s auto-hide) instead of a stuck red line.
 - Note for owner replies: if their mic is blocked, the message now TELLS them how to unblock; typing always works as a fallback.
 - Backlog unchanged: set ADMIN_SESSION_SECRET on Vercel; optional ZAI_MODEL upgrade (glm-4.6); rotate the shared Z.ai key.
+
+---
+Task ID: 106
+Agent: Z.ai Code (main)
+Task: Owner allowed mic in settings but STILL saw "Microphone is blocked" → make the error diagnose the real cause instead of guessing.
+
+Work Log:
+- Diagnosis insight: known Chromium quirk — after changing site mic permission to Allow WITHOUT reloading, getUserMedia works but SpeechRecognition keeps a "stale denied" state and errors not-allowed → our old message wrongly said "blocked" for the owner's exact case. Other real causes: site-specific block persists (global setting doesn't override), OS-level block (Windows Privacy), mic busy (NotReadable), no device.
+- Probed public Z.ai ASR first (no key needed): POST api.z.ai/api/paas/v4/audio/asr → 401 (auth), WITH key → 404 path /v4/audio/asr → public API does NOT expose server ASR → browser SR stays the only live voice path; voice route unchanged (verified before wiring, avoided shipping a dead fallback).
+- assistant-widget.tsx: added queryMicPermission() + probeMicHardware() + diagnoseMicFailure() orchestrator:
+  - mic actually OK (gUM succeeds) → "Microphone is allowed — it just needs a page refresh to start." + one-tap [Refresh page] button (MicError.action)
+  - perm denied / NotAllowed / SecurityError → blocked message (now also mentions Windows Settings → Privacy → Microphone + REFRESH emphasis)
+  - NotReadableError → mic busy; NotFoundError → no device
+  - wired into BOTH the SR not-allowed onerror AND the pre-check denied path
+- QA: lint clean; agent-browser E2E with faked granted permission + fake gUM (exact owner scenario) → correct "allowed — refresh" alert with working Refresh button ✓; clean reload (headless denies mic) → blocked message with OS/refresh steps ✓.
+- Commits: f547f46 (alert UX + double-bubble fix) then 01c56a5 (real-state diagnosis) → push → Vercel auto-deploy.
+
+Stage Summary:
+- Voice errors now tell the TRUTH per case: blocked vs needs-refresh vs busy vs no-device, each with the exact fix; the refresh-needed case (owner's) is one tap away from fixed.
+- Owner likely just needs to REFRESH the page after allowing mic — the new message + button make that obvious.
+- Server-side ASR confirmed unavailable on public Z.ai API (404) — do not revisit without a different provider.
