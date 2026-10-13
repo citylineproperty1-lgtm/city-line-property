@@ -159,3 +159,12 @@ model RevokedSession {
   hash      String   @id
   expiresAt DateTime
 }
+
+/// Pending listing-removal confirmations for the AI agent (single-use token).
+/// DB-backed (not memory) so confirmations survive serverless instance swaps.
+model PendingRemoval {
+  id        String   @id @default(cuid())
+  reference String   @unique
+  token     String
+  expiresAt DateTime
+}

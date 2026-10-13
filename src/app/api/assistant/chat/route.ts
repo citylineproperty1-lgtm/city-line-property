@@ -52,8 +52,6 @@ const DISTRICTS = [
   "Overseas Block",
 ] as const;
 
-/** reference -> { token, expiresAt } for pending listing removals */
-const pendingRemovals = new Map<string, { token: string; expiresAt: number }>();
 /** per-IP rate buckets */
 const rateBuckets = new Map<string, { count: number; reset: number }>();
 
@@ -373,11 +371,26 @@ async function runRemove(
   if (!row) return { error: `No listing found for "${ref}".` };
 
   const token = String(args.confirmToken ?? "").trim();
-  const pending = pendingRemovals.get(row.reference);
+  // DB-backed pending store — survives serverless instance swaps (the old
+  // in-memory Map silently broke confirmations on Vercel when the confirm
+  // round hit a different instance).
+  const pending = await db.pendingRemoval.findUnique({ where: { reference: row.reference } });
 
-  if (!token || !pending || pending.expiresAt < Date.now() || pending.token !== token) {
+  if (
+    !token ||
+    !pending ||
+    pending.expiresAt.getTime() < Date.now() ||
+    pending.token !== token
+  ) {
     const fresh = `RM-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-    pendingRemovals.set(row.reference, { token: fresh, expiresAt: Date.now() + 10 * 60_000 });
+    const expiresAt = new Date(Date.now() + 10 * 60_000);
+    await db.pendingRemoval.upsert({
+      where: { reference: row.reference },
+      update: { token: fresh, expiresAt },
+      create: { reference: row.reference, token: fresh, expiresAt },
+    });
+    // Opportunistic cleanup of long-expired confirmations.
+    await db.pendingRemoval.deleteMany({ where: { expiresAt: { lt: new Date() } } });
     return {
       needsConfirmation: true,
       confirmToken: fresh,
@@ -392,7 +405,7 @@ async function runRemove(
   }
 
   await db.property.delete({ where: { id: row.id } });
-  pendingRemovals.delete(row.reference);
+  await db.pendingRemoval.deleteMany({ where: { reference: row.reference } });
   return { removed: true, reference: row.reference, title: row.title };
 }
 
@@ -422,6 +435,7 @@ Conversions you must do yourself: 1 marla = 272.4 sqft (so "5 marla" area = 1362
 Rules:
 - NEVER invent listings or prices — use tools for anything about inventory.
 - To REMOVE a listing: call remove_listing WITHOUT confirmToken first; you will receive a token (e.g. RM-4F7K); tell the user to reply "YES <token>" to confirm; only call remove_listing WITH that exact token after the user confirms.
+- When the user replies with a confirmation token (e.g. "YES RM-4F7K"), you MUST call remove_listing with reference + confirmToken — never answer from memory. NEVER claim a listing was added or removed unless your LAST [TOOL_RESULT] showed created:true or removed:true; if the tool returned an error or a new token request, report exactly that instead.
 - To ADD a listing: you need at least title, price and type+district; ask for missing pieces; create it only when you have the required fields (status defaults SALE; convert marla to sqft for area).
 - After a tool result, continue: either request ONE more tool or send the final reply. NEVER call the same tool twice in a row — after you see a [TOOL_RESULT], your next output must be the final {"action":"reply"} answer.
 - Keep the reply short, friendly, simple English (or the user's language), max ~90 words.
