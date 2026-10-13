@@ -16,6 +16,24 @@ import fs from "node:fs/promises";
  *   ZAI_API_KEY, ZAI_CHAT_ID, ZAI_TOKEN, ZAI_USER_ID
  */
 
+/**
+ * True when the SDK has a usable config (sandbox file or ZAI_* env vars).
+ * When false, callers should degrade to the offline brain
+ * (assistant-fallback.ts) instead of erroring — search stays available
+ * with zero cost and zero secrets.
+ */
+export async function isZaiConfigured(): Promise<boolean> {
+  // QA switch: force the offline brain locally
+  if (process.env.ASSISTANT_FORCE_FALLBACK === "1") return false;
+  try {
+    await fs.access("/etc/.z-ai-config");
+    return true;
+  } catch {
+    /* keep checking */
+  }
+  return Boolean(process.env.ZAI_BASE_URL && process.env.ZAI_API_KEY);
+}
+
 let bootstrapped = false;
 
 export async function ensureZaiConfig(): Promise<void> {

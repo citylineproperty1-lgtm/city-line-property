@@ -21,6 +21,31 @@ import type { Property } from "@/lib/types";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+// ---- browser-native speech recognition (free, no server ASR needed) ----
+// Chrome/Edge/Android ship it built-in; when absent we fall back to
+// MediaRecorder + server-side transcription.
+type ClpSRResultEvent = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
+type ClpSRErrorEvent = { error?: string };
+interface ClpSpeechRecognition {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  maxAlternatives: number;
+  start(): void;
+  stop(): void;
+  onresult: ((e: ClpSRResultEvent) => void) | null;
+  onerror: ((e: ClpSRErrorEvent) => void) | null;
+  onend: (() => void) | null;
+}
+type ClpSRCtor = new () => ClpSpeechRecognition;
+
+function getSpeechRecognition(): ClpSRCtor | null {
+  if (typeof window === "undefined") return null;
+  const w = window as unknown as Record<string, unknown>;
+  const SR = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as ClpSRCtor | undefined;
+  return SR ?? null;
+}
+
 const WELCOME =
   "Hi! I'm the CLP Assistant 🤖 — ask me anything about our listings.\n\nTry:\n• \"3 marla plot in Etihad Phase 1\"\n• \"Houses under 2 crore\"\n• Tell me: CLP-117?";
 
@@ -38,6 +63,7 @@ export function AssistantWidget() {
 
   const listRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
+  const recogRef = useRef<ClpSpeechRecognition | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -106,8 +132,46 @@ export function AssistantWidget() {
     [busy, msgs]
   );
 
-  // ---- voice recording ------------------------------------------------
+  // ---- voice input ----------------------------------------------------
+  // 1st choice: browser speech recognition (works live, zero cost).
+  // Fallback: record + server transcription (/api/assistant/voice).
+  const startNativeSpeech = useCallback((): boolean => {
+    const SR = getSpeechRecognition();
+    if (!SR) return false;
+    setMicError("");
+    try {
+      const rec = new SR();
+      rec.lang = navigator.language?.startsWith("en") ? navigator.language : "en-US";
+      rec.interimResults = false;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+      rec.onresult = (e) => {
+        const transcript = e.results?.[0]?.[0]?.transcript ?? "";
+        if (transcript.trim()) {
+          setMsgs((m) => [...m, { role: "user", content: `🎙️ "${transcript}"` }]);
+          void send(transcript);
+        }
+      };
+      rec.onerror = (e) => {
+        setRecording(false);
+        setMicError(
+          e.error === "not-allowed"
+            ? "Microphone blocked — allow mic access to speak."
+            : "Did not catch that — tap the mic and try again."
+        );
+      };
+      rec.onend = () => setRecording(false);
+      recogRef.current = rec;
+      rec.start();
+      setRecording(true);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [send]);
+
   const startRecording = useCallback(async () => {
+    if (startNativeSpeech()) return;
     setMicError("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -181,9 +245,17 @@ export function AssistantWidget() {
     } catch {
       setMicError("Microphone not available — please type instead.");
     }
-  }, [msgs]);
+  }, [msgs, startNativeSpeech]);
 
   const stopRecording = useCallback(() => {
+    if (recogRef.current) {
+      try {
+        recogRef.current.stop();
+      } catch {
+        /* already ended */
+      }
+      return;
+    }
     recorderRef.current?.stop();
   }, []);
 

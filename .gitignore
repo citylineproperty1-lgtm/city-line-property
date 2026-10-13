@@ -65,3 +65,6 @@ download
 # uploaded files (attachments sync) — must NOT match src/app/api/admin/upload
 /upload/
 tool-results/
+
+# QA scratch space (agent-browser screenshots, temp scripts)
+.zscripts/tmp/

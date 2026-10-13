@@ -3,7 +3,8 @@ import { db } from "@/lib/db";
 import { serializeProperty } from "@/lib/serialize";
 import { getSessionAdmin, type SessionAdmin } from "@/lib/auth";
 import { formatPKR } from "@/lib/format";
-import { ensureZaiConfig } from "@/lib/zai-config";
+import { ensureZaiConfig, isZaiConfigured } from "@/lib/zai-config";
+import { fallbackAnswer } from "@/lib/assistant-fallback";
 import ZAI from "z-ai-web-dev-sdk";
 
 export const runtime = "nodejs";
@@ -155,6 +156,7 @@ async function runSearch(
   const beds = Number(args.beds ?? 0) || 0;
   const limit = Math.min(Number(args.limit ?? 5) || 5, 8);
   const includeDrafts = admin ? Boolean(args.includeDrafts) : false;
+  console.log("[assistant] search args:", JSON.stringify(args));
 
   const where: Record<string, unknown> = includeDrafts ? {} : { published: true };
   if (status === "SALE" || status === "RENT") where.status = status;
@@ -180,11 +182,13 @@ async function runSearch(
         ? {
             ...where,
             OR: [
-              { title: { contains: extraText } },
-              { district: { contains: extraText } },
-              { address: { contains: extraText } },
-              { reference: { equals: extraText } },
-              { description: { contains: extraText } },
+              // case-insensitive: Postgres `contains` is case-sensitive by
+              // default, so a needle like "house" missed "3 Marla House"
+              { title: { contains: extraText, mode: "insensitive" } },
+              { district: { contains: extraText, mode: "insensitive" } },
+              { address: { contains: extraText, mode: "insensitive" } },
+              { reference: { equals: extraText, mode: "insensitive" } },
+              { description: { contains: extraText, mode: "insensitive" } },
             ],
           }
         : where,
@@ -193,10 +197,20 @@ async function runSearch(
     });
 
   let rows = await find(query || null);
-  // Long sentences make bad `contains` needles — if the text filter killed
-  // every row, retry with the structured filters only.
-  if (rows.length === 0 && query.split(/\s+/).length > 2) {
+  // Any non-empty needle can kill every row (over-specific or misspelled) —
+  // if the text filter matched nothing, retry with the structured filters.
+  if (rows.length === 0 && query) {
     rows = await find(null);
+  }
+  // The model often over-constrains the AREA it invented (e.g. forces
+  // "Etihad Town Phase 1" when the user never named a district) — relax it
+  // before giving up, matching how a human agent would widen the search.
+  if (rows.length === 0 && where.district) {
+    rows = await db.property.findMany({
+      where: { ...where, district: undefined },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
   }
   return {
     total: rows.length,
@@ -398,6 +412,7 @@ or request ONE tool:
 
 Category slugs: ${CATEGORIES.join(", ")}.
 In search_properties, "query" must be a SHORT keyword (1-2 words, e.g. "corner", "commercial") or empty — put sizes/prices/areas in the numeric filters, never in query.
+Only pass "district" when the USER actually named that area. If they did not name one, leave district empty — a wrong district makes the search find nothing.
 Conversions you must do yourself: 1 marla = 272.4 sqft (so "5 marla" area = 1362); 1 lac/lakh = 100,000 PKR; 1 crore = 10,000,000 PKR ("9 crore 30 lac" = 93000000; "1.5 crore" = 15000000).
 Rules:
 - NEVER invent listings or prices — use tools for anything about inventory.
@@ -443,6 +458,14 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = await getSessionAdmin();
+
+  // No AI config (or QA override)? Answer with the offline brain — search,
+  // details and business info still work for visitors, zero cost, zero
+  // secrets. Mutations politely point at the Admin panel.
+  if (!(await isZaiConfigured())) {
+    const fb = await fallbackAnswer(message);
+    return NextResponse.json({ reply: fb.reply, properties: fb.properties, admin: !!admin, action: fb.action });
+  }
 
   try {
     await ensureZaiConfig();
@@ -601,10 +624,18 @@ export async function POST(req: NextRequest) {
       action: lastAction || undefined,
     });
   } catch (e) {
+    // AI configured but broken (SDK/network/quota)? Degrade to the offline
+    // brain so visitors still get an answer instead of a dead end.
     console.error("POST /api/assistant/chat", e);
-    return NextResponse.json(
-      { error: "The assistant is unavailable right now — please try again." },
-      { status: 500 }
-    );
+    try {
+      const fb = await fallbackAnswer(message);
+      return NextResponse.json({ reply: fb.reply, properties: fb.properties, admin: !!admin, action: fb.action });
+    } catch (fbError) {
+      console.error("assistant fallback also failed", fbError);
+      return NextResponse.json(
+        { error: "The assistant is unavailable right now — please try again." },
+        { status: 500 }
+      );
+    }
   }
 }
