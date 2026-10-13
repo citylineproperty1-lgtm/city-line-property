@@ -1953,3 +1953,29 @@ Stage Summary:
 - Admin session policy is now 1 day (24h) per device, owner-set. The 30s auto-logout fix (Task 91) is preserved — screen locks/app switches still do NOT log out; only explicit Sign out or 24h expiry ends a session.
 - Note: sessions already signed in before this deploy keep their old 7-day tokens; the 1-day rule applies from the next sign-in per device.
 - Commit: de7b407 (3 files: src/lib/auth.ts, admin-login.tsx, admin-view.tsx)
+
+---
+Task ID: 93
+Agent: main session (Z.ai Code)
+Task: Owner corrections to CLP-117 — new cover photo, plot sizes corrected (4 + 3.66 = 7.66 marla), price 9 crore 30 lac
+
+Work Log:
+- Optimized uploaded aerial photo (upload/Urban Construction Corner from Above.png, 1672×941 PNG) via PIL → JPEG q82 progressive → public/images/properties/pair-plots-commercial-6.jpg (421KB)
+- DB update (Supabase, no deploy needed for data):
+  - images array: new photo moved to index 0 (cover), existing 5 photos keep order (6 photos total)
+  - title: "…3.9 Marla Corner…" → "…3.66 Marla Corner + 4 Marla Non-Corner"
+  - price: 95,000,000 → 93,000,000 (PKR 9.3 Crore; payment-plan 30% auto-updates to PKR 2.8 Crore)
+  - area: 2152 → 2087 sqft (7.66 marla × 272.4; price/sqft auto-recomputed 44,562)
+  - description: Plot 1 bullet → 3.66 Marla; Total Area bullet → 7.66 Marla
+- Local browser verification: detail page (title/price/sqft/cover/description) + properties grid (9.3 Crore, new cover in card) ✅
+- Commit 6736285 (image file) → push → Vercel deploy
+- Live verification (cache-bypass API + static asset + agent-browser on live domain):
+  - /api/properties: price 93000000, area 2087 (7.66 marla), cover=pair-plots-commercial-6.jpg, 6 photos, desc has 3.66+7.66 ✅
+  - /images/properties/pair-plots-commercial-6.jpg → HTTP 200, 431KB image/jpeg ✅
+  - Live detail page renders: PKR 9.3 Crore, 2,087 sqft, 7.66 Marla, new cover ✅
+- Cleanup: temp update script deleted
+
+Stage Summary:
+- CLP-117 fully corrected on live: new aerial cover photo, 3.66 Marla corner + 4 Marla non-corner = 7.66 marla total, PKR 9 crore 30 lac.
+- API returns images/description as pre-parsed JSON (not strings) — future QA scripts must not json.loads them again.
+- Commits: 6736285 (image only; data changes live in Supabase, no deploy required).
