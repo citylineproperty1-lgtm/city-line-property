@@ -2083,3 +2083,21 @@ Stage Summary:
 - Same mark + geometry applies to all future admin uploads.
 - Lesson recorded: after re-watermarking, browser cache can show stale images on "verification" — always md5 the origin bytes AND use a fresh browser session.
 - Commits: d3498bb.
+
+---
+Task ID: 99
+Agent: main session (Z.ai Code)
+Task: Owner tweaks — "remove logo from mark and citylineproperty.com only display City Line Property, do it more light font"
+
+Work Log:
+- Rebuilt lockup v5: TEXT-ONLY — no golden logo, no domain line; just "City Line Property"
+- Lighter font: switched DejaVu Sans → Carlito Regular (thinnest installed sans; compared DejaVu/Carlito/FreeSans visually), opacity 0.88→0.68, shadow 0.42→0.25, size kept big (58 @1x), slight letter-spacing
+- Same 45° diagonal + sizing rule (clamp(min(w*0.85, h*0.92), 220, 1200)); route doc comment updated to text-only
+- Restored originals from git 550689f, re-batched all 23 photos (23 jpg / 0 png), lint clean
+- Commit f87e351 → push → Vercel deploy
+- Live verification: 4 photos md5 byte-identical (GitHub status API was rate-limited, verified via bytes directly); fresh agent-browser session renders the light text-only diagonal mark ✅
+
+Stage Summary:
+- Watermark is now a minimal Zameen-style mark: light semi-transparent white "City Line Property" text at 45° across the photo center. No logo, no domain.
+- Applies to all 23 existing photos + future admin uploads (same asset + geometry).
+- Commits: f87e351.
