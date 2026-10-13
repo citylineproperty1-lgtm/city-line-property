@@ -2204,3 +2204,25 @@ Stage Summary:
 - 🎉 FULL AI AGENT IS LIVE AND PROVEN: visitors search/ask by text & voice (free offline fallback still covers AI outages); signed-in admin can ADD and REMOVE listings by command with single-use YES-token confirmation, now serverless-safe (DB-backed) and hallucination-guarded.
 - Owner's Z.ai key: validated + full Vercel runtime path proven; free model active; cost currently ZERO.
 - Backlog (suggested): set ADMIN_SESSION_SECRET on Vercel (QA minting currently possible with the fallback secret); ZAI_MODEL upgrade option (glm-4.6); rotate the shared Z.ai key.
+
+---
+Task ID: 105
+Agent: Z.ai Code (main)
+Task: Owner reported "display error" — screenshot showed the assistant's bare red "Microphone blocked — allow mic access to speak." line. Fix the voice-error UX.
+
+Work Log:
+- Root cause reading of the screenshot: owner tapped the mic; the browser (site permission) blocked it; the widget printed a one-line terse error that never dismissed → looked like a broken display. Not a code crash — a UX gap.
+- Rewrote voice error handling in src/components/site/assistant-widget.tsx:
+  - blockedMicError() helper: headline + platform-aware fix steps (desktop/Android: lock icon → Permissions → Microphone → Allow → reload; iOS: Settings → Safari → Microphone → Allow) + "you can also type below" nudge.
+  - Full SpeechRecognition error map: not-allowed/service-not-allowed → blocked; no-speech / audio-capture / network / aborted (silent) → distinct friendly messages.
+  - getUserMedia fallback errors mapped too (NotAllowedError/NotFoundError/NotReadableError/SecurityError).
+  - Alert is now a proper card: MicOff icon, role=alert, X dismiss button, auto-hide after 10s, auto-scrolled into view (micError added to the scroll effect deps).
+  - Permission pre-check via navigator.permissions.query({name:"microphone"}) — if already "denied", show fix immediately with no recording pulse; secure-context check for non-https.
+  - 🔴 Fixed a REAL double-bubble bug: voice transcripts were appended twice (once with 🎙️ by onresult/onstop, then again inside send()). send() now takes displayAs; MediaRecorder fallback refactored to sendRef (kills ~40 duplicated lines + stale-closure risk).
+- QA: lint clean; agent-browser E2E: mic click in headless (mic denied) → new alert with fix steps renders ✓ → dismiss button works ✓ → text chat "houses under 2 crore" → AI reply + CLP-109 card ✓ (AI mode intact).
+- Commit f547f46 (explicit path) → push → Vercel auto-deploy.
+
+Stage Summary:
+- Voice errors are now self-explanatory and self-healing UI (fix steps + dismiss + 10s auto-hide) instead of a stuck red line.
+- Note for owner replies: if their mic is blocked, the message now TELLS them how to unblock; typing always works as a fallback.
+- Backlog unchanged: set ADMIN_SESSION_SECRET on Vercel; optional ZAI_MODEL upgrade (glm-4.6); rotate the shared Z.ai key.
