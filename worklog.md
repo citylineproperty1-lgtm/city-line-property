@@ -2063,3 +2063,23 @@ Stage Summary:
 - Every listing photo now carries: golden CLP logo + "City Line Property" + "citylineproperty.com.pk" — centered, semi-transparent, consistent. Same mark auto-applies to future admin uploads.
 - The website address is now baked into every photo copy (owner's ask: show the website like zameen.com does).
 - Commit: 182c825.
+
+---
+Task ID: 98
+Agent: main session (Z.ai Code)
+Task: Owner tweaks to the watermark — "increase the font size, do the little bit light font, do its direction to 45 degree"
+
+Work Log:
+- Rebuilt lockup v4: DejaVu Sans REGULAR (was Bold) at bigger sizes (brand 46→56, domain 26→30 @1x, logo 118→128), lighter opacities (brand 0.94→0.88, domain 0.82→0.76), softer shadow (0.60→0.42)
+- Built horizontal at 2x → rotated 45° CCW (ascends left-to-right) → tight-cropped square 544×546 → LANCZOS 1x; base64 module regenerated
+- NEW sizing rule for the square diagonal mark: lockupW = clamp(min(w*0.85, h*0.92), 220, 1200) — sized by frame height so the 45° diagonal ALWAYS fits inside (first attempt w*0.62 clipped on wide 1800×874 panoramas; previewed and fixed before shipping)
+- upload route updated to identical rule + docs; batch v4 processes clean .png first for conversion stems (no double-watermark intermediate at all this time)
+- Restored originals from git 550689f, re-watermarked all 23 photos (23 jpg / 0 png), lint clean
+- Commit d3498bb (explicit paths) → push → Vercel success ~2min
+- Live verification: 4 photos md5 byte-identical; FIRST browser screenshot showed OLD horizontal mark = browser cache (md5 proved origin correct) → fresh agent-browser session confirmed the 45° diagonal mark renders live ✅ (cache tip for owner: hard refresh Ctrl+Shift+R)
+
+Stage Summary:
+- Watermark is now a big, light-weight, 45° diagonal CLP mark (logo + "City Line Property" + "citylineproperty.com.pk") centered on every photo — owner's three tweaks all shipped.
+- Same mark + geometry applies to all future admin uploads.
+- Lesson recorded: after re-watermarking, browser cache can show stale images on "verification" — always md5 the origin bytes AND use a fresh browser session.
+- Commits: d3498bb.
