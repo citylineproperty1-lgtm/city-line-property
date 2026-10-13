@@ -78,10 +78,14 @@ export async function createSession(admin: SessionAdmin): Promise<void> {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    // Session-scoped cookie (no maxAge): closing the browser drops it
-    // automatically. Tab closes / navigations away are covered on top by
-    // server-side revocation (revokeCurrentSession + the pagehide beacon).
-    secure: false, // sandbox preview runs on http; flip to true behind https
+    // Durable 7-day cookie (matches the signed token's exp). Previously this
+    // was a session-scoped cookie AND every pagehide/background fired a
+    // logout beacon — on phones, an auto screen-lock or an app switch
+    // (WhatsApp, etc.) revoked the session within seconds, which the owner
+    // experienced as "admin logs out after 30s". Now only the explicit
+    // "Sign out" button ends the session early.
+    maxAge: MAX_AGE_SECONDS,
+    secure: process.env.NODE_ENV === "production", // live runs https; sandbox dev is http
   });
 }
 
