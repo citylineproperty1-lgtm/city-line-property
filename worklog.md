@@ -1979,3 +1979,21 @@ Stage Summary:
 - CLP-117 fully corrected on live: new aerial cover photo, 3.66 Marla corner + 4 Marla non-corner = 7.66 marla total, PKR 9 crore 30 lac.
 - API returns images/description as pre-parsed JSON (not strings) — future QA scripts must not json.loads them again.
 - Commits: 6736285 (image only; data changes live in Supabase, no deploy required).
+
+---
+Task ID: 94
+Agent: main session (Z.ai Code)
+Task: Owner request — replace CLP-117 cover with annotated plot-map photo (plots A/B + 7.66 marla + parking labels)
+
+Work Log:
+- Optimized upload/pasted_image_1791892177652.png (1038×815 RGBA) → RGB JPEG q82 progressive → public/images/properties/pair-plots-commercial-7.jpg (233KB)
+- DB: images[0] = pair-plots-commercial-7.jpg (cover), kept aerial shot (6.jpg) as photo 2, then original 5 → 7 photos total
+- Local verification: detail page first image = 7.jpg ✅
+- Commit 6f9e784 → push → Vercel deploy
+- Live verification: static image HTTP 200 (233KB); API cover = 7.jpg with 7 photos; live detail page renders annotated cover ✅
+- Cleanup: temp live json removed
+
+Stage Summary:
+- CLP-117 cover is now the annotated plot-map (Combined 7.66 Marla, Plot A 3.66, Plot B 4, Parking ~117 ft wide). 7 photos total; price 9.3 crore / 2,087 sqft unchanged from Task 93.
+- NOTE: the annotation says "approx 1,724 sq ft at 225 sq ft per marla" while the site's listing card math uses the site-wide 272.4 sqft/marla convention (2,087 sqft, 44,562/sqft). Owner has not asked to change site math — flagged in report; change only if owner confirms.
+- Commits: 6f9e784 (image only; data changes live in Supabase, no deploy needed).
