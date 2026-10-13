@@ -1873,3 +1873,24 @@ Stage Summary:
 - Rankings: Instagram holds brand query #1 on aggregator index; Google status must be read from owner's GSC (only trusted source); Bing/Brave-type indexes churn — resubmission + GBP remain owner levers
 - Repo now exactly mirrors live (no orphan routes); junk file removed; attic preserves WIP history
 - Next patrol backlog: IndexNow ping (Bing), GA4 view_item/generate_lead events, Etihad Town informational content (payment-plan style, no invented prices), Bing Webmaster guide for owner
+
+---
+Task ID: 89
+Agent: Z.ai Code (main session)
+Task: Owner submitted new listing (text + 5 site photos): 4 Marla Commercial Pair Plots (3.9 corner + 4 non-corner), price 9 crore 50 lac → add as Commercial Plots listing
+
+Work Log:
+- Photos: 5 PNGs (2.4–3.1MB each) in upload/ → PIL pipeline → 1920px JPEG q82 progressive → public/images/properties/pair-plots-commercial-{1..5}.jpg (256–364KB each). Cover = palm-boulevard wide shot; #2 = corner plot + market boards shot
+- Conventions extracted from live data: type "commercial-plots", plots beds/baths 0, area sqft @ 272.4/marla → 7.9 marla = 2,152 sqft, district one of 5 areas, images JSON path array, reference auto CLP-1xx
+- Inserted via bun+Prisma script (Supabase Postgres): CLP-117, slug 4-marla-commercial-pair-plots-etihad-town-phase-1, price 95000000 (PKR 9.5 Crore), SALE, district "Etihad Town Phase 1" (photos match Phase 1 Main Boulevard: Lal Estate/Divine Solar boards, LESCO blue transformers; office is in Phase 1 — flagged to owner, one-line change if different), address "Main Boulevard, commercial zone", 5 amenities, published
+- Owner's title suffix "| City Line Property" dropped — site already brands every card/detail page (noted to owner)
+- Verified LOCAL: API newest ✅, images 200 ✅, detail page #/property/<slug> renders (PKR 9.5 Crore, 2,152 sqft, PKR 44,145/sqft, description w/ bullet list, lead gate modal, 5-photo carousel + thumbnails) ✅
+- Git: push rejected (parallel session duplicated Task-88 worklog commit again — identical content verified via diff) → rebase --onto origin/main 90ed096 (dropped dupe) → photos commit 317ebe8 pushed clean
+- Verified LIVE after deploy: /api/properties newest = CLP-117 ✅, /api/properties/<slug> 200 ✅, photos 200 on live ✅, agent-browser on live detail page: title/price/area/photos(7 imgs incl thumbs)/gate all true ✅
+- Dev-only warnings noted (NOT fixed, no user impact): scroll-container position warning (framer-motion carousel), LCP-eager hint on already-priority image
+
+Stage Summary:
+- New listing CLP-117 LIVE on www.citylineproperty.com.pk within one session: 5 optimized photos, correct PKR crore formatting, lead gate active
+- District assumption: Etihad Town Phase 1 (evidence-based); owner can correct
+- Ops note: parallel-session duplicate commits recurring — always diff before rebase, drop identical dupes
+- Owner follow-up: request indexing in GSC again (new content), share listing link on WhatsApp/Instagram + GBP update post
