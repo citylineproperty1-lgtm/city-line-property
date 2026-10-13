@@ -2143,3 +2143,25 @@ Stage Summary:
 - The agent bot the owner asked for is now LIVE-USEFUL with zero setup and zero AI cost: visitors get search/details/business-info by text or (Chrome/Android) voice; add/remove correctly requires the full AI mode + admin sign-in and says so politely.
 - Full AI mode still activates the moment ZAI_* env vars are set on Vercel (offline brain then becomes only the failure fallback).
 - QA helper .zscripts/tmp/qa-fallback.ts kept (gitignored) for future patrols.
+
+---
+Task ID: 102
+Agent: Z.ai Code (main)
+Task: Owner approved AI mode and asked which AI key to add in Vercel → verify public Z.ai API path, make the code send an explicit model on the public API, push, and give the owner exact Vercel setup steps.
+
+Work Log:
+- Confirmed from node_modules/z-ai-web-dev-sdk/dist/index.js: chat = POST {baseUrl}/chat/completions, auth = "Authorization: Bearer <apiKey>", X-Chat-Id/X-User-Id/X-Token headers are OPTIONAL (skipped when empty) → a standard public Z.ai key works on Vercel; sandbox internal JWT (token/chatId/userId) is NOT reproducible by the owner and NOT needed.
+- Web search confirmed: public base URL https://api.z.ai/api/paas/v4 (docs.z.ai quick start); GLM-4.5-Flash is FREE; API keys are created on the Z.ai API Keys page (z.ai → API Keys).
+- Smoke test: POST https://api.z.ai/api/paas/v4/chat/completions with dummy key + model glm-4.5-flash + thinking disabled → 401 "token expired or incorrect" (correct endpoint + body shape; auth is the only missing piece).
+- src/lib/zai-config.ts: added DEFAULT_ENV_MODEL ("glm-4.5-flash"), usedEnvConfig flag + isEnvConfigured() export (set when the config is bootstrapped from ZAI_* env vars), rewrote header comment with the exact REQUIRED/OPTIONAL Vercel env vars.
+- src/app/api/assistant/chat/route.ts: completion body now includes model: process.env.ZAI_MODEL || DEFAULT_ENV_MODEL — ONLY when isEnvConfigured(); sandbox internal gateway (no model param) untouched.
+- /api/assistant/voice left as-is: already fails gracefully (500 "please type instead"); primary voice path is browser Web Speech API anyway.
+- QA: bun run lint clean; local AI-mode chat verified ("3 marla plot…" → search_properties + CLP-102 card, "hello" → greeting) — sandbox behavior unchanged; agent-browser E2E: FAB click (via JS eval — dev <nextjs-portal> badge covers the bottom-left FAB click point in dev only) → panel opens → "hello" → AI greeting reply.
+- Commit 7895578 (explicit paths: src/lib/zai-config.ts, src/app/api/assistant/chat/route.ts) → push → live home 200 + live /api/assistant/chat answering (offline brain until owner adds keys, as designed).
+
+🔴 TOOLING GOTCHA (cost me a false alarm):
+- The Bash tool's output sanitizer strips literal "[m" sequences (ANSI SGR-m reset codes) from piped output — "const [msgs" prints as "const sgs", "const [mounted" as "const ounted". This looked like file corruption in sed/rg/python/git-show piped output but the Read tool + tsc proved the file/commit were 100% intact. RULE: never diagnose file content from Bash-piped output — use the Read tool as ground truth.
+
+Stage Summary:
+- Full AI mode is now one Vercel env-var pair away: ZAI_BASE_URL=https://api.z.ai/api/paas/v4 + ZAI_API_KEY=<key from z.ai API Keys page> (optional ZAI_MODEL, default glm-4.5-flash which is free). Owner given exact click-by-click steps.
+- Live site verified healthy after deploy; offline brain keeps search/details/business-info working with zero cost until/unless the key is added.
