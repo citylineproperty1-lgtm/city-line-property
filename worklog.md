@@ -2042,3 +2042,24 @@ Stage Summary:
 - Watermark is now Zameen-style: centered, same proportional size on every photo, subtle (no pill). Applies to all 23 existing photos + every future admin upload.
 - Build outage caused by cron patrol restoring deleted WIP files — reverted; patrol job now has hard rules against it.
 - Commits: 48883b9 (watermark v2 + re-batch), bf1382e (revert junk restore).
+
+---
+Task ID: 97
+Agent: main session (Z.ai Code)
+Task: Owner feedback — "at there the website is not shown" → the new centered watermark was missing the website address; add the domain to the mark (like zameen.com shows its domain)
+
+Work Log:
+- Diagnosed owner message in context: watermark v2 showed logo + "City Line Property" but NO domain — owner wants the website visible on every photo, Zameen-style
+- Rebuilt lockup (make-watermark-v3.py): golden logo (white→alpha, 62% opacity) + "City Line Property" (white, soft shadow) + "citylineproperty.com.pk" letter-spaced line beneath, rendered 2x → LANCZOS 1x (623×130 PNG, base64 module regenerated)
+- Restored all 23 clean originals from git 550689f (pre-watermark), re-batched with EXACT upload-route geometry (EXIF rotate → flatten → cap 1920 → clamp(w*0.34, 170, 520) centered → JPEG q82 progressive); 4 PNG→JPEG conversions repeated, PNGs deleted
+- Verified no double-watermark (intermediate double-pass on the 4 conversion files is overwritten by the clean-PNG pass), final tree = 23 jpg / 0 png
+- upload route: geometry unchanged (width-based, aspect-agnostic); doc comment updated to mention the address line
+- bun run lint clean; local browser check: CLP-117 detail page renders annotated cover with new domain watermark ✅
+- Commit 182c825 (explicit paths only: assets/, src/lib/watermark-lockup.ts, upload route, public/images/properties/) → push → Vercel success (~2min)
+- Live verification: 5 sampled photos (large/small/PNG-converted/villa) md5 byte-identical local vs live; live detail page renders watermark with "citylineproperty.com.pk" ✅
+- Cleanup: temp scripts + previews deleted; cron patrol rebuilt
+
+Stage Summary:
+- Every listing photo now carries: golden CLP logo + "City Line Property" + "citylineproperty.com.pk" — centered, semi-transparent, consistent. Same mark auto-applies to future admin uploads.
+- The website address is now baked into every photo copy (owner's ask: show the website like zameen.com does).
+- Commit: 182c825.
