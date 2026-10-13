@@ -2165,3 +2165,21 @@ Work Log:
 Stage Summary:
 - Full AI mode is now one Vercel env-var pair away: ZAI_BASE_URL=https://api.z.ai/api/paas/v4 + ZAI_API_KEY=<key from z.ai API Keys page> (optional ZAI_MODEL, default glm-4.5-flash which is free). Owner given exact click-by-click steps.
 - Live site verified healthy after deploy; offline brain keeps search/details/business-info working with zero cost until/unless the key is added.
+
+---
+Task ID: 103
+Agent: Z.ai Code (main)
+Task: Owner created their Z.ai API key and shared it in chat → verify the key, prove the exact Vercel runtime path end-to-end, then hand the owner the final paste-ready Vercel steps.
+
+Work Log:
+- Direct API test with the owner key: POST api.z.ai/api/paas/v4/chat/completions, model glm-4.5-flash, thinking disabled → HTTP 200, reply OK, usage正常 → key VALID and the free model is enabled on their account.
+- ⚠️ KEY HYGIENE: the key was shared in chat and used ONLY in ephemeral bash env vars + /tmp test files (all deleted). It is NOT in any repo file, NOT in worklog.md, NOT in git. Suggested owner rotate it later (new key → update Vercel value → delete old).
+- Simulated the production bootstrap (zai-config.ts env-config mode): wrote /tmp/.z-ai-config from ZAI_* env vars, imported the SDK, created chat completion → OK.
+- RUNTIME GOTCHA FOUND: `bun` os.homedir() IGNORES a runtime `process.env.HOME` override (resolves /home/z — the test only passed because cwd=/tmp had the file). **Node** (the real Vercel serverless runtime, and what `export const runtime = "nodejs"` gives us) DOES respect HOME at call time → /tmp/.z-ai-config found via $HOME search path → SDK → public API → 200 OK, model glm-4.5-flash. So the Vercel path is proven, not assumed.
+- Verified /home/z/my-project has NO .z-ai-config (git ls-files clean) → no risk of the sandbox config leaking into the repo/deploy.
+- No Vercel CLI/token in sandbox → env vars must be added by the owner in the dashboard (expected).
+- Live site re-checked healthy (home 200, assistant API answering in offline mode).
+
+Stage Summary:
+- Owner key VERIFIED and the full Vercel code path PROVEN with it (Node homedir override → /tmp config → public API → completion).
+- Everything is now waiting on exactly 2 dashboard env vars (ZAI_BASE_URL, ZAI_API_KEY) + Redeploy. After that: full AI mode live; I will verify from the live site behavior (admin-session "add listing" flow is the definitive AI-mode test).
