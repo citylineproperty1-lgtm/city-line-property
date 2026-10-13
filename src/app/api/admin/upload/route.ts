@@ -11,12 +11,11 @@ export const dynamic = "force-dynamic";
  * Admin image upload — bakes the CLP watermark into the pixels.
  *
  * Like zameen.com, every listing photo carries the brand mark so downloaded
- * copies stay branded: a semi-transparent golden CLP logo + "City Line
- * Property" wordmark + the "citylineproperty.com.pk" address line (soft
- * shadow, no background pill) is composited into the CENTER of the image at
- * upload time — same proportional size and placement on every photo. The
- * watermark is part of the stored image — it cannot be stripped by copying
- * the file.
+ * copies stay branded: a semi-transparent golden CLP logo + light-weight
+ * "City Line Property" wordmark + the "citylineproperty.com.pk" address
+ * line — rotated 45° DIAGONAL and centered (owner spec), sized so the
+ * diagonal always fits the frame. The watermark is part of the stored
+ * image — it cannot be stripped by copying the file.
  *
  * Pipeline: EXIF rotate → flatten → cap 1920px → composite watermark →
  * JPEG q82 progressive → stored in the MediaFile table (base64) and served
@@ -66,9 +65,15 @@ export async function POST(req: NextRequest) {
     const w = meta.width ?? MAX_WIDTH;
     const h = meta.height ?? Math.round((meta.width ?? 1) * 1.0);
 
-    // 2) Watermark geometry — Zameen-style CENTER placement, identical rules
-    //    to the one-time batch script that watermarked the existing photos.
-    const lockupW = Math.min(520, Math.max(170, Math.round(w * 0.34)));
+    // 2) Watermark geometry — 45° DIAGONAL center mark (owner spec):
+    //    bigger, light-weight, rotated mark. The lockup asset is a
+    //    tight-cropped square (text runs corner to corner), so size it by
+    //    the frame HEIGHT (h*0.92, width-capped at w*0.85) so the diagonal
+    //    always fits inside the photo. Same rules as the batch script.
+    const lockupW = Math.min(
+      1200,
+      Math.max(220, Math.min(Math.round(w * 0.85), Math.round(h * 0.92)))
+    );
     const lockup = await sharp(lockupBuffer)
       .resize({ width: lockupW })
       .png()
