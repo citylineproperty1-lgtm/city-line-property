@@ -93,6 +93,20 @@ function braveMicError(): MicError {
   };
 }
 
+/**
+ * The mic itself is fine (getUserMedia just succeeded) but the browser's
+ * speech engine still won't start — Chrome's voice service is unavailable
+ * (network/firewall to Google's speech servers, or a browser build without
+ * the engine). Honest terminal message: typing still works.
+ */
+function engineDeadMicError(): MicError {
+  return {
+    text: "Microphone is working, but the voice engine did not start.",
+    hint:
+      "Please type below — the assistant answers the same. Voice usually works in Chrome; on some networks the voice service is blocked.",
+  };
+}
+
 async function queryMicPermission(): Promise<MicPermissionState> {
   try {
     const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
@@ -125,9 +139,9 @@ async function probeMicHardware(): Promise<string | null> {
  * really is allowed (getUserMedia succeeds) but SpeechRecognition keeps
  * saying not-allowed. In that case we offer a one-tap refresh.
  */
-async function diagnoseMicFailure(): Promise<MicError> {
+async function diagnoseMicFailure(knownGum?: string | null): Promise<MicError> {
   const perm = await queryMicPermission();
-  const gum = await probeMicHardware();
+  const gum = knownGum !== undefined ? knownGum : await probeMicHardware();
   if (gum === null) {
     // Hardware + browser permission are fine — only the speech engine failed.
     if (await isBrave()) return braveMicError();
@@ -200,6 +214,8 @@ export function AssistantWidget() {
   const recogRef = useRef<ClpSpeechRecognition | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const srRetryRef = useRef(0); // one silent retry for the speech engine
+  const wantVoiceRef = useRef(false); // true while the user intends to be listening
 
   useEffect(() => setMounted(true), []);
 
@@ -294,6 +310,7 @@ export function AssistantWidget() {
       rec.onresult = (e) => {
         const transcript = e.results?.[0]?.[0]?.transcript ?? "";
         if (transcript.trim()) {
+          srRetryRef.current = 0; // engine worked — reset the retry counter
           void sendRef.current(transcript, `🎙️ "${transcript}"`);
         }
       };
@@ -303,27 +320,41 @@ export function AssistantWidget() {
         if (err === "aborted") return; // user pressed stop — stay quiet
         void (async () => {
           if (err === "not-allowed" || err === "service-not-allowed") {
-            // Don't trust the label — probe the real mic state and tell the
-            // user the exact fix (Brave, or a refresh after allowing).
-            setMicError(await diagnoseMicFailure());
-          } else if (err === "network" && (await isBrave())) {
-            setMicError(braveMicError());
+            // The mic was JUST granted via getUserMedia (we probe first,
+            // WhatsApp-style), so a refusal here is the speech engine, not
+            // the user. Chromium often starts working on a second attempt.
+            if (srRetryRef.current < 1 && wantVoiceRef.current) {
+              srRetryRef.current += 1;
+              window.setTimeout(() => {
+                if (wantVoiceRef.current) startNativeSpeech();
+              }, 350);
+              return;
+            }
+            setMicError(engineDeadMicError());
+          } else if (err === "network") {
+            if (await isBrave()) {
+              setMicError(braveMicError());
+            } else {
+              setMicError({
+                text:
+                  "Voice service had a network problem — check your internet, or type your question below.",
+              });
+            }
           } else if (err === "no-speech") {
             setMicError({
               text: "I didn't hear anything — tap the mic and speak a little louder.",
             });
           } else if (err === "audio-capture") {
             setMicError({ text: "No microphone found on this device — please type instead." });
-          } else if (err === "network") {
-            setMicError({
-              text: "Voice service had a network problem — try again, or type your question.",
-            });
           } else {
             setMicError({ text: "Did not catch that — tap the mic and try again." });
           }
         })();
       };
-      rec.onend = () => setRecording(false);
+      rec.onend = () => {
+        setRecording(false);
+        if (recogRef.current === rec) recogRef.current = null;
+      };
       recogRef.current = rec;
       rec.start();
       setRecording(true);
@@ -342,18 +373,21 @@ export function AssistantWidget() {
       });
       return;
     }
-    // Pre-check permission where supported (Chrome/Edge/Android): if the site
-    // setting is already "deny", diagnose and show the exact fix — no
-    // recording flash.
-    try {
-      const perm = await navigator.permissions.query({ name: "microphone" as PermissionName });
-      if (perm.state === "denied") {
-        setMicError(await diagnoseMicFailure());
-        return;
-      }
-    } catch {
-      /* Firefox/Safari don't support mic permission queries — just continue */
+    if (await isBrave()) {
+      setMicError(braveMicError());
+      return;
     }
+    // WhatsApp-style flow: touch the mic hardware FIRST. This is what makes
+    // Chrome show its Allow popup (like WhatsApp does), and a successful
+    // getUserMedia also clears the stale-denied state that otherwise breaks
+    // SpeechRecognition after permission changes.
+    const gumErr = await probeMicHardware();
+    if (gumErr !== null) {
+      setMicError(await diagnoseMicFailure(gumErr));
+      return;
+    }
+    srRetryRef.current = 0;
+    wantVoiceRef.current = true;
     if (startNativeSpeech()) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -413,9 +447,11 @@ export function AssistantWidget() {
   }, [startNativeSpeech]);
 
   const stopRecording = useCallback(() => {
-    if (recogRef.current) {
+    wantVoiceRef.current = false; // cancels any pending engine retry
+    const active = recogRef.current;
+    if (active) {
       try {
-        recogRef.current.stop();
+        active.stop();
       } catch {
         /* already ended */
       }
