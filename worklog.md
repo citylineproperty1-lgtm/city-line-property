@@ -2122,3 +2122,24 @@ Stage Summary:
 - CLP Assistant built and fully working locally/preview: voice or text → search listings (with photo cards), property details, business info; admin sign-in unlocks add/remove by command with confirmation safety.
 - LIVE activation pending ONE step: set ZAI_* env vars in the Vercel dashboard (or owner-approved in-code config) — currently live endpoint answers gracefully "unavailable".
 - Reference-collision fix also protects the admin panel's manual create flow.
+
+---
+Task ID: 101
+Agent: main session (Z.ai Code)
+Task: Owner said "A" (= go ahead on the agent bot) → make the CLP Assistant actually WORK on the live site today (it was dormant: /api/assistant/chat answered "unavailable" because Vercel has no ZAI_* env vars)
+
+Work Log:
+- Cleanup first: uncommitted junk commit 99aef00 (patrol QA screenshots/voice-test.wav accidentally committed with a UUID message) — git reset --mixed HEAD~1, deleted the artifacts, added .zscripts/tmp/ to .gitignore so QA scratch never gets committed again
+- Built src/lib/assistant-fallback.ts — the OFFLINE BRAIN: keyword/regex understanding, NO AI cost, NO secrets. Handles: CLP-### refs → full details + card; search (type/district/status SALE|RENT/price lac-crore "under/above/between"/beds/marla/kanal/sqft + leftover keyword needle); flat↔apartment broadening (Pakistani usage); business info (1% commission, phones, office 151-C Etihad Town Phase 1, Mon-Sun 10AM-8PM); greetings/help (also catches stray keystrokes); mutation intents answered with a pointer (never executed offline). Postgres mode:"insensitive" text needles + structured-retry chain (query → drop needle → drop district → try type "for-rent" for RENT)
+- Route wiring: isZaiConfigured() added to zai-config.ts (checks /etc config or ZAI_* env; ASSISTANT_FORCE_FALLBACK=1 forces offline for QA) → POST /api/assistant/chat uses the offline brain when AI is not configured AND as graceful degradation in the catch when the AI call throws (no more dead-end 500)
+- Widget: browser-native Web Speech API is now the FIRST voice path (free, works on live with no server ASR); MediaRecorder+/api/assistant/voice stays as fallback where browser SR is missing
+- 🔴 Fixed a REAL AI-mode bug found while re-testing: runSearch text `contains` was case-sensitive on Postgres (LLM needle "house" missed "3 Marla House" → random "no houses" answers) → mode:"insensitive" + retry on ANY failed needle (was only >2-word queries) + auto-relax when the model INVENTS a district (it forced "Etihad Town Phase 1" so the Premier Enclave house under 2 Cr was invisible) + prompt now says only pass district the user actually named. AI search "houses under 2 crore" went 0/4 → 3/3 after fix
+- QA: bun script over 16 phrasings (greetings, refs, budgets, mutations, Urdu-ish "ghar chahiye" → graceful latest-listings) + HTTP E2E with ASSISTANT_FORCE_FALLBACK=1 (6 cases) + agent-browser widget E2E (chat → "I found 1 match" + clickable CLP-110 card) + AI-mode re-verified (search/get/business 3/3) + lint clean
+- Dev-server ops lesson: `nohup ... &` dies when the tool shell call ends — launch `env -u DATABASE_URL setsid nohup bash .zscripts/dev.sh > dev.log 2>&1 < /dev/null &` AND keep the same shell call alive ~45s while it boots; always `env -u DATABASE_URL` (shell exports a SQLite URL that overrides .env)
+- Commit 41d6d3e (explicit paths) → push → Vercel deploy
+- Patrol cron rebuilt: job 456857 "CLP web dev patrol (15min)" fixed_rate 900s with hard rules
+
+Stage Summary:
+- The agent bot the owner asked for is now LIVE-USEFUL with zero setup and zero AI cost: visitors get search/details/business-info by text or (Chrome/Android) voice; add/remove correctly requires the full AI mode + admin sign-in and says so politely.
+- Full AI mode still activates the moment ZAI_* env vars are set on Vercel (offline brain then becomes only the failure fallback).
+- QA helper .zscripts/tmp/qa-fallback.ts kept (gitignored) for future patrols.
