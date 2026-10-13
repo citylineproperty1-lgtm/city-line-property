@@ -1908,3 +1908,23 @@ Work Log:
 Stage Summary:
 - CLP-117 fully updated per owner: 100+ ft wide parking + 40 ft road now visible in specs, features, and description
 - Owner told exact wording used (literal reading) — one-line change if they meant e.g. front 100ft road / back 40ft road
+
+---
+Task ID: 91
+Agent: Z.ai Code (main session)
+Task: Owner bug report: "admin is automatically logout after 30s"
+
+Work Log:
+- Root cause: the admin shell fired a logout sendBeacon on EVERY pagehide + hashchange-away, with server-side token revocation, on top of a session-scoped cookie (no maxAge). On a phone, screen auto-lock (~30s) or switching to WhatsApp/Instagram backgrounds the tab → pagehide fires → token revoked server-side → owner returns to find themselves logged out. The "30 seconds" was the phone's auto-lock timer, not a server TTL (auth.ts token exp was 7 days all along)
+- Fix (commit 6439af9):
+  - auth.ts createSession: cookie now durable maxAge=7d (matches token exp), secure:true in production (https live), false in dev (sandbox http)
+  - admin-view.tsx: removed the pagehide/hashchange/pageshow auto-logout effect entirely — only the explicit "Sign out" button ends the session early (still calls logout → revokeCurrentSession, verified working)
+  - logout route comment updated; login footnote copy updated to "signed in for 7 days" (commit 5f77ba4)
+- Local verification: temp QA admin created via Prisma → login 200 + Set-Cookie shows Max-Age=604800 HttpOnly SameSite=lax → /me 200 → logout → /me 401 (server-side revocation intact) → temp admin deleted
+- LIVE verification (agent-browser, qa-test account): signed in on https://www.citylineproperty.com.pk/#/admin → idle 50s (old bug died at ~30s) → STILL SIGNED IN ✅ → navigate Home and back to #/admin → STILL SIGNED IN ✅ → QA account deleted afterwards
+- Note: 401-flip stays as safety net (expired/invalid token → login screen)
+
+Stage Summary:
+- Owner's admin session now lasts 7 days per device; phone screen-lock/app-switch no longer logs out; explicit Sign out still revokes server-side instantly (all tabs)
+- Security tradeoff documented in code comments: single-owner business tool, httpOnly+HMAC-signed+7d token, manual revocation preserved
+- Owner should log in once more after this deploy (old cookie was session-scoped/possibly revoked); afterwards no more logouts for a week
