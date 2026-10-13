@@ -2264,3 +2264,19 @@ Work Log:
 Stage Summary:
 - Voice errors now terminal-correct per browser: Brave = honest "use Chrome/Edge or type"; Chrome stale = one-tap refresh; blocked = lock-icon + Windows steps; busy/no-device = own messages.
 - For the OWNER's own use: voice needs Chrome/Edge on desktop, or Chrome/Samsung Internet on Android — Brave will never do SR without upstream changes. Typing works everywhere.
+
+---
+Task ID: 108
+Agent: Z.ai Code (main)
+Task: Owner now on CHROME (screenshot: lock-popup shows Microphone ON for citylineproperty.com.pk) yet assistant still says "Microphone is blocked" → separate the last failure layer.
+
+Work Log:
+- Forensics: browser permission ON + SR still not-allowed means the refusal comes from OUTSIDE the browser — Windows mic privacy (Microphone access / Let desktop apps access OFF), an antivirus privacy shield, or a dismissed prompt. Our old mapping lumped "browser deny" and "OS refuse" into one lock-icon message the owner had already done → dead-end loop.
+- assistant-widget.tsx: new osBlockedMicError() (Windows: Windows-key → "microphone privacy settings" → ON "Microphone access" + "Let desktop apps access your microphone" → F5; macOS variant: System Settings → Privacy & Security → Microphone). diagnoseMicFailure() reordered: perm "denied" → site lock-icon message; perm granted/prompt + gUM NotAllowedError/SecurityError → OS message; NotReadable → busy; NotFound → no mic; granted+gUM OK → refresh message; Brave → Brave message.
+- QA: lint clean; agent-browser E2E all five: granted+NotAllowed → OS message ✓; granted+gUM-OK → refresh ✓; denied → site ✓; Brave → Brave ✓; headless no-audio-device → NotFound → "No microphone found" ✓ (accidentally proved that path too).
+- Commit (explicit path) → push → Vercel auto-deploy.
+
+Stage Summary:
+- Mic failure diagnosis is now complete and layered: site permission / OS privacy / engine-stale / Brave / busy / no-device — each with its own terminal-correct message.
+- For the owner on Chrome+Windows: the remaining blocker is almost certainly Windows mic privacy (or antivirus) — the message now walks them through it by name. If "Let desktop apps access your microphone" is already ON and it still fails, the laptop mic may be disabled in Windows Sound settings or physically broken (screen is cracked; older hardware).
+- Typing remains fully functional everywhere (offline brain + live AI both answer text).
