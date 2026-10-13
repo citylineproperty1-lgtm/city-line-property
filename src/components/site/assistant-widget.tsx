@@ -46,7 +46,29 @@ function blockedMicError(): MicError {
     : {
         text: "Microphone is blocked for this site.",
         hint:
-          "To fix: tap the lock (🔒) icon next to the web address → Permissions → Microphone → Allow. On Windows also check Settings → Privacy → Microphone. Then REFRESH the page (F5). You can also just type below — the same assistant answers.",
+          "To fix: tap the lock (🔒) icon next to the web address → Microphone → Allow, then REFRESH the page (F5). You can also just type below — the same assistant answers.",
+      };
+}
+
+/**
+ * The browser-level permission looks fine but the OS refused the mic —
+ * typical on Windows when "Microphone access" / "Let desktop apps access"
+ * is OFF (or an antivirus privacy shield blocks it). Also covers a
+ * dismissed permission prompt.
+ */
+function osBlockedMicError(): MicError {
+  const ua = typeof navigator === "undefined" ? "" : navigator.userAgent || "";
+  const isMac = /Macintosh/.test(ua) && (navigator.maxTouchPoints ?? 0) <= 1;
+  return isMac
+    ? {
+        text: "Your Mac is not letting the browser use the microphone.",
+        hint:
+          "To fix:  → System Settings → Privacy & Security → Microphone → turn ON your browser, then refresh this page. You can also just type below — the same assistant answers.",
+      }
+    : {
+        text: "Windows is not letting the browser use the microphone.",
+        hint:
+          'To fix: press the Windows key → type "microphone privacy settings" → open it → turn ON "Microphone access" AND "Let desktop apps access your microphone". Then refresh this page (F5). You can also just type below — the same assistant answers.',
       };
 }
 
@@ -115,8 +137,14 @@ async function diagnoseMicFailure(): Promise<MicError> {
       action: { label: "Refresh page", onClick: () => window.location.reload() },
     };
   }
-  if (perm === "denied" || gum === "NotAllowedError" || gum === "SecurityError") {
+  if (perm === "denied") {
+    // Browser-level deny → the site lock-icon fix is the right advice.
     return blockedMicError();
+  }
+  if (gum === "NotAllowedError" || gum === "SecurityError") {
+    // Browser says allowed (or never asked) but the REQUEST was refused →
+    // the operating system (or antivirus) is blocking the mic.
+    return osBlockedMicError();
   }
   if (gum === "NotReadableError") {
     return { text: "The microphone is busy in another app — close it and try again." };
