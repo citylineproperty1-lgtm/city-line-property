@@ -2101,3 +2101,24 @@ Stage Summary:
 - Watermark is now a minimal Zameen-style mark: light semi-transparent white "City Line Property" text at 45° across the photo center. No logo, no domain.
 - Applies to all 23 existing photos + future admin uploads (same asset + geometry).
 - Commits: f87e351.
+
+---
+Task ID: 100
+Agent: main session (Z.ai Code)
+Task: Owner asked — "is it possible to add an agent bot: voice or written commands, add/remove listings, search property" → built the CLP Assistant
+
+Work Log:
+- Backend /api/assistant/chat (nodejs runtime): LLM agent (z-ai-web-dev-sdk, backend-only) with strict JSON tool protocol — search_properties / get_property / add_listing / remove_listing / reply; max 3 tool rounds; per-IP rate limit (30/min); lenient JSON extraction; 429 retry w/ backoff; repeat-action guard (model looped searches — now forced to answer); rounds-exhausted fallback summarises found cards instead of failing
+- Mutations are SERVER-GATED by the clp_admin session (LLM can only request); remove needs a single-use 10-min token (RM-XXXX) read back to the user before the delete executes — verified end-to-end (token issued → wrong/no token = no deletion → token confirmed = deleted)
+- add_listing: title/price/type/district validated, marla→sqft + lac/crore conversions done by the LLM (prompted), categories/districts normalized (incl. ASR misspellings "ettie hat"→Etihad)
+- 🔴 Fixed real bug: reference CLP-{101+count} collided after historical deletions (agent QA hit P2002) — both the agent AND admin panel POST now use max(existing ref)+1
+- /api/assistant/voice: FormData audio → ASR (z-ai audio.asr) → transcript; E2E tested with TTS-generated speech ("Show me five Marla plots..." → correct transcript → correct CLP-101 answer)
+- Frontend assistant-widget.tsx: bottom-left FAB (WhatsApp bubble owns the right), spring chat panel, typing dots, property mini-cards (image/price/ref → click to detail), mic button (MediaRecorder webm → /voice), admin chip via /api/admin/me, "View updated listings" chip after mutations; mounted in page.tsx shell
+- Local E2E via curl + agent-browser: search ("houses under 2 crore" → CLP-109 card), get (CLP-117 full answer), business info, visitor mutation denial, admin add (CLP-118 created) + remove (deleted, verified in DB), UI chat flow on / and /#/properties
+- Vercel discovery: SDK reads /etc/.z-ai-config (sandbox) — absent on Vercel → live assistant dormant; added src/lib/zai-config.ts bootstrap: writes /tmp/.z-ai-config from ZAI_BASE_URL/ZAI_API_KEY/ZAI_CHAT_ID/ZAI_TOKEN/ZAI_USER_ID when no /etc config exists; local behavior unchanged (verified)
+- Commits: b1085b4 (agent + voice + widget + ref fix), 2266597 (serverless bootstrap)
+
+Stage Summary:
+- CLP Assistant built and fully working locally/preview: voice or text → search listings (with photo cards), property details, business info; admin sign-in unlocks add/remove by command with confirmation safety.
+- LIVE activation pending ONE step: set ZAI_* env vars in the Vercel dashboard (or owner-approved in-code config) — currently live endpoint answers gracefully "unavailable".
+- Reference-collision fix also protects the admin panel's manual create flow.
