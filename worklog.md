@@ -1894,3 +1894,17 @@ Stage Summary:
 - District assumption: Etihad Town Phase 1 (evidence-based); owner can correct
 - Ops note: parallel-session duplicate commits recurring — always diff before rebase, drop identical dupes
 - Owner follow-up: request indexing in GSC again (new content), share listing link on WhatsApp/Instagram + GBP update post
+
+---
+Task ID: 90
+Agent: Z.ai Code (main session)
+Task: Owner: "in listing clp 117 add, 100 feet plus wide parking, and 40 feet road"
+
+Work Log:
+- Updated CLP-117 in Supabase via Prisma script (.zscripts/tmp/update-clp117.ts): parking field "100+ feet wide parking" (was "" → specs row showed "—"), description gained two bullets under Property Details ("• Parking: 100+ Feet Wide Parking Area" / "• Road: 40 Feet Wide Road"), amenities: replaced generic "Wide road" with "100+ ft wide parking" + "40 ft road" (kept "Main boulevard location")
+- No deploy needed (data lives in Supabase; APIs uncached)
+- Verified LIVE: API {property} wrapper shows parking/amenities/desc bullets ✅; agent-browser on live detail page: parkingShown ✅ roadInAmenities ✅ descHasParking ✅
+
+Stage Summary:
+- CLP-117 fully updated per owner: 100+ ft wide parking + 40 ft road now visible in specs, features, and description
+- Owner told exact wording used (literal reading) — one-line change if they meant e.g. front 100ft road / back 40ft road
