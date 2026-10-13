@@ -3,7 +3,12 @@ import { db } from "@/lib/db";
 import { serializeProperty } from "@/lib/serialize";
 import { getSessionAdmin, type SessionAdmin } from "@/lib/auth";
 import { formatPKR } from "@/lib/format";
-import { ensureZaiConfig, isZaiConfigured } from "@/lib/zai-config";
+import {
+  DEFAULT_ENV_MODEL,
+  ensureZaiConfig,
+  isEnvConfigured,
+  isZaiConfigured,
+} from "@/lib/zai-config";
 import { fallbackAnswer } from "@/lib/assistant-fallback";
 import ZAI from "z-ai-web-dev-sdk";
 
@@ -486,6 +491,12 @@ export async function POST(req: NextRequest) {
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           completion = await zai.chat.completions.create({
+            // The public Z.ai API (Vercel env-config mode) requires an
+            // explicit model; the sandbox internal gateway has a server
+            // default and must stay untouched.
+            ...(isEnvConfigured()
+              ? { model: process.env.ZAI_MODEL || DEFAULT_ENV_MODEL }
+              : {}),
             messages,
             thinking: { type: "disabled" },
           });

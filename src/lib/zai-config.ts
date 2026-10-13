@@ -10,11 +10,32 @@ import fs from "node:fs/promises";
  *   2. writes /tmp/.z-ai-config from ZAI_* env vars and points $HOME at
  *      /tmp for the process, so the SDK picks it up.
  *
- * Set these five env vars on the hosting platform to activate the AI
- * assistant in production:
- *   ZAI_BASE_URL (e.g. https://internal-api.z.ai/v1)
- *   ZAI_API_KEY, ZAI_CHAT_ID, ZAI_TOKEN, ZAI_USER_ID
+ * Set these env vars on the hosting platform (Vercel → Settings →
+ * Environment Variables) to activate the AI assistant in production:
+ *
+ *   REQUIRED
+ *     ZAI_BASE_URL = https://api.z.ai/api/paas/v4   (public Z.ai API)
+ *     ZAI_API_KEY  = <key created at z.ai → API Keys>
+ *
+ *   OPTIONAL
+ *     ZAI_MODEL    = glm-4.5-flash (default; free) — or glm-4.6 etc.
+ *     ZAI_CHAT_ID / ZAI_TOKEN / ZAI_USER_ID — only for the sandbox
+ *       internal gateway; leave unset on the public API (SDK omits the
+ *       headers when empty).
  */
+
+/** Model used when running on the public API (env-config mode).
+ *  glm-4.5-flash is Z.ai's free tier — set ZAI_MODEL to upgrade. */
+export const DEFAULT_ENV_MODEL = "glm-4.5-flash";
+
+/** True when the running config was built from ZAI_* env vars (serverless
+ *  / public-API mode) rather than a sandbox config file. The public API
+ *  requires an explicit `model` on every chat call. */
+let usedEnvConfig = false;
+
+export function isEnvConfigured(): boolean {
+  return usedEnvConfig;
+}
 
 /**
  * True when the SDK has a usable config (sandbox file or ZAI_* env vars).
@@ -58,6 +79,7 @@ export async function ensureZaiConfig(): Promise<void> {
   }
 
   try {
+    usedEnvConfig = true;
     await fs.writeFile(
       "/tmp/.z-ai-config",
       JSON.stringify({
