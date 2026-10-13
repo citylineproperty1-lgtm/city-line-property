@@ -13,6 +13,7 @@ import { SavedView } from "@/components/site/saved-view";
 import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
 import { AdminView } from "@/components/site/admin-view";
 import { ContactBubble } from "@/components/site/contact-bubble";
+import { AssistantWidget } from "@/components/site/assistant-widget";
 import { ScrollProgress } from "@/components/site/scroll-progress";
 import { SplashScreen } from "@/components/site/splash-screen";
 import {
@@ -143,6 +144,7 @@ export default function Page() {
       </main>
       <SiteFooter />
       <ContactBubble />
+      <AssistantWidget />
     </div>
   );
 }

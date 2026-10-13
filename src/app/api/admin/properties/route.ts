@@ -72,8 +72,15 @@ export async function POST(req: NextRequest) {
     if (!type) return NextResponse.json({ error: "Category is required." }, { status: 400 });
     if (!district) return NextResponse.json({ error: "Area is required." }, { status: 400 });
 
-    const count = await db.property.count();
-    const reference = `CLP-${101 + count}`;
+    // Reference = highest existing CLP number + 1 (count-based numbering
+    // collides whenever a listing was ever deleted — leaves gaps).
+    const refs = await db.property.findMany({ select: { reference: true } });
+    let maxRef = 100;
+    for (const r of refs) {
+      const m = /^CLP-(\d+)$/.exec(r.reference);
+      if (m) maxRef = Math.max(maxRef, Number(m[1]));
+    }
+    const reference = `CLP-${maxRef + 1}`;
     const slug = `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`;
 
     const images = Array.isArray(body.images) ? body.images.map(String).filter(Boolean) : [];
