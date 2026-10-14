@@ -32,7 +32,11 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self)",
+            /* microphone=(self): the CLP Assistant's voice input needs the
+               mic on our own origin. () would silently disable it for every
+               visitor on every device — no permission prompt ever appears.
+               Camera stays off (no feature uses it). */
+            value: "camera=(), geolocation=(self), microphone=(self)",
           },
         ],
       },
