@@ -2318,3 +2318,26 @@ Stage Summary:
 - 🎉 REAL ROOT CAUSE FIXED: voice input was killed site-wide by our own Permissions-Policy header; mic is now allowed on the live origin and the permission prompt can finally appear (WhatsApp-style).
 - Owner instruction: refresh page → tap mic → ALLOW → speak. Works on phone Chrome too. Brave remains voice-incapable (engine), but Chrome/Edge/mobile are unblocked.
 - Lesson recorded: whenever a browser feature silently fails across devices with NO permission prompt, check Permissions-Policy headers FIRST.
+
+---
+Task ID: 111
+Agent: Z.ai Code (main)
+Task: Owner confirms voice WORKS now (Permissions-Policy fix validated) but "when i speak some lines, it could not properly hear the words or sentence" → fix transcription accuracy.
+
+Work Log:
+- Root causes found in startNativeSpeech():
+  1. `rec.lang = navigator.language` → Pakistani phones report "en-PK", which is NOT in Google's supported SR language list → engine recognizes badly.
+  2. `continuous = false` → engine stops at the FIRST pause; multi-line dictation got cut after 2–3 words (owner's exact complaint).
+  3. `interimResults = false` + auto-send on first result → half-heard phrase was sent instantly with no chance to review or fix.
+- Fixes in assistant-widget.tsx:
+  1. VOICE_LANGS picker (persisted in localStorage "clp-voice-lang"): English (en-US), English (India) (en-IN — best model for South Asian accents), English (UK) (en-GB), اردو (ur-PK). 🌐 Languages button next to the mic opens the chip row; mid-dictation switch restarts the engine with the new language; restored language survives reload.
+  2. `continuous = true` + `interimResults = true`: engine keeps listening through whole sentences; when it ends itself on a long pause, onend AUTO-RESUMES the same dictation (voiceDraftRef carries text across restarts; restartsRef caps at 3 consecutive silent restarts, resets on speech; lastSRErrorRef stops error-ends from double-rescheduling alongside the not-allowed retry).
+  3. Review-before-send: transcript now fills the INPUT BOX live (no more instant auto-send). User taps ⏹, checks/edits the text, then presses send. Tip line while recording: "Speak in short sentences · tap ⏹ to finish · check the text, then send." Placeholder shows the active language: "Listening… (English (India))".
+  4. New SR error branch: language-not-supported → alert pointing at the 🌐 button. no-speech now silent (auto-resume handles it) instead of a false alarm message.
+- MediaRecorder fallback (iOS) unchanged: still records → /api/assistant/voice.
+- QA (agent-browser + fake SpeechRecognition + fake gUM/permissions): engine config (continuous/interim/en-US) ✓; live transcript in input ✓; pause → auto-resume creates instance #2 with text carried over ("3 marla plot in etihad phase 1" + "under 2 crore" merged) ✓; stop → no restart, text retained ✓; send → user bubble + AI reply with property card ✓; typed-input regression (CLP-117?) ✓; picker → en-IN persisted + next engine instance lang=en-IN ✓; placeholder/tip labels ✓; lint clean; no console errors.
+- Commit 1501dd5 → push → Vercel live verified (clp-voice-lang in chunk 617b38553a91aae3.js; picker renders on www.citylineproperty.com.pk with all 4 options).
+
+Stage Summary:
+- Voice accuracy root causes fixed: wrong language model (en-PK), cut-off after first pause, blind instant-send. Owner should now: tap mic → pick "English (India)" or "اردو" → speak in short sentences → watch the text appear LIVE → tap ⏹ → fix any word → send.
+- Honest limits remain: browser SR accuracy is what Google's engine gives; if accent recognition is still poor, the transcript is editable before send (big UX win vs auto-send).
