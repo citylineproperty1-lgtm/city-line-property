@@ -2341,3 +2341,24 @@ Work Log:
 Stage Summary:
 - Voice accuracy root causes fixed: wrong language model (en-PK), cut-off after first pause, blind instant-send. Owner should now: tap mic → pick "English (India)" or "اردو" → speak in short sentences → watch the text appear LIVE → tap ⏹ → fix any word → send.
 - Honest limits remain: browser SR accuracy is what Google's engine gives; if accent recognition is still poor, the transcript is editable before send (big UX win vs auto-send).
+
+---
+Task ID: 112
+Agent: Z.ai Code (main)
+Task: Owner: "now when i speak it write the word two times or maximum time" → duplicated words in the voice transcript → fix the duplication.
+
+Work Log:
+- Root causes (all in the new continuous/interim flow from Task 111):
+  1. onresult concatenated EVERY entry of e.results, but Chrome (esp. Android) keeps the stale interim entry at index i AND appends the final copy at index i+1 → same phrase counted twice per utterance.
+  2. Auto-resume restarts (Android ends the engine after each phrase) → each new engine session re-emits the tail of the previous utterance → another copy per restart (hence "two times or maximum time").
+  3. onend carry-over took the raw input box text (incl. interim revisions) as the base for the next session.
+- Fixes (assistant-widget.tsx):
+  1. onresult now reads ONLY from event.resultIndex onward and splits by isFinal: finals merge into instFinalRef, interims render live.
+  2. New mergeText(prev, next): word-level tail-overlap dedupe (equal / p.endsWith(n) / n.startsWith(p) / partial seam merge, case-insensitive) — applied to final accumulation, to the base+current display merge, and to restart carry-over.
+  3. onend/applyLang carry mergeText(voiceDraftRef, instFinalRef) — only TRUE finals cross engine sessions, never the raw input box.
+- QA (agent-browser + fake SR, async reads): in-place interim→final ✓ single copy; stale-interim + final-at-next-index event ✓ single copy; pause→restart re-emitting the same phrase ✓ still single copy; partial tail overlap ("3 marla plot" + "plot in etihad phase 1") ✓ merged once at the seam; clean continuation ("under 2 crore") ✓ appended; stop→send→AI reply with card ✓; no console errors; lint clean.
+- Commit 97cc987 → push → Vercel live (assistant chunk b7b0bf1b23b9b86d.js contains resultIndex marker; old chunk replaced) → LIVE smoke: fired a doubled interim+final event on www.citylineproperty.com.pk → input showed "houses under 2 crore" exactly once.
+
+Stage Summary:
+- Duplicated transcript words eliminated at three levels (per-event resultIndex, per-instance final merge, cross-restart carry merge).
+- Voice flow is now: mic → live single-copy transcript → pause-resume keeps listening → stop → review/edit → send.
