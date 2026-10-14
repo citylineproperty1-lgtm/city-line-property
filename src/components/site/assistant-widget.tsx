@@ -5,9 +5,12 @@
  *
  * Floating button (bottom-left, mirrors the WhatsApp bubble on the right).
  * The panel is a small chat: visitors search listings and ask questions;
- * signed-in admins can also add/remove listings by command. Voice input is
- * recorded in-browser, transcribed server-side (/api/assistant/voice) and
- * then processed by the same agent endpoint (/api/assistant/chat).
+ * signed-in admins can also add/remove listings by command. Voice input
+ * listens continuously with a live transcript in the input box (the user
+ * picks a language with the 🌐 button and reviews the text before sending).
+ * Browsers without speech recognition (iOS) fall back to recording +
+ * server-side transcription (/api/assistant/voice). Both paths feed the
+ * same agent endpoint (/api/assistant/chat).
  *
  * The server owns ALL safety: mutations only run with a valid admin session
  * cookie, and removals require a spoken-back confirmation token.
@@ -15,7 +18,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mic, MicOff, RefreshCw, Send, Sparkles, Square, X } from "lucide-react";
+import { Languages, Mic, MicOff, RefreshCw, Send, Sparkles, Square, X } from "lucide-react";
 import { formatPKR } from "@/lib/format";
 import type { Property } from "@/lib/types";
 
@@ -194,6 +197,18 @@ function getSpeechRecognition(): ClpSRCtor | null {
   return SR ?? null;
 }
 
+// Google's speech engine only understands a fixed language list. Many
+// Pakistani phones report "en-PK", which the engine does NOT know — it then
+// recognizes badly. Offer only languages the engine actually supports;
+// "English (India)" is usually the best model for South Asian accents.
+const VOICE_LANGS: ReadonlyArray<{ code: string; label: string }> = [
+  { code: "en-US", label: "English" },
+  { code: "en-IN", label: "English (India)" },
+  { code: "en-GB", label: "English (UK)" },
+  { code: "ur-PK", label: "اردو" },
+];
+const VOICE_LANG_KEY = "clp-voice-lang";
+
 const WELCOME =
   "Hi! I'm the CLP Assistant 🤖 — ask me anything about our listings.\n\nTry:\n• \"3 marla plot in Etihad Phase 1\"\n• \"Houses under 2 crore\"\n• Tell me: CLP-117?";
 
@@ -208,6 +223,8 @@ export function AssistantWidget() {
   const [mutated, setMutated] = useState(false);
   const [recording, setRecording] = useState(false);
   const [micError, setMicError] = useState<MicError | null>(null);
+  const [voiceLang, setVoiceLang] = useState("en-US");
+  const [langOpen, setLangOpen] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -216,8 +233,24 @@ export function AssistantWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
   const srRetryRef = useRef(0); // one silent retry for the speech engine
   const wantVoiceRef = useRef(false); // true while the user intends to be listening
+  const voiceLangRef = useRef("en-US"); // startNativeSpeech reads it without stale closures
+  const voiceDraftRef = useRef(""); // transcript from earlier engine restarts in this session
+  const restartsRef = useRef(0); // auto-resume counter (pause too long / silence)
+  const lastSRErrorRef = useRef(false); // last engine stop came from an error?
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // restore the saved voice language (default English)
+    try {
+      const saved = window.localStorage.getItem(VOICE_LANG_KEY);
+      if (saved && VOICE_LANGS.some((l) => l.code === saved)) {
+        setVoiceLang(saved);
+        voiceLangRef.current = saved;
+      }
+    } catch {
+      /* private mode */
+    }
+  }, []);
 
   // keep the message list scrolled to the bottom
   useEffect(() => {
@@ -246,6 +279,7 @@ export function AssistantWidget() {
       if (!message || busy) return;
       setMicError(null);
       setInput("");
+      voiceDraftRef.current = ""; // dictation base starts fresh next time
       setMsgs((m) => [...m, { role: "user", content: displayAs ?? message }]);
       setBusy(true);
       try {
@@ -303,21 +337,32 @@ export function AssistantWidget() {
     if (!SR) return false;
     try {
       const rec = new SR();
-      rec.lang = navigator.language?.startsWith("en") ? navigator.language : "en-US";
-      rec.interimResults = false;
-      rec.continuous = false;
+      rec.lang = voiceLangRef.current || "en-US";
+      rec.interimResults = true; // live text while the user speaks
+      rec.continuous = true; // keep listening through whole sentences
       rec.maxAlternatives = 1;
+      lastSRErrorRef.current = false; // fresh instance — clean slate
       rec.onresult = (e) => {
-        const transcript = e.results?.[0]?.[0]?.transcript ?? "";
-        if (transcript.trim()) {
-          srRetryRef.current = 0; // engine worked — reset the retry counter
-          void sendRef.current(transcript, `🎙️ "${transcript}"`);
+        let txt = "";
+        const results = e.results;
+        for (let i = 0; i < results.length; i++) {
+          const alt = results[i]?.[0];
+          if (alt?.transcript) txt += `${alt.transcript} `;
         }
+        txt = txt.replace(/\s+/g, " ").trim();
+        if (txt) {
+          srRetryRef.current = 0; // engine works — reset the error retry counter
+          restartsRef.current = 0; // engine works — reset the auto-resume counter
+        }
+        const base = voiceDraftRef.current.trim();
+        setInput(base ? `${base} ${txt}` : txt);
       };
       rec.onerror = (e) => {
-        setRecording(false);
         const err = e.error;
         if (err === "aborted") return; // user pressed stop — stay quiet
+        if (err === "no-speech") return; // silence — onend auto-resumes listening
+        setRecording(false);
+        lastSRErrorRef.current = true; // onend must not treat this as a natural stop
         void (async () => {
           if (err === "not-allowed" || err === "service-not-allowed") {
             // The mic was JUST granted via getUserMedia (we probe first,
@@ -340,9 +385,10 @@ export function AssistantWidget() {
                   "Voice service had a network problem — check your internet, or type your question below.",
               });
             }
-          } else if (err === "no-speech") {
+          } else if (err === "language-not-supported") {
             setMicError({
-              text: "I didn't hear anything — tap the mic and speak a little louder.",
+              text: `The voice language "${voiceLangRef.current}" is not supported by this browser.`,
+              hint: "Tap the language button next to the mic and pick another one.",
             });
           } else if (err === "audio-capture") {
             setMicError({ text: "No microphone found on this device — please type instead." });
@@ -354,6 +400,19 @@ export function AssistantWidget() {
       rec.onend = () => {
         setRecording(false);
         if (recogRef.current === rec) recogRef.current = null;
+        // The engine stops itself on every long pause. While the user still
+        // wants voice, resume the SAME dictation (keep what was heard so far).
+        if (!wantVoiceRef.current || lastSRErrorRef.current) return;
+        if (restartsRef.current >= 3) {
+          wantVoiceRef.current = false;
+          setMicError({ text: "Voice input paused — tap the mic to continue speaking." });
+          return;
+        }
+        restartsRef.current += 1;
+        voiceDraftRef.current = (inputRef.current?.value ?? voiceDraftRef.current).trim();
+        window.setTimeout(() => {
+          if (wantVoiceRef.current) startNativeSpeech();
+        }, 400);
       };
       recogRef.current = rec;
       rec.start();
@@ -386,6 +445,9 @@ export function AssistantWidget() {
       setMicError(await diagnoseMicFailure(gumErr));
       return;
     }
+    // dictation continues from whatever is already typed in the box
+    voiceDraftRef.current = (inputRef.current?.value ?? "").trim();
+    restartsRef.current = 0;
     srRetryRef.current = 0;
     wantVoiceRef.current = true;
     if (startNativeSpeech()) return;
@@ -460,7 +522,29 @@ export function AssistantWidget() {
     recorderRef.current?.stop();
   }, []);
 
+  // switch the voice language (and restart the engine mid-dictation)
+  const applyLang = useCallback((code: string) => {
+    setVoiceLang(code);
+    voiceLangRef.current = code;
+    try {
+      window.localStorage.setItem(VOICE_LANG_KEY, code);
+    } catch {
+      /* private mode */
+    }
+    setLangOpen(false);
+    if (recogRef.current) {
+      voiceDraftRef.current = (inputRef.current?.value ?? "").trim();
+      try {
+        recogRef.current.stop(); // onend auto-resumes with the new language
+      } catch {
+        /* already ended */
+      }
+    }
+  }, []);
+
   if (!mounted) return null;
+
+  const langLabel = VOICE_LANGS.find((l) => l.code === voiceLang)?.label ?? "English";
 
   return (
     <>
@@ -639,6 +723,32 @@ export function AssistantWidget() {
 
             {/* input row */}
             <div className="border-t border-border bg-card px-3 py-2.5">
+              {langOpen && (
+                <div
+                  className="mb-2 flex flex-wrap items-center gap-1.5 rounded-2xl bg-muted/70 p-2"
+                  role="group"
+                  aria-label="Voice language"
+                >
+                  <span className="flex items-center gap-1 px-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <Languages className="h-3 w-3" aria-hidden />
+                    Voice language
+                  </span>
+                  {VOICE_LANGS.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => applyLang(l.code)}
+                      aria-pressed={voiceLang === l.code}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                        voiceLang === l.code
+                          ? "bg-teal-600 text-white"
+                          : "bg-background text-foreground ring-1 ring-border hover:bg-accent"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <button
                   onClick={recording ? stopRecording : startRecording}
@@ -656,6 +766,20 @@ export function AssistantWidget() {
                     <Mic className="h-4.5 w-4.5" aria-hidden />
                   )}
                 </button>
+                <button
+                  onClick={() => setLangOpen((v) => !v)}
+                  disabled={busy}
+                  aria-label={`Voice language: ${langLabel} — tap to change`}
+                  aria-expanded={langOpen}
+                  title={`Voice language: ${langLabel}`}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors ${
+                    langOpen
+                      ? "bg-teal-600 text-white"
+                      : "bg-teal-600/10 text-teal-700 hover:bg-teal-600/20 dark:text-teal-400"
+                  } disabled:opacity-50`}
+                >
+                  <Languages className="h-4 w-4" aria-hidden />
+                </button>
                 <input
                   ref={inputRef}
                   value={input}
@@ -666,7 +790,7 @@ export function AssistantWidget() {
                       send(input);
                     }
                   }}
-                  placeholder={recording ? "Listening… speak now" : "Ask or command… e.g. 3 marla plot"}
+                  placeholder={recording ? `Listening… (${langLabel})` : "Ask or command… e.g. 3 marla plot"}
                   aria-label="Message the CLP Assistant"
                   className="h-10 min-w-0 flex-1 rounded-full border border-border bg-background px-4 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-teal-600/50"
                 />
@@ -680,7 +804,9 @@ export function AssistantWidget() {
                 </button>
               </div>
               <p className="mt-1.5 px-1 text-[10.5px] leading-snug text-muted-foreground">
-                Voice or text — same agent. Listing changes need an Admin sign-in.
+                {recording
+                  ? "Speak in short sentences · tap ⏹ to finish · check the text, then send."
+                  : "Voice or text — same agent. Listing changes need an Admin sign-in."}
               </p>
             </div>
           </motion.div>
