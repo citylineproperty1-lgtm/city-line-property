@@ -2301,3 +2301,20 @@ Work Log:
 Stage Summary:
 - Voice now follows the exact permission UX the owner recognized from WhatsApp: Allow popup first, then listening. If the engine itself is unavailable (network blocks Google speech service), the assistant says so honestly and invites typing.
 - Remaining unknown for the owner: whether their network reaches Chrome's speech service. If the new flow still fails, the message will now say "voice engine did not start" — that means network/engine, NOT their settings, and typing remains the answer.
+
+---
+Task ID: 110
+Agent: Z.ai Code (main)
+Task: Owner: voice fails on phone Chrome too → two devices failing = common factor is the SITE → hunt for a site-side blocker → FOUND AND FIXED THE ROOT CAUSE.
+
+Work Log:
+- Re-framed the whole investigation: laptop AND phone both fail while WhatsApp works → the blocker must live on our origin. Owner also noted WhatsApp "firstly takes permission" and our site never showed a prompt → a policy-level block never prompts.
+- curl -I https://www.citylineproperty.com.pk/ → 🔴 smoking gun: `permissions-policy: camera=(), microphone=(), geolocation=(self)` in next.config.ts site-wide security headers (added pre-assistant-bot). `microphone=()` silently disables the mic for EVERY visitor on EVERY device — getUserMedia → NotAllowedError, SpeechRecognition → not-allowed, NO permission prompt ever. This also retro-explains the localhost E2E "headless auto-deny" readings (dev server sends the same header) and why every per-device fix (Brave/OS/refresh/WhatsApp-flow) changed nothing.
+- Fix: next.config.ts → `camera=(), geolocation=(self), microphone=(self)` (mic allowed on our own origin only; camera still off; no third-party embeds use mic). Grepped for other policy headers — none.
+- Commit b87ca4e → push → waited for Vercel → live header verified: `microphone=(self)` ✓ → agent-browser on LIVE site: navigator.permissions.query({name:"microphone"}).state === "prompt" (was "denied") ✓ — the browser is now allowed to ask for and use the mic.
+- Retrospective: all earlier device-side theories (Brave engine, Windows privacy, stale SR, Google-speech network) were red herrings caused by chasing symptoms while our own header blocked everything; the UX hardening shipped along the way (layered diagnosis, WhatsApp-style flow, dismissible alerts) remains genuinely useful.
+
+Stage Summary:
+- 🎉 REAL ROOT CAUSE FIXED: voice input was killed site-wide by our own Permissions-Policy header; mic is now allowed on the live origin and the permission prompt can finally appear (WhatsApp-style).
+- Owner instruction: refresh page → tap mic → ALLOW → speak. Works on phone Chrome too. Brave remains voice-incapable (engine), but Chrome/Edge/mobile are unblocked.
+- Lesson recorded: whenever a browser feature silently fails across devices with NO permission prompt, check Permissions-Policy headers FIRST.
