@@ -175,7 +175,10 @@ async function diagnoseMicFailure(knownGum?: string | null): Promise<MicError> {
 // ---- browser-native speech recognition (free, no server ASR needed) ----
 // Chrome/Edge/Android ship it built-in; when absent we fall back to
 // MediaRecorder + server-side transcription.
-type ClpSRResultEvent = { results: ArrayLike<ArrayLike<{ transcript: string }>> };
+type ClpSRResultEvent = {
+  results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal?: boolean }>;
+  resultIndex?: number;
+};
 type ClpSRErrorEvent = { error?: string };
 interface ClpSpeechRecognition {
   lang: string;
@@ -195,6 +198,35 @@ function getSpeechRecognition(): ClpSRCtor | null {
   const w = window as unknown as Record<string, unknown>;
   const SR = (w.SpeechRecognition ?? w.webkitSpeechRecognition) as ClpSRCtor | undefined;
   return SR ?? null;
+}
+
+/**
+ * Merge a new piece of transcript into existing text WITHOUT duplicating
+ * words. The speech engine repeatedly re-emits what it already gave us:
+ * interim entries stay in the results list next to their final version,
+ * and every engine restart (Android restarts after each phrase) can
+ * re-emit the tail of the last utterance — the same words showed up
+ * 2–4 times. Merge by word-level tail overlap so repeats are eaten.
+ */
+function mergeText(prev: string, next: string): string {
+  const p = prev.trim();
+  const n = next.trim();
+  if (!p) return n;
+  if (!n) return p;
+  if (p === n || p.endsWith(n)) return p; // already contained at the tail
+  if (n.startsWith(p)) return n; // next is a longer revision of prev
+  const pw = p.split(/\s+/);
+  const nw = n.split(/\s+/);
+  const max = Math.min(pw.length, nw.length);
+  for (let k = max; k > 0; k--) {
+    if (
+      pw.slice(-k).join(" ").toLowerCase() ===
+      nw.slice(0, k).join(" ").toLowerCase()
+    ) {
+      return `${p} ${nw.slice(k).join(" ")}`.trim(); // partial overlap: keep the seam once
+    }
+  }
+  return `${p} ${n}`.trim();
 }
 
 // Google's speech engine only understands a fixed language list. Many
@@ -235,6 +267,7 @@ export function AssistantWidget() {
   const wantVoiceRef = useRef(false); // true while the user intends to be listening
   const voiceLangRef = useRef("en-US"); // startNativeSpeech reads it without stale closures
   const voiceDraftRef = useRef(""); // transcript from earlier engine restarts in this session
+  const instFinalRef = useRef(""); // finalized text of the CURRENT engine instance only
   const restartsRef = useRef(0); // auto-resume counter (pause too long / silence)
   const lastSRErrorRef = useRef(false); // last engine stop came from an error?
 
@@ -342,20 +375,32 @@ export function AssistantWidget() {
       rec.continuous = true; // keep listening through whole sentences
       rec.maxAlternatives = 1;
       lastSRErrorRef.current = false; // fresh instance — clean slate
+      instFinalRef.current = ""; // finals of THIS instance only (deduped)
       rec.onresult = (e) => {
-        let txt = "";
-        const results = e.results;
-        for (let i = 0; i < results.length; i++) {
-          const alt = results[i]?.[0];
-          if (alt?.transcript) txt += `${alt.transcript} `;
+        let interim = "";
+        // Only read results from resultIndex: older entries were already
+        // counted (stale interims + re-emitted finals live there — reading
+        // them again is what duplicated the words).
+        const start = typeof e.resultIndex === "number" ? e.resultIndex : 0;
+        for (let i = start; i < e.results.length; i++) {
+          const res = e.results[i];
+          const t = res?.[0]?.transcript ?? "";
+          if (!t) continue;
+          if (res.isFinal) {
+            instFinalRef.current = mergeText(instFinalRef.current, t);
+          } else {
+            interim += `${t} `;
+          }
         }
-        txt = txt.replace(/\s+/g, " ").trim();
-        if (txt) {
+        const base = voiceDraftRef.current.trim();
+        const cur = `${instFinalRef.current} ${interim}`.replace(/\s+/g, " ").trim();
+        if (cur) {
           srRetryRef.current = 0; // engine works — reset the error retry counter
           restartsRef.current = 0; // engine works — reset the auto-resume counter
         }
-        const base = voiceDraftRef.current.trim();
-        setInput(base ? `${base} ${txt}` : txt);
+        // mergeText also eats the restart quirk where a fresh engine session
+        // re-emits the tail of the previous one.
+        setInput(base ? mergeText(base, cur) : cur);
       };
       rec.onerror = (e) => {
         const err = e.error;
@@ -409,7 +454,9 @@ export function AssistantWidget() {
           return;
         }
         restartsRef.current += 1;
-        voiceDraftRef.current = (inputRef.current?.value ?? voiceDraftRef.current).trim();
+        // carry only TRUE finals into the next engine session (never the raw
+        // input box — it can contain interim revisions that would double up)
+        voiceDraftRef.current = mergeText(voiceDraftRef.current, instFinalRef.current);
         window.setTimeout(() => {
           if (wantVoiceRef.current) startNativeSpeech();
         }, 400);
@@ -533,7 +580,7 @@ export function AssistantWidget() {
     }
     setLangOpen(false);
     if (recogRef.current) {
-      voiceDraftRef.current = (inputRef.current?.value ?? "").trim();
+      voiceDraftRef.current = mergeText(voiceDraftRef.current, instFinalRef.current);
       try {
         recogRef.current.stop(); // onend auto-resumes with the new language
       } catch {
