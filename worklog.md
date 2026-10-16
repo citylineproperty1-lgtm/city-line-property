@@ -2430,3 +2430,20 @@ Stage Summary:
 - Site-wide marla standard is now 1 marla = 225 sqft: stored areas, search filters, size unit toggle, AI assistant math all aligned. 5 marla houses/plots show exactly 1,125 sqft.
 - Note: price/sqft changed mechanically (same price, correct area): CLP-118 20,278→32,444; CLP-119 16,000-ish? (was 18,056 pre-115? actual rendered was on 1800: 18,056→ now 28,889). If owner prefers to show marla price instead, that's a separate display change.
 - Note: CLP-106 stored as 563 (2.5 marla) — odd sqft number is the correct rounding.
+
+---
+Task ID: 117
+Agent: Z.ai Code (main)
+Task: Owner follow-up — "show both in sq ft and marla also" (after Task 116 fixed 1 marla = 225 sqft).
+
+Work Log:
+- Added formatAreaBoth(sqft) to src/lib/business.ts next to formatMinArea: "1,125 sqft (5 Marla)" — marla whole when clean (±0.005), else 2 decimals ("7.66 Marla"); guards area<=0 → "—".
+- property-card.tsx chip (shared by home / properties grid / related / saved): text → formatAreaBoth, title "Area (sqft & Marla)", icon span shrink-0 so two-line wrap stays clean.
+- property-detail.tsx Area fact → formatAreaBoth (now "1,125 sqft (5 Marla)").
+- admin-listing-drawer.tsx: live hint under the Area (sqft) input — "= 5 Marla (1 marla = 225 sqft)" while typing (integer-safe formatting: 1125→"5", 1723→"7.66", 10→"10"); helper text "1 marla = 225 sqft — 5 marla = 1,125 sqft" when empty. (Caught a self-bug pre-commit: naive regex strip turned 10 marla into "1" — replaced with integer check.)
+- SEO JSON-LD intentionally keeps sqft-only (schema.org unitText).
+- QA local: lint clean; properties grid 6-card eval shows both units ("1,125 sqft (5 Marla)", "1,723 sqft (7.66 Marla)", "5,200 sqft (23.11 Marla)", "620 sqft (2.76 Marla)"); screenshots desktop + mobile 390px — chip rows clean, CLP-117 wraps to 2 lines without overflow; detail main facts match.
+- Commit 25d5fb5 (explicit paths: business.ts, property-card, property-detail, admin-listing-drawer) → push → Vercel → LIVE: /#/properties shows both units (9+ cards, e.g. "1,125 sqft (5 Marla)", "5,200 sqft (23.11 Marla)").
+
+Stage Summary:
+- Area now displays as "X sqft (Y Marla)" everywhere buyers see it (cards + detail) with the 225 standard; admin gets a live marla converter hint to prevent future wrong entries.
