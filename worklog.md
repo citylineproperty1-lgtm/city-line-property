@@ -2462,3 +2462,18 @@ Work Log:
 
 Stage Summary:
 - CLP-119 now has 20 watermarked photos (10 + 10) live on www.citylineproperty.com.pk. Photos in Postgres MediaFile; only the script is in git.
+
+---
+Task ID: 119
+Agent: Z.ai Code (main)
+Task: Owner report — "in website clp 118 price is showing this but the actual price is 3.65 [crore], this bring error in customer mind" (screenshot: detail heading "PKR 3.6 Crore").
+
+Work Log:
+- Root cause: formatPKR rounded Crore/Lakh to 1 decimal → 36,500,000 rendered "PKR 3.6 Crore" (5 lac lost). Same bug rounded CLP-119 UP: 32,500,000 → "PKR 3.3 Crore" (5 lac added). All cards/detail/instalment/WhatsApp prefill used the same formatter.
+- Fix in src/lib/format.ts: formatPKR + compactPKR now 2 decimals with trailing-zero trim (new trimZeros: "3.65"→"3.65", "3.60"→"3.6", "4.00"→"4"). pkrInWords already exact, untouched. Assistant money() (chat route) Lakh 1→2 decimals + Crore trim corrected ("4.10"→"4.1").
+- Unit-tested all 17 listing prices: 36500000→"PKR 3.65 Crore", 32500000→"PKR 3.25 Crore", 18500000→"1.85 Crore", 10800000→"1.08 Crore", 95000000→"9.5 Crore", 8900000→"89 Lakh", rents exact (95000→"95,000", 285000→"2.85 Lakh"). Lint clean.
+- QA local: CLP-118 detail heading "PKR 3.65 Crore"; properties grid prices all exact (3.25/3.65/9.5 Crore, 2.85/58/85 Lakh, 1.08/1.35 Crore); home map renders fine (pins use "Rs" markers, compactPKR only in tight chips).
+- Commit 832f01f (explicit paths: format.ts, assistant chat route) → push → Vercel → LIVE: CLP-118 detail "PKR 3.65 Crore", listings grid all exact.
+
+Stage Summary:
+- Price display is now exact to the lac everywhere (cards, detail, instalment estimator, AI assistant). 3.65 Crore shows as 3.65 — no more ±5 lac rounding confusion. Data was always correct (36,500,000); this was display-only.
