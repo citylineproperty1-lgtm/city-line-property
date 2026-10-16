@@ -2362,3 +2362,21 @@ Work Log:
 Stage Summary:
 - Duplicated transcript words eliminated at three levels (per-event resultIndex, per-instance final merge, cross-restart carry merge).
 - Voice flow is now: mic → live single-copy transcript → pause-resume keeps listening → stop → review/edit → send.
+---
+Task ID: 113
+Agent: Z.ai Code (main)
+Task: Owner request — add a new listing: 5 Marla house for sale, PKR 3 crore 65 lac, full title/description provided, 10 WhatsApp photos uploaded to /home/z/my-project/upload/.
+
+Work Log:
+- Env incident found & worked around: the platform reset (07:20) left a sandbox-default DATABASE_URL (file:./db/custom.db) in the SHELL environment and a stale .env interplay — Prisma scripts failed with "URL must start with postgresql://". Workaround for local scripts: `env -u DATABASE_URL -u DIRECT_URL bun …` (bun auto-loads the real .env with the Supabase pooler URL). Live site unaffected (Vercel has its own env vars).
+- BUG FIX: /api/admin/upload (the watermark upload route, 109 lines) had been deleted by auto-commit a566551 (Oct 13) while admin-listing-drawer still calls it → admin photo uploads were broken. Restored from git (a566551^) — sharp pipeline: EXIF rotate → flatten → cap 1920px → 45° diagonal text-only watermark v5 → JPEG q82 → MediaFile (base64 in Postgres) → served from /api/media/<id> with immutable caching.
+- New listing CLP-118 via scripts/add-listing-house-oct16.ts (same watermark pipeline as admin uploads, MediaFile storage — Vercel-safe, no git binaries):
+  - Title: "5 Marla House for Sale | 4 Master Bedrooms, 5 Washrooms & Rooftop BBQ Area"
+  - Price 36,500,000 (3 crore 65 lac) · SALE · houses · 4 beds / 5 baths · area 1800 sqft (matches the sibling 5-marla house convention) · Etihad Town Phase 1, Lahore · address "Location on request" · yearBuilt 2025 · 6 amenities from the owner's feature list
+  - 10 photos in the owner's order (staircase cover), each baked with the CLP diagonal watermark, stored as /api/media/<id>
+  - reference auto-assigned CLP-118 (max+1 rule), slug title-derived + random suffix
+- QA: media route 200 image/jpeg ✓; /api/properties returns CLP-118 with 10 images ✓; agent-browser on the local detail page: gallery "1 / 10", all specs correct (PKR 3.6 Crore, 4/5/1800, Houses, 2025, PKR 20,278/sqft), full owner description renders, lead-gate modal works, 11/12 next/image instances loaded (1 lazy offscreen) ✓; watermark visually verified on the served JPEG.
+- Commit → push → Vercel auto-deploy → live verification below.
+
+Stage Summary:
+- CLP-118 is live with all 10 watermarked photos; admin photo upload route restored (was silently broken since Oct 13).
