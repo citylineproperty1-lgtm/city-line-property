@@ -2447,3 +2447,18 @@ Work Log:
 
 Stage Summary:
 - Area now displays as "X sqft (Y Marla)" everywhere buyers see it (cards + detail) with the 225 standard; admin gets a live marla converter hint to prevent future wrong entries.
+
+---
+Task ID: 118
+Agent: Z.ai Code (main)
+Task: Owner follow-up — "add these picture in clp 119" (10 WhatsApp photos, 12.20.46–12.20.50 PM batch).
+
+Work Log:
+- Verified batch: all 10 files present in upload/, md5 unique within batch (no dupes); timestamps 12.20.46–50 vs Task 115's 12.20.42–45 — separate files, no overlap. 10 message previews match 10 files (stairs, under-stair washroom, blue-LED lounge, kitchen, marble washroom, room w/ window, wavy-tile washroom, big kitchen, balcony arches, courtyard).
+- scripts/add-photos-clp119-oct18.ts (Task 114 pipeline clone): EXIF rotate → flatten → cap 1920px → 45° diagonal CLP watermark v5 → JPEG q82 → MediaFile → /api/media/<id>. Filenames continue Task 115's sequence: 5marla-house-4bed-11..20.jpg in owner's listed order. Double-run guard: aborts unless CLP-119 has exactly 10 images before appending.
+- Run OK: 10 photos stored (139–232 KB each), images 10 → 20 in one update. yearBuilt untouched (already 2026).
+- QA local: /api/properties CLP-119 images=20 (note: API returns images already-parsed array — check script updated, no double JSON.parse); media route 200 image/jpeg; watermark visually verified single-baked on photo 20 (courtyard); agent-browser detail: counter "1 / 20", thumbnail jump to photo 20 renders main gallery image with alt "…— photo 20".
+- Commit c860022 (explicit path: scripts/add-photos-clp119-oct18.ts) → push → Vercel. DB shared → live immediately: live /api/properties CLP-119 images=20, live media 200, live detail counter "1 / 20".
+
+Stage Summary:
+- CLP-119 now has 20 watermarked photos (10 + 10) live on www.citylineproperty.com.pk. Photos in Postgres MediaFile; only the script is in git.
