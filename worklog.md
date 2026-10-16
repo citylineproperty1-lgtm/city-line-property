@@ -2397,3 +2397,19 @@ Stage Summary:
 - CLP-118 now has 19 watermarked photos (10 + 9) and yearBuilt 2026 — already visible on www.citylineproperty.com.pk (DB is shared; deploy carried the Leaflet fix).
 - Leaflet unmount race fixed — deep-link cold loads no longer throw _leaflet_pos.
 - Note: photos live in Postgres MediaFile rows; only the script + map fix are in git.
+
+---
+Task ID: 115
+Agent: Z.ai Code (main)
+Task: Owner request — one more listing: 5 Marla House for Sale | 4 Bedrooms, 5 Washrooms & 2 Kitchen, PKR 3 crore 25 lac, 10 new WhatsApp photos (12.20.42–12.20.45 PM batch), built in year 2026.
+
+Work Log:
+- Verified upload batch: all 10 files present in upload/, md5 unique (no dupes), 10 message previews match 10 files 1:1.
+- scripts/add-listing-house2-oct16.ts (clone of Task 113 pipeline + a re-run guard on title): EXIF rotate → flatten → cap 1920px → 45° diagonal CLP watermark v5 → JPEG q82 → MediaFile base64 → /api/media/<id>. Filenames 5marla-house-4bed-01..10.jpg in owner's order (blue-LED ceiling room as cover).
+- Created listing: reference CLP-119 (max+1 rule), slug 5-marla-house-for-sale-4-bedrooms-5-washrooms-2-kitchen-14ux, title/description verbatim from owner (bullets formatted •, description keeps owner's text incl. "two kitchens." line), price 32,500,000, SALE · houses · 4 beds / 5 baths · 1800 sqft · Etihad Town Phase 1, Lahore · address "Location on request" · yearBuilt 2026 · 5 amenities (4 Bedrooms / 5 Washrooms / 2 Kitchens / Rooftop BBQ Area / Family Living & Investment).
+- QA local: media route 200 image/jpeg, cover watermark visually verified (single diagonal mark); property API ref/price/beds/baths/area/images=10/year 2026 ✓; detail page title ✓, gallery "1 / 10" ✓, "2026 Year built" spec ✓, price renders "PKR 3.3 Crore" (site's 1-decimal crore format) ✓; no dev-issue badge.
+- Commit 26f496a (explicit path: scripts/add-listing-house2-oct16.ts) → push → Vercel → LIVE: /api/properties returns CLP-119 year 2026 price 32,500,000 images 10; live media 200; live detail page counter 1/10 + 2026 + CLP-119 + title ✓; newest-first grid shows CLP-119 at top.
+
+Stage Summary:
+- CLP-119 live on www.citylineproperty.com.pk with 10 watermarked photos, PKR 3 crore 25 lac, yearBuilt 2026 — newest listing in the grid.
+- Photos in Postgres MediaFile; only the script is in git.
