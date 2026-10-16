@@ -88,6 +88,7 @@ export default function RealMap({
 
   useEffect(() => {
     let cancelled = false;
+    let sizeTimer: ReturnType<typeof setTimeout> | undefined;
 
     (async () => {
       const L = (await import("leaflet")).default;
@@ -107,12 +108,22 @@ export default function RealMap({
       map.on("blur", () => map.scrollWheelZoom.disable());
       mapRef.current = map;
       layerRef.current = L.layerGroup().addTo(map);
-      // Force redraw after container becomes visible.
-      setTimeout(() => map.invalidateSize(), 80);
+      // Force redraw after container becomes visible. Cancelled on unmount —
+      // invalidateSize() on a removed map throws Leaflet's "_leaflet_pos"
+      // TypeError (deep-link cold loads unmount home view within this window).
+      sizeTimer = setTimeout(() => {
+        if (cancelled || mapRef.current !== map) return;
+        try {
+          map.invalidateSize();
+        } catch {
+          /* container torn down mid-redraw — nothing to invalidate */
+        }
+      }, 80);
     })();
 
     return () => {
       cancelled = true;
+      if (sizeTimer) clearTimeout(sizeTimer);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
