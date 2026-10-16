@@ -2413,3 +2413,20 @@ Work Log:
 Stage Summary:
 - CLP-119 live on www.citylineproperty.com.pk with 10 watermarked photos, PKR 3 crore 25 lac, yearBuilt 2026 — newest listing in the grid.
 - Photos in Postgres MediaFile; only the script is in git.
+
+---
+Task ID: 116
+Agent: Z.ai Code (main)
+Task: Owner report — "you are mentioning wrong sqft. I said 5 marla house so according to this 1125 sqft, 1 marla is 225 sqft. Check the sqft in all listings is ok or not."
+
+Work Log:
+- Full audit of all 17 listings: area vs title-marla. Found old seed data used Punjab "big marla" 272.25 sqft/marla; owner's standard (Etihad Town) is 1 marla = 225 sqft. CLP-117 was already 225-correct (1723 = 7.66 × 225).
+- Code fix: MARLA_SQFT 272.25 → 225 in src/lib/business.ts (site-wide size filter + formatMinArea); assistant chat route.ts (areaMarla /272.4 ×2 → /225, system prompt "1 marla = 272.4" → "1 marla = 225 sqft (so '5 marla' area = 1125)"); assistant-fallback.ts (marla/kanal parse ×272.4 → ×225, detailsReply /272.4 → /225).
+- Data fix: scripts/fix-areas-225-oct18.ts with expected-old-value guards — 12 listings updated: CLP-101 1361→1125, CLP-102 817→675, CLP-103 2722→2250, CLP-104 5445→4500 (1 kanal = 20 marla), CLP-105 1089→900, CLP-106 681→563 (2.5×225=562.5→563), CLP-107 2100→1125, CLP-108 4200→2250, CLP-109 1250→675, CLP-114 1800→1125, CLP-118 1800→1125, CLP-119 1800→1125. Untouched (covered-area, not marla plots): CLP-110 apartment 1650, CLP-111 1100, CLP-112 620, CLP-116 hall 5200; CLP-117 already correct.
+- QA local: lint clean; API area/price-per-sqft correct (CLP-119 32,500,000/1125 = PKR 28,889; CLP-118 = PKR 32,444); agent-browser detail page shows "1,125 sqft Area" + "PKR 28,889 Price / sqft", related cards consistent; /api/properties?minArea=1125 → 11 results incl. CLP-119 (filter works on 225 standard); assistant chat answers "5 marla = 1,125 sqft … 225 sqft per marla".
+- Commit 71d6fe4 (explicit paths: business.ts, assistant route, assistant-fallback, fix script) → push → Vercel. Data live immediately (Supabase shared). Live checks: /api/properties CLP-118/119/114 area=1125; live detail page contains "1,125 sqft" and "28,889".
+
+Stage Summary:
+- Site-wide marla standard is now 1 marla = 225 sqft: stored areas, search filters, size unit toggle, AI assistant math all aligned. 5 marla houses/plots show exactly 1,125 sqft.
+- Note: price/sqft changed mechanically (same price, correct area): CLP-118 20,278→32,444; CLP-119 16,000-ish? (was 18,056 pre-115? actual rendered was on 1800: 18,056→ now 28,889). If owner prefers to show marla price instead, that's a separate display change.
+- Note: CLP-106 stored as 563 (2.5 marla) — odd sqft number is the correct rounding.
