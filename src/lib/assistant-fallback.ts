@@ -142,8 +142,8 @@ function parseFilters(raw: string): Filters {
   const marla = /\b(\d+(?:\.\d+)?)\s*marla\b/.exec(m);
   const kanal = /\b(\d+(?:\.\d+)?)\s*kanal\b/.exec(m);
   const sqft = /\b(\d{3,5})\s*(?:sq\.?\s*ft|sqft|square\s*feet)\b/.exec(m);
-  if (marla) f.area = Math.round(Number(marla[1]) * 272.4);
-  else if (kanal) f.area = Math.round(Number(kanal[1]) * 20 * 272.4);
+  if (marla) f.area = Math.round(Number(marla[1]) * 225);
+  else if (kanal) f.area = Math.round(Number(kanal[1]) * 20 * 225);
   else if (sqft) f.area = Number(sqft[1]);
 
   // prices: cues decide min vs max; a lone amount reads as a budget (max)
@@ -268,7 +268,7 @@ function detailsReply(p: Property): string {
   const bits: string[] = [];
   if (p.beds) bits.push(`${p.beds} bed`);
   if (p.baths) bits.push(`${p.baths} bath`);
-  if (p.area) bits.push(`${(p.area / 272.4).toFixed(2)} marla (${p.area} sqft)`);
+  if (p.area) bits.push(`${(p.area / 225).toFixed(2)} marla (${p.area} sqft)`);
   const lines = [
     `${p.title} (${p.reference})`,
     `${formatPKR(p.price)}${p.status === "RENT" ? " per month" : ""} · ${p.type.replace(/-/g, " ")}`,

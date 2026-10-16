@@ -226,7 +226,7 @@ async function runSearch(
       type: p.type,
       district: p.district,
       area: p.area,
-      areaMarla: (p.area / 272.4).toFixed(2),
+      areaMarla: (p.area / 225).toFixed(2),
       beds: p.beds,
       baths: p.baths,
       published: p.published,
@@ -255,7 +255,7 @@ async function runGet(args: Record<string, unknown>): Promise<Record<string, unk
       district: row.district,
       address: row.address,
       area: row.area,
-      areaMarla: (row.area / 272.4).toFixed(2),
+      areaMarla: (row.area / 225).toFixed(2),
       beds: row.beds,
       baths: row.baths,
       description: row.description,
@@ -431,7 +431,7 @@ or request ONE tool:
 Category slugs: ${CATEGORIES.join(", ")}.
 In search_properties, "query" must be a SHORT keyword (1-2 words, e.g. "corner", "commercial") or empty — put sizes/prices/areas in the numeric filters, never in query.
 Only pass "district" when the USER actually named that area. If they did not name one, leave district empty — a wrong district makes the search find nothing.
-Conversions you must do yourself: 1 marla = 272.4 sqft (so "5 marla" area = 1362); 1 lac/lakh = 100,000 PKR; 1 crore = 10,000,000 PKR ("9 crore 30 lac" = 93000000; "1.5 crore" = 15000000).
+Conversions you must do yourself: 1 marla = 225 sqft (so "5 marla" area = 1125); 1 lac/lakh = 100,000 PKR; 1 crore = 10,000,000 PKR ("9 crore 30 lac" = 93000000; "1.5 crore" = 15000000).
 Rules:
 - NEVER invent listings or prices — use tools for anything about inventory.
 - To REMOVE a listing: call remove_listing WITHOUT confirmToken first; you will receive a token (e.g. RM-4F7K); tell the user to reply "YES <token>" to confirm; only call remove_listing WITH that exact token after the user confirms.

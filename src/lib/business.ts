@@ -77,8 +77,8 @@ export function officeDirectionsLink(): string {
 }
 
 
-/** Lahore (Punjab) standard: 1 Marla = 272.25 sqft. Used by the size filter. */
-export const MARLA_SQFT = 272.25;
+/** Etihad Town / City Line standard: 1 Marla = 225 sqft. Used by the size filter. */
+export const MARLA_SQFT = 225;
 
 /** Unit the visitor types a size in. */
 export type SizeUnit = "sqft" | "marla";
