@@ -138,8 +138,8 @@ function extractJson(text: string): Record<string, unknown> | null {
 }
 
 function money(n: number): string {
-  if (n >= 10_000_000) return `PKR ${(n / 10_000_000).toFixed(2).replace(/\.00$/, "")} Crore`;
-  if (n >= 100_000) return `PKR ${(n / 100_000).toFixed(1).replace(/\.0$/, "")} Lac`;
+  if (n >= 10_000_000) return `PKR ${(n / 10_000_000).toFixed(2).replace(/0+$/, "").replace(/\.$/, "")} Crore`;
+  if (n >= 100_000) return `PKR ${(n / 100_000).toFixed(2).replace(/0+$/, "").replace(/\.$/, "")} Lac`;
   return `PKR ${n.toLocaleString("en-PK")}`;
 }
 

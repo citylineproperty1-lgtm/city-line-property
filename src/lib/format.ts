@@ -7,12 +7,12 @@ export function formatPKR(price: number, perMonth = false): string {
   const abs = Math.abs(price);
   let text: string;
 
+  // 2 decimals + trim — exact lac precision (3.65 Crore stays "3.65 Crore",
+  // never rounds to "3.6"/"3.7" which misquotes the price by 5 lac).
   if (abs >= 10_000_000) {
-    const cr = price / 10_000_000;
-    text = `${trimZero(cr.toFixed(cr >= 100 ? 0 : 1))} Crore`;
+    text = `${trimZeros((price / 10_000_000).toFixed(2))} Crore`;
   } else if (abs >= 100_000) {
-    const lac = price / 100_000;
-    text = `${trimZero(lac.toFixed(lac >= 100 ? 0 : 1))} Lakh`;
+    text = `${trimZeros((price / 100_000).toFixed(2))} Lakh`;
   } else {
     text = new Intl.NumberFormat("en-PK").format(Math.round(price));
   }
@@ -24,10 +24,10 @@ export function formatPKR(price: number, perMonth = false): string {
 export function compactPKR(price: number): string {
   const abs = Math.abs(price);
   if (abs >= 10_000_000) {
-    return `${trimZero((price / 10_000_000).toFixed(1))} Cr`;
+    return `${trimZeros((price / 10_000_000).toFixed(2))} Cr`;
   }
   if (abs >= 100_000) {
-    return `${trimZero((price / 100_000).toFixed(price >= 1_000_000 ? 0 : 1))} L`;
+    return `${trimZeros((price / 100_000).toFixed(2))} L`;
   }
   return new Intl.NumberFormat("en-PK").format(Math.round(price));
 }
@@ -56,6 +56,11 @@ export function pkrInWords(price: number): string {
 
 function trimZero(v: string): string {
   return v.endsWith(".0") ? v.slice(0, -2) : v;
+}
+
+/** Strip trailing zeros after a decimal point: "3.65"→"3.65", "3.60"→"3.6", "4.00"→"4". */
+function trimZeros(v: string): string {
+  return v.includes(".") ? v.replace(/0+$/, "").replace(/\.$/, "") : v;
 }
 
 export function formatCompact(n: number): string {
