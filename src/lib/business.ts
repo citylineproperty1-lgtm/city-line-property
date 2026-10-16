@@ -91,3 +91,14 @@ export function formatMinArea(sqft: number): string {
   }
   return `${Math.round(sqft).toLocaleString("en-PK")}+ sqft`;
 }
+
+/** Both units: "1,125 sqft (5 Marla)". Marla shown whole when clean, else 2 decimals. */
+export function formatAreaBoth(sqft: number): string {
+  if (!Number.isFinite(sqft) || sqft <= 0) return "—";
+  const marla = sqft / MARLA_SQFT;
+  const marlaText =
+    Math.abs(marla - Math.round(marla)) < 0.005
+      ? String(Math.round(marla))
+      : marla.toFixed(2);
+  return `${Math.round(sqft).toLocaleString("en-PK")} sqft (${marlaText} Marla)`;
+}

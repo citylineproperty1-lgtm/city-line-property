@@ -8,7 +8,7 @@ import { CATEGORIES, categoryLabel, type Property } from "@/lib/types";
 import { BedDouble, Bath, Ruler, Car, Heart, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { waLink } from "@/lib/business";
+import { formatAreaBoth, waLink } from "@/lib/business";
 import { WhatsAppIcon } from "@/components/site/whatsapp-button";
 
 /** Small tinted chip for the property's category. */
@@ -164,11 +164,11 @@ export function PropertyCard({ property, index = 0 }: { property: Property; inde
               {property.baths}
             </span>
           )}
-          <span className="flex items-center gap-1.5" title="Area (sqft)">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+          <span className="flex items-center gap-1.5" title="Area (sqft & Marla)">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent">
               <Ruler className="h-3.5 w-3.5 text-primary" />
             </span>
-            {property.area.toLocaleString()} sqft
+            {formatAreaBoth(property.area)}
           </span>
           {property.parking && (
             <span className="ml-auto hidden items-center gap-1.5 sm:flex" title="Parking">

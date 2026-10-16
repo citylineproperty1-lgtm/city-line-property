@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { BUSINESS, waLink } from "@/lib/business";
+import { BUSINESS, formatAreaBoth, waLink } from "@/lib/business";
 import { Lightbox } from "@/components/site/lightbox";
 import { DetailUnlockGate } from "@/components/site/detail-unlock";
 
@@ -164,7 +164,7 @@ export function PropertyDetailView({ id }: { id: string }) {
     {
       icon: Ruler,
       label: "Area",
-      value: `${property.area.toLocaleString()} sqft`,
+      value: formatAreaBoth(property.area),
     },
     { icon: Car, label: "Parking", value: property.parking || "—" },
     { icon: Building2, label: "Type", value: categoryLabel(property.type) },

@@ -479,7 +479,16 @@ export function AdminListingDrawer({
                 </p>
               </div>
               {numInput("yearBuilt", { id: "f-year", label: "Year built", min: 1950 })}
-              {numInput("area", { id: "f-area", label: "Area (sqft)" })}
+              <div className="space-y-1.5">
+                {numInput("area", { id: "f-area", label: "Area (sqft)" })}
+                <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
+                  {Number(form.area) > 0
+                    ? `= ${(Number(form.area) / 225 % 1 === 0
+                        ? String(Number(form.area) / 225)
+                        : (Number(form.area) / 225).toFixed(2).replace(/0+$/, "").replace(/\.$/, ""))} Marla (1 marla = 225 sqft)`
+                    : "1 marla = 225 sqft — 5 marla = 1,125 sqft"}
+                </p>
+              </div>
             </div>
           </fieldset>
 
