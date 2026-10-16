@@ -2380,3 +2380,20 @@ Work Log:
 
 Stage Summary:
 - CLP-118 is live with all 10 watermarked photos; admin photo upload route restored (was silently broken since Oct 13).
+
+---
+Task ID: 114
+Agent: Z.ai Code (main)
+Task: Owner follow-up on CLP-118 — "add these picture in clp 118 and changed built in year that is 2026 thats brand new house" (8 listed WhatsApp photos, second batch in upload/).
+
+Work Log:
+- Triage of the 09:10 upload batch: 10 files landed in upload/ but the message listed 8. md5 hashes: all unique, no duplicates. "12.50.24 PM (1).jpeg" was ALREADY CLP-118 photo #10 (Task 113 batch) — correctly skipped. "12.50.25 PM (2).jpeg" (backlit wardrobe, unique content, same batch) appended last → 9 new photos total, owner's listed order first.
+- scripts/add-photos-clp118-oct16.ts: same pipeline as Task 113/admin uploads (EXIF rotate → flatten → cap 1920px → 45° diagonal CLP watermark v5 → JPEG q82 → MediaFile base64 in Postgres). Filenames continue the sequence 5marla-house-bbq-11..19.jpg. Single update: images 10 → 19 (append, existing order untouched), yearBuilt 2025 → 2026. Run with `env -u DATABASE_URL -u DIRECT_URL bun scripts/…` (sandbox env quirk from Task 113 still present).
+- 🔴 BONUS BUG FIXED — Runtime TypeError on property pages: "Cannot read properties of undefined (reading '_leaflet_pos')" at real-map.tsx:111. Root cause: the mount effect scheduled `setTimeout(() => map.invalidateSize(), 80)` and never cancelled it; a cold deep-link load (#/property/…) mounts home view (RealMap) then switches to detail, unmounting the map inside the 80 ms window → invalidateSize() on a removed Leaflet map → crash in the dev overlay. Fix: timer handle cleared in cleanup + guard `mapRef.current === map` + try/catch around invalidateSize.
+- QA local: media route 200 image/jpeg (watermark visually verified single-baked on photo 11 lounge + photo 19 wardrobe); property API 19 images / yearBuilt 2026; detail page gallery "1 / 19" with 19 thumbs, "2026 Year built" spec, photo 19 renders in main gallery; home map still healthy after fix (1102×458, 15 tiles, 6 pins); cold deep-link load → NO issue badge; lint clean; dev.log clean.
+- Commit 5c20327 (explicit paths: scripts/add-photos-clp118-oct16.ts + src/components/site/real-map.tsx) → push → Vercel → live: home 200, /api/media new photo 200, /api/properties 19 images yearBuilt 2026, live detail "1 / 19" + specs "2026 Year built" + "PKR 20,278 Price / sqft" (screenshot), no runtime issues.
+
+Stage Summary:
+- CLP-118 now has 19 watermarked photos (10 + 9) and yearBuilt 2026 — already visible on www.citylineproperty.com.pk (DB is shared; deploy carried the Leaflet fix).
+- Leaflet unmount race fixed — deep-link cold loads no longer throw _leaflet_pos.
+- Note: photos live in Postgres MediaFile rows; only the script + map fix are in git.
