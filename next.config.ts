@@ -2,7 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  /* config options here */
+  /* sharp is a native module (libvips via @img/* platform packages). When
+     bundled into the serverless function, its runtime require() of the
+     platform binary fails on Vercel and EVERY request to routes importing
+     sharp returns a bare 500 (the admin photo upload broke exactly this
+     way). Keeping it external makes Next load it from node_modules at
+     runtime, where the native bindings resolve correctly. */
+  serverExternalPackages: ["sharp"],
   typescript: {
     ignoreBuildErrors: true,
   },

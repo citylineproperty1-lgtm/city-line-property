@@ -84,6 +84,42 @@ interface ListingForm {
   images: string[];
 }
 
+/** Vercel rejects serverless request bodies over 4.5MB, and multi-MB phone
+ * photos also upload slowly on mobile data. Pre-shrink in the browser:
+ * cap the long edge at 1920px (same as the server pipeline) and re-encode
+ * JPEG q0.85 — typically 10-20x smaller. EXIF orientation is baked in by
+ * the bitmap loader. The server still runs its full pipeline (rotate,
+ * flatten, watermark, mozjpeg), so nothing changes visually. Any browser
+ * hiccup falls back to the original file. */
+async function shrinkForUpload(file: File): Promise<File> {
+  try {
+    if (typeof createImageBitmap === "undefined") return file;
+    const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const long = Math.max(bmp.width, bmp.height);
+    const scale = Math.min(1, 1920 / long);
+    const w = Math.max(1, Math.round(bmp.width * scale));
+    const h = Math.max(1, Math.round(bmp.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bmp.close();
+      return file;
+    }
+    ctx.drawImage(bmp, 0, 0, w, h);
+    bmp.close();
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85)
+    );
+    if (!blob || blob.size >= file.size) return file;
+    const cleanName = (file.name || "photo").replace(/\.[a-z0-9]+$/i, "") + ".jpg";
+    return new File([blob], cleanName, { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
+
 /**
  * One-tap common amenities (Zameen-style) — tapping a chip adds it to the
  * listing automatically; tapping again removes it. Custom amenities can
@@ -185,16 +221,26 @@ export function AdminListingDrawer({
     setUrlDraft("");
   };
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (rawFile: File) => {
     setUploading(true);
     setError(null);
     try {
+      const file = await shrinkForUpload(rawFile);
       const fd = new FormData();
       fd.append("file", file);
       const d = await api<{ path: string }>("/api/admin/upload", { method: "POST", body: fd });
       set("images", [...form.images, d.path]);
     } catch (err) {
-      if (!isAuthLoss(err)) setError(errorMessage(err));
+      if (!isAuthLoss(err)) {
+        const msg = errorMessage(err);
+        // Vercel answers 413 (payload too large) with a non-JSON body when a
+        // photo slips past the browser pre-shrink — make that readable.
+        setError(
+          /\(413\)|too large|payload/i.test(msg)
+            ? "Photo is too large to upload. Please try a smaller photo."
+            : msg
+        );
+      }
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
 import { db } from "@/lib/db";
 import { guardAdmin } from "@/lib/auth";
 import { WATERMARK_LOCKUP_BASE64 } from "@/lib/watermark-lockup";
@@ -25,11 +24,25 @@ const MAX_BYTES = 10 * 1024 * 1024; // 10MB raw upload cap
 const MAX_WIDTH = 1920; // matches the site photo pipeline
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-const lockupBuffer = Buffer.from(WATERMARK_LOCKUP_BASE64, "base64");
-
 export async function POST(req: NextRequest) {
   const unauthorized = await guardAdmin();
   if (unauthorized) return unauthorized;
+
+  // sharp is loaded lazily INSIDE the handler. A top-level import of a
+  // native module can take down the whole function at cold-start on hosts
+  // where the binary fails to resolve — that surfaced as a bare 500 with no
+  // JSON body for every upload attempt. Loading it here means any failure
+  // returns a readable JSON error instead of an opaque crash.
+  let sharp: typeof import("sharp").default;
+  try {
+    sharp = (await import("sharp")).default;
+  } catch (e) {
+    console.error("POST /api/admin/upload — failed to load sharp", e);
+    return NextResponse.json(
+      { error: "Image processing is temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
+  }
 
   let file: File | null = null;
   try {
@@ -54,6 +67,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const raw = Buffer.from(await file.arrayBuffer());
+    const lockupBuffer = Buffer.from(WATERMARK_LOCKUP_BASE64, "base64");
 
     // 1) Orient by EXIF, flatten any transparency onto white, cap width.
     const base = sharp(raw, { failOn: "none" })
