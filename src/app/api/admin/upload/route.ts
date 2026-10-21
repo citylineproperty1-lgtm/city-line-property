@@ -25,24 +25,32 @@ const MAX_WIDTH = 1920; // matches the site photo pipeline
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export async function POST(req: NextRequest) {
-  const unauthorized = await guardAdmin();
-  if (unauthorized) return unauthorized;
-
-  // sharp is loaded lazily INSIDE the handler. A top-level import of a
-  // native module can take down the whole function at cold-start on hosts
-  // where the binary fails to resolve — that surfaced as a bare 500 with no
-  // JSON body for every upload attempt. Loading it here means any failure
-  // returns a readable JSON error instead of an opaque crash.
+  // sharp is loaded lazily INSIDE the handler — but BEFORE the auth guard.
+  // A top-level import of a native module can take down the whole function
+  // at cold-start on hosts where the binary fails to resolve (that surfaced
+  // as a bare 500 with no JSON body for every upload attempt). Loading it
+  // here means any failure returns a readable JSON error instead of an
+  // opaque crash. It also makes the unauthenticated 401 probe prove the
+  // whole module-load path works on the live deployment.
   let sharp: typeof import("sharp").default;
   try {
-    sharp = (await import("sharp")).default;
+    const mod = await import("sharp");
+    sharp = ((mod as { default?: typeof mod.default }).default ??
+      mod) as typeof mod.default;
   } catch (e) {
     console.error("POST /api/admin/upload — failed to load sharp", e);
     return NextResponse.json(
-      { error: "Image processing is temporarily unavailable. Please try again later." },
+      {
+        error: "Image processing is temporarily unavailable. Please try again later.",
+        // Short diagnostic code (error name only — no internals leaked).
+        reason: e instanceof Error ? e.name : "unknown",
+      },
       { status: 503 }
     );
   }
+
+  const unauthorized = await guardAdmin();
+  if (unauthorized) return unauthorized;
 
   let file: File | null = null;
   try {

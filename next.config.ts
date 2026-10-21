@@ -15,10 +15,22 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   /* Package the committed SQLite database into every serverless API bundle.
      Without this, hosted builds (Vercel etc.) run API routes with NO database
-     file at all — listings come back empty and admin login fails. */
+     file at all — listings come back empty and admin login fails.
+     sharp + @img/* are force-included as well: sharp resolves its native
+     libvips binary through runtime requires that the bundler's file tracer
+     cannot follow, so the trace alone drops them from the serverless bundle
+     and `import("sharp")` fails at runtime (upload route 503). */
   outputFileTracingIncludes: {
-    "/api/**/*": ["./db/**/*"],
-    "/api/*": ["./db/**/*"],
+    "/api/**/*": [
+      "./db/**/*",
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/**/*",
+    ],
+    "/api/*": [
+      "./db/**/*",
+      "./node_modules/sharp/**/*",
+      "./node_modules/@img/**/*",
+    ],
   },
   /* Edge-cache the SSR homepage shell + sitemap at the Vercel CDN.
      The shell is identical for every visitor (all personalization is
