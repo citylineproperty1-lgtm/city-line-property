@@ -99,6 +99,6 @@ export function formatAreaBoth(sqft: number): string {
   const marlaText =
     Math.abs(marla - Math.round(marla)) < 0.005
       ? String(Math.round(marla))
-      : marla.toFixed(2);
+      : marla.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
   return `${Math.round(sqft).toLocaleString("en-PK")} sqft (${marlaText} Marla)`;
 }
