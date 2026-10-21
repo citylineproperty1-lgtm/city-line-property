@@ -4,6 +4,24 @@ Project: City Line Property real estate platform (Next.js 16 + TypeScript + Tail
 Design direction: family.co-inspired white modern UI — pure white, near-black type, subtle borders, pill buttons, generous whitespace, emerald accent, Inter typography.
 Repo: https://github.com/citylineproperty1-lgtm/city-line-property.git (was empty, project built from scratch)
 
+## 🔴 CRITICAL RULES FOR ANY AUTOMATED AGENT (patrol/cron) — READ BEFORE TOUCHING ANYTHING
+
+1. **NEVER delete `src/app/api/admin/upload/route.ts`.** This is the owner's
+   manual photo-upload API. An earlier patrol run deleted it (it looked
+   "unused") and the owner's admin panel lost photo uploads; another patrol
+   run restored it. It IS used by the admin listing drawer
+   (`admin-listing-drawer.tsx` → POST /api/admin/upload). Deleting it breaks
+   the owner's live business workflow. Same for `/api/health` (deploy marker).
+2. **NEVER touch `AdminUser` rows / password hashes.**
+3. **NEVER run `bun run build`** and **NEVER `git add -A`** (explicit paths only).
+4. The dev server must run on port 3000 via `bash .zscripts/dev.sh`; when
+   starting it from a shell, strip the sandbox's bogus DB env first:
+   `env -u DATABASE_URL -u DIRECT_URL bash .zscripts/dev.sh`.
+5. Prisma scripts must run as `env -u DATABASE_URL -u DIRECT_URL bun scripts/<file>.ts`
+   (the sandbox exports a bogus SQLite DATABASE_URL that overrides .env).
+6. `.zscripts/tmp/` holds disposable query/diagnostic scripts — do not "clean"
+   it while agents are working; recreate freely if missing.
+
 ---
 Task ID: 1
 Agent: main
@@ -2528,3 +2546,22 @@ Work Log:
 Stage Summary:
 - All pending fixes are LIVE on www.citylineproperty.com.pk: manual photo upload works in the admin panel (browser also pre-shrinks big phone photos), marla decimals render clean (11.2, not 11.20).
 - Git auth restored (token set to No expiration by owner — should not recur). Remaining backlog unchanged: optional ZAI_MODEL upgrade (glm-4.6), key rotation.
+
+---
+Task ID: 123
+Agent: Z.ai Code (main)
+Task: Owner report — upload still failing after Task 122 deploy, now with readable 503 "Image processing is temporarily unavailable".
+
+Work Log:
+- The 503 proved the new code was live but `import("sharp")` still failed inside the Vercel serverless bundle: with serverExternalPackages sharp is external, but Next's file tracer cannot follow sharp 0.35's runtime requires of the @img platform packages, so the native binaries were dropped from the traced bundle.
+- Fix A — next.config.ts: force-include ./node_modules/sharp/**/* and ./node_modules/@img/**/* into outputFileTracingIncludes for /api routes (alongside ./db/**/*).
+- Fix B — upload route: sharp import moved BEFORE guardAdmin (so an unauthenticated 401 probe exercises the full module-load path), ESM/CJS interop hardening (mod.default ?? mod), 503 body now carries a short `reason` (error name only).
+- DISCOVERED the automated patrol had DELETED src/app/api/admin/upload/route.ts AGAIN in the working tree (uncommitted; HEAD was intact) and wiped .zscripts/tmp/. Restored route from HEAD, applied Fix B, recreated tmp scripts. Added a prominent "CRITICAL RULES FOR AUTOMATED AGENTS" warning block at the TOP of worklog.md (never delete the upload route / health route, no bun run build, no git add -A, env -u quirks).
+- Local QA (after dev restart with env -u): unauth probe 401 JSON, authed upload 200 + watermark verified visually; test MediaFile row deleted; lint clean.
+- Commits: 34aab55 (sharp force-include + route hardening) and 27fda5e (new /api/health endpoint returning VERCEL_GIT_COMMIT_SHA as a deploy marker) — pushed with the owner's new token.
+- LIVE PROOF: /api/health returns sha 27fda5ea9e99… (exact HEAD match → new deployment serving), and POST /api/admin/upload unauth returns 401 JSON — since sharp now loads BEFORE the guard, this proves the native module imports successfully on Vercel. The authed path after 401 is byte-identical to the locally verified pipeline.
+
+Stage Summary:
+- Root cause chain fully closed: bundled-native crash (bare 500) → tracer dropped binaries (503) → force-included binaries (fixed, proven live). Owner can now upload photos manually; big photos are pre-shrunk in the browser.
+- /api/health is the permanent deploy marker — always verify sha before probing fixes on live.
+- Patrol deletes the upload route when unsupervised — critical-rules block added to worklog; keep an eye on future patrol commits (git diff after any patrol run).
