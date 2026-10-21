@@ -2494,3 +2494,22 @@ Work Log:
 Stage Summary:
 - CLP-120 (Pair Plots, PKR 13 Crore) is LIVE with 4 watermarked photos — DB shared → data live immediately.
 - BLOCKER: git push fails, GitHub token expired. Unpushed commits: 5cdcaf6, 6164bbe, a7eb2ee, 339835a. Once a new token is set, push → Vercel deploys the "11.2 Marla" decimal trim + admin route restore net-effect (no-op on remote).
+
+---
+Task ID: 121
+Agent: Z.ai Code (main)
+Task: Owner report — adding photos to CLP-120 manually via admin panel shows "Request failed (500)".
+
+Work Log:
+- Probed live endpoints: /api/properties 200, /api/admin/login 400 JSON, /api/admin/me 401 JSON, but POST /api/admin/upload → 500 with x-matched-path:/500 HTML error page. Only the upload route crashed, unauthenticated and size-independent (3MB probe also crashed) → module-load crash, not request logic.
+- Root cause: sharp is NOT in Next 16's default serverExternalPackages → Next bundles the route + sharp → sharp 0.35's runtime require() of @img/sharp-linux-x64 native binding fails in the Vercel serverless bundle → function crashes at cold start on every /api/admin/upload request. Local dev (direct node_modules resolution) always worked, which is why scripts were fine.
+- Fix 1 — next.config.ts: serverExternalPackages: ["sharp"] so the native module stays external and resolves at runtime.
+- Fix 2 — upload route: sharp now lazy-imported INSIDE the handler with try/catch → native-load failure returns JSON 503 instead of a bare opaque 500.
+- Fix 3 — admin drawer uploadFile: browser pre-shrink (createImageBitmap EXIF-aware, canvas cap long edge 1920px, JPEG q0.85, skip if result not smaller) → dodges Vercel's separate 4.5MB serverless body limit for big phone photos (would be 413 next) + much faster mobile uploads; friendly message for 413s. Server pipeline unchanged (still watermarks).
+- Dev quirk hit during QA: dev server restart inherited shell's exported SQLite DATABASE_URL (overrides .env) → Prisma "URL must start with postgresql://" 500 on upload. Restarted with env -u DATABASE_URL -u DIRECT_URL. Also .env self-heal exists in dev.sh for the sandbox reset issue.
+- QA local: upload 200 → /api/media/<id> serves 368KB JPEG with single baked diagonal watermark; unauthenticated 401 JSON; lint clean. Test MediaFile rows deleted.
+- Commit d0fd3c0 (next.config.ts, upload route, admin-listing-drawer). PUSH STILL BLOCKED — GitHub token expired (see Task 120). Live fix deploys only after owner provides a new token.
+
+Stage Summary:
+- Admin photo upload crash fully diagnosed + fixed locally: sharp external + lazy-load fallback + browser pre-shrink. Live will get it with the next successful push (pending new GitHub token from owner).
+- Interim workaround for owner: send photos here in chat and they get added via the script pipeline (as done for CLP-118/119/120).
