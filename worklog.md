@@ -2477,3 +2477,20 @@ Work Log:
 
 Stage Summary:
 - Price display is now exact to the lac everywhere (cards, detail, instalment estimator, AI assistant). 3.65 Crore shows as 3.65 — no more ±5 lac rounding confusion. Data was always correct (36,500,000); this was display-only.
+
+---
+Task ID: 120
+Agent: Z.ai Code (main)
+Task: Owner asked "what happend" — new Pair Plots listing (13 crore, 4 photos) was created in a prior session that ran out of context before QA/worklog/reply; verify and close out.
+
+Work Log:
+- Identified upload batch: 5 files Oct 20 11:52-11:53, md5 dedupe → 4 unique (first+last identical, md5 906a9d82…). Content verified: park view, plot site x2, aerial corner view.
+- Found CLP-120 already in DB from the cut-off session: id cmvhu12gm0004qb5hkooz25yn, title "Pair Plots for Sale Facing Park | 6 Marla + 5.2 Marla Corner Plot", price 130,000,000, area 2520 sqft (11.2 marla x 225), type residential-plots, district Etihad Town Phase 1, published, 4 MediaFile images, full owner description, amenities [Park Facing, One Corner Plot, Two Adjacent Plots, 6 Marla + 5.2 Marla, Open Outlook, Prime Investment Opportunity]. Script scripts/add-listing-pairplots-oct18.ts committed in 6164bbe (incl. formatAreaBoth decimal trim 11.20→11.2).
+- Discovered local main was AHEAD 4 (5cdcaf6 patrol commit, 6164bbe CLP-120, a7eb2ee admin-route restore, 339835a dev.pid) — nothing deployed since. NOTE: the admin upload route deletion in 5cdcaf6 never reached the remote (both deletion and restore are unpushed), so live was never broken.
+- Push attempt FAILED: GitHub token expired ("Invalid username or token"). Need owner to provide a new token. Code-only impact: live shows "2,520 sqft (11.20 Marla)" until push; DB data is live regardless.
+- QA LIVE (www.citylineproperty.com.pk): /api/properties has CLP-120 (4 images); detail page renders hero + 3 more thumbs, single-baked diagonal watermark, "For Sale" badge, "PKR 13 Crore" exact, facts (— beds/baths as plots, Residential Plots, 2026, PKR 51,587/sqft), full description, viewing form prefilled with listing title, "18 listings available", first card on grid.
+- QA LOCAL (port 3000, has the unpushed trim fix): area fact "2,520 sqft (11.2 Marla)" ✓.
+
+Stage Summary:
+- CLP-120 (Pair Plots, PKR 13 Crore) is LIVE with 4 watermarked photos — DB shared → data live immediately.
+- BLOCKER: git push fails, GitHub token expired. Unpushed commits: 5cdcaf6, 6164bbe, a7eb2ee, 339835a. Once a new token is set, push → Vercel deploys the "11.2 Marla" decimal trim + admin route restore net-effect (no-op on remote).
