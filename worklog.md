@@ -2565,3 +2565,26 @@ Stage Summary:
 - Root cause chain fully closed: bundled-native crash (bare 500) → tracer dropped binaries (503) → force-included binaries (fixed, proven live). Owner can now upload photos manually; big photos are pre-shrunk in the browser.
 - /api/health is the permanent deploy marker — always verify sha before probing fixes on live.
 - Patrol deletes the upload route when unsupervised — critical-rules block added to worklog; keep an eye on future patrol commits (git diff after any patrol run).
+
+---
+Task ID: 124
+Agent: Z.ai Code (main)
+Task: Owner request — "Do these seo of my website: SEO Audit, Technical SEO Audit, Schema Markup, Copywriting, GEO Audit Toolkit".
+
+Work Log:
+- AUDIT: strong base already existed (GA4, OG/Twitter cards, robots directives, FAQ schema, RealEstateAgent+WebSite+featured ItemList JSON-LD, crawlable SeoContent). #1 technical gap: the SPA is HASH-ROUTED — listing deep links (#/property/<id>) are URL fragments, so every listing was invisible as an individual page (sitemap had exactly 1 URL; Product schema pointed at non-crawlable fragment URLs).
+- REAL URLS: next.config rewrites serve the SPA shell at /property/<id> and /properties; new src/middleware.ts copies the original path into x-clp-original-path; src/lib/seo-path.ts (React cache) resolves the path → published listing. Client router (store.ts) prefers the pathname (viewFromPathname/viewFromLocation/pathForView) and falls back to the hash — legacy #/ links keep working; navigate() pushes real paths; back/forward verified in browser.
+- SSR METADATA: layout.tsx exports generateMetadata — per-listing title/description ("PKR 13 Crore · 2,520 sqft (11.2 Marla) · Etihad Town Phase 1, Lahore …"), canonical, og:url and og:image = LISTING PHOTO; /properties gets its own title/description/canonical; unknown listing ids get noindex. Route switched revalidate=60 → dynamic (headers() requirement); edge cache for "/" preserved via existing next.config headers.
+- SCHEMA: per-listing pages emit Product+Offer (sku/mpn = CLP ref, price PKR, priceValidUntil, availability, seller @id) + BreadcrumbList + RealEstateAgent @id organization; shared pages keep agent+website(+SearchAction on /properties?q=)+FAQPage+featured ItemList, all URLs now real paths; @id entity graph added (GEO).
+- CRAWL PATHS: SeoContent now links ALL published listings (server-rendered <a href="/property/<id>">) + area/category links upgraded to real URLs.
+- SITEMAP: / + /properties + every published listing (per-listing lastmod from updatedAt) — 20 URLs live.
+- GEO: robots.txt explicitly welcomes GPTBot/OAI-SearchBot/ChatGPT-User/ClaudeBot/PerplexityBot/Google-Extended/Applebot-Extended/meta-externalagent/Amazonbot; new public/llms.txt (llmstxt.org) with contact, NAP, service areas, category links, key facts (1% commission, 1 Marla = 225 sqft, PKR Crore/Lakh).
+- OG FIX: src/app/opengraph-image.tsx file convention OVERRODE per-listing og:image → baked the branded 1200×630 card to static public/og-default.png, deleted the generator, metadata now points at the static file. Live: property pages share the listing photo, home/properties share the branded card.
+- Client-side per-view canonical + og:url updates in page.tsx; property-detail.tsx sets the listing's real title/description/canonical/og once loaded (SPA navigations).
+- QA local: SSR titles/canonicals/JSON-LD verified via curl; /properties?type=houses renders 5 houses; hash deep-link renders detail; back/forward + in-app navigation push real URLs; lint clean.
+- LIVE (sha 51cbbd6): /api/health matches HEAD; live /property/<id> serves listing title+canonical+og:image (listing photo); JSON-LD Product/Offer/Breadcrumb/RealEstateAgent present; sitemap 20 URLs; /properties canonical; robots+llms 200; browser check of live detail (owner's new uploaded photos showing, 12 views) + homepage renders normally.
+
+Stage Summary:
+- Every listing now has a real, indexable URL with server-rendered title/description/canonical/OG (listing photo) + full Product/Offer/Breadcrumb schema; sitemap exposes all of them; AI engines explicitly welcome with an llms.txt summary. Old #/ links keep working.
+- Owner next steps (recommend): Search Console → submit /sitemap.xml once; rich results will build as Google recrawls. WhatsApp share previews now show the listing photo + price.
+- Note: page renders are now dynamic (per-URL metadata); edge cache keeps TTFB healthy — watch CWV in Search Console; can revisit with route-level ISR later if needed.
