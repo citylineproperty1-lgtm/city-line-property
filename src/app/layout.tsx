@@ -75,7 +75,11 @@ const defaultMetadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/opengraph-image",
+        // Branded 1200×630 card, baked once from the former dynamic generator
+        // (public/og-default.png). Static file = no per-request render, and
+        // the file-convention override is gone so listing pages can use
+        // their own photo as og:image.
+        url: "/og-default.png",
         width: 1200,
         height: 630,
         alt: "City Line Property — real estate agency in Etihad Town, Lahore. Only 1% commission.",
@@ -86,7 +90,7 @@ const defaultMetadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/opengraph-image"],
+    images: ["/og-default.png"],
   },
   robots: {
     index: true,
