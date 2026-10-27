@@ -89,6 +89,50 @@ export function PropertyDetailView({ id }: { id: string }) {
           setProperty(d.property);
           recordRecent(d.property.id);
 
+          // Real-URL metadata (client-side): the listing's own title,
+          // description, canonical and og:url — keeps the head correct for
+          // crawlers that render JS and for in-app share actions. When the
+          // page was loaded directly at /property/<id>, the server already
+          // emitted the same metadata (middleware + generateMetadata).
+          try {
+            const p: Property = d.property;
+            const SITE = "https://www.citylineproperty.com.pk";
+            const price =
+              p.status === "RENT"
+                ? `PKR ${p.price.toLocaleString("en-PK")}/month`
+                : formatPKR(p.price);
+            const marla = p.area / 225;
+            const marlaText =
+              Math.abs(marla - Math.round(marla)) < 0.005
+                ? String(Math.round(marla))
+                : marla.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+            const desc = `${price} · ${p.area.toLocaleString("en-PK")} sqft (${marlaText} Marla) · ${[p.district, p.city].filter(Boolean).join(", ")}`;
+            document.title = `${p.title} | City Line Property`;
+            const setMeta = (selector: string, attr: string, content: string) => {
+              let el = document.querySelector<HTMLMetaElement>(selector);
+              if (!el) {
+                el = document.createElement("meta");
+                const [k, v] = attr.split("=");
+                el.setAttribute(k, v);
+                document.head.appendChild(el);
+              }
+              el.setAttribute("content", content);
+            };
+            setMeta('meta[name="description"]', "name=description", desc);
+            setMeta('meta[property="og:title"]', "property=og:title", `${p.title} — ${price}`);
+            setMeta('meta[property="og:description"]', "property=og:description", desc);
+            setMeta('meta[property="og:url"]', "property=og:url", `${SITE}/property/${p.id}`);
+            let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+            if (!canonical) {
+              canonical = document.createElement("link");
+              canonical.setAttribute("rel", "canonical");
+              document.head.appendChild(canonical);
+            }
+            canonical.setAttribute("href", `${SITE}/property/${p.id}`);
+          } catch {
+            /* metadata best-effort — never block rendering */
+          }
+
           // similar: wider pool scored by category > area > status > price proximity
           fetch(`/api/properties?limit=24&sort=newest`)
             .then((r) => r.json())

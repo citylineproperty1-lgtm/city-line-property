@@ -7,6 +7,7 @@ import { SeoJsonLd } from "@/components/site/seo-jsonld";
 import { SeoContent } from "@/components/site/seo-content";
 import { SeoGate } from "@/components/site/seo-gate";
 import { ThemeProvider } from "@/components/site/theme-provider";
+import { originalPath, parseSeoPath, getSeoProperty, priceLabel, marlaLabel, SITE } from "@/lib/seo-path";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,16 +16,14 @@ const inter = Inter({
 });
 
 // The root layout renders live SEO data from the database (JSON-LD +
-// crawlable homepage content). ISR with a 60s window: the rendered shell is
-// edge-cached on Vercel (TTFB in milliseconds → healthy Core Web Vitals in
-// Search Console) and re-rendered in the background at most once a minute.
-// The server components swallow DB errors, so even a build-time prerender
-// with an unreachable database still succeeds (content fills in on
-// revalidation). Visitor/admin data itself always flows through uncached
-// /api routes, so nothing the user sees is ever stale.
-export const revalidate = 60;
-
-const SITE = "https://www.citylineproperty.com.pk";
+// crawlable content). Real-URL rewrites (/property/<id>, /properties) need
+// PER-URL titles, descriptions, canonicals and JSON-LD, so metadata is
+// resolved per request via generateMetadata + middleware's x-clp-original-path
+// header. Rendering is dynamic, but next.config's edge Cache-Control for "/"
+// (s-maxage=60 + stale-while-revalidate) keeps TTFB healthy. Visitor/admin
+// data itself always flows through uncached /api routes, so nothing the user
+// sees is ever stale.
+export const dynamic = "force-dynamic";
 
 /** Google Analytics 4 — owner's web stream (Measurement ID). */
 const GA4_ID = "G-1JLS4S6NSX";
@@ -34,7 +33,7 @@ const TITLE =
 const DESCRIPTION =
   "Trusted property dealer in Etihad Town, Lahore — buy, sell or rent plots, houses & apartments in Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block. Only 1% commission.";
 
-export const metadata: Metadata = {
+const defaultMetadata: Metadata = {
   metadataBase: new URL(SITE),
   title: { default: TITLE, template: "%s | City Line Property" },
   description: DESCRIPTION,
@@ -106,6 +105,81 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.webmanifest",
 };
+
+const PROPERTIES_TITLE =
+  "Plots, Houses & Apartments for Sale & Rent in Etihad Town, Lahore — City Line Property";
+const PROPERTIES_DESCRIPTION =
+  "Browse all verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block, Lahore. Only 1% commission — call 0309 4499940.";
+
+/**
+ * Per-URL metadata, resolved server-side (no JS needed):
+ *  - /property/<id> → the listing's title, price/area description, canonical
+ *    URL and listing-photo OpenGraph image (WhatsApp/IM share previews).
+ *  - /properties → the listings index.
+ *  - anything else → the site default.
+ * Never throws — on any failure the default metadata is returned.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const path = await originalPath();
+    const target = parseSeoPath(path);
+    if (target?.kind === "property") {
+      const p = await getSeoProperty(target.id);
+      if (p) {
+        const url = `${SITE}/property/${p.id}`;
+        const price = priceLabel(p.price, p.status);
+        const area = `${p.area.toLocaleString("en-PK")} sqft (${marlaLabel(p.area)})`;
+        const loc = [p.district, p.city].filter(Boolean).join(", ");
+        const short = p.description.replace(/\s+/g, " ").trim().slice(0, 140);
+        const description = `${price} · ${area} · ${loc}. ${short}`;
+        const firstImage = (() => {
+          try {
+            const arr = JSON.parse(p.images) as string[];
+            const img = Array.isArray(arr) ? arr[0] : undefined;
+            if (!img) return undefined;
+            return img.startsWith("http") ? img : `${SITE}${img.startsWith("/") ? "" : "/"}${img}`;
+          } catch {
+            return undefined;
+          }
+        })();
+        return {
+          ...defaultMetadata,
+          title: p.title,
+          description,
+          alternates: { canonical: `/property/${p.id}` },
+          openGraph: {
+            ...defaultMetadata.openGraph,
+            title: `${p.title} — ${price}`,
+            description,
+            url,
+            type: "website",
+            ...(firstImage ? { images: [{ url: firstImage, alt: p.title }] } : {}),
+          },
+          twitter: {
+            card: "summary_large_image",
+            title: p.title,
+            description,
+            ...(firstImage ? { images: [firstImage] } : {}),
+          },
+        };
+      }
+      // Unknown/unpublished listing id — keep crawlers out of a dead end.
+      return { ...defaultMetadata, robots: { index: false, follow: true } };
+    }
+    if (target?.kind === "properties") {
+      return {
+        ...defaultMetadata,
+        title: PROPERTIES_TITLE,
+        description: PROPERTIES_DESCRIPTION,
+        alternates: { canonical: "/properties" },
+        openGraph: { ...defaultMetadata.openGraph, title: PROPERTIES_TITLE, description: PROPERTIES_DESCRIPTION, url: `${SITE}/properties` },
+      };
+    }
+  } catch {
+    // fall through to the site default
+  }
+  return defaultMetadata;
+}
 
 export const viewport: Viewport = {
   width: "device-width",

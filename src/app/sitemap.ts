@@ -7,32 +7,53 @@ const SITE = "https://www.citylineproperty.com.pk";
 export const dynamic = "force-dynamic";
 
 /**
- * The public site is a hash-routed SPA, so "/" is the one canonical,
- * indexable URL. Google renders the JS and sees every view through it.
+ * Real, crawlable URLs for every published listing (/property/<id>) plus the
+ * listings index (/properties). The client SPA serves them via next.config
+ * rewrites — see src/middleware.ts + src/lib/store.ts.
  *
- * lastmod is derived from the database (newest published listing) so it is
- * ACCURATE — it only changes when the content actually changes. Google
+ * lastmod is derived from the database (per listing + newest overall) so it
+ * is ACCURATE — it only changes when the content actually changes. Google
  * learns to distrust sitemap lastmod values that always say "now".
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let lastModified = new Date();
   try {
-    const latest = await db.property.findFirst({
+    const rows = await db.property.findMany({
       where: { published: true },
       orderBy: { updatedAt: "desc" },
-      select: { updatedAt: true },
+      select: { id: true, updatedAt: true },
     });
-    if (latest?.updatedAt) lastModified = latest.updatedAt;
-  } catch {
-    // Database unavailable — fall back to "now" rather than failing the route.
-  }
 
-  return [
-    {
-      url: `${SITE}/`,
-      lastModified,
-      changeFrequency: "daily",
-      priority: 1,
-    },
-  ];
+    const newest = rows[0]?.updatedAt ?? new Date();
+
+    return [
+      {
+        url: `${SITE}/`,
+        lastModified: newest,
+        changeFrequency: "daily",
+        priority: 1,
+      },
+      {
+        url: `${SITE}/properties`,
+        lastModified: newest,
+        changeFrequency: "daily",
+        priority: 0.9,
+      },
+      ...rows.map((r) => ({
+        url: `${SITE}/property/${r.id}`,
+        lastModified: r.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      })),
+    ];
+  } catch {
+    // Database unavailable — at least the homepage, rather than failing.
+    return [
+      {
+        url: `${SITE}/`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+        priority: 1,
+      },
+    ];
+  }
 }

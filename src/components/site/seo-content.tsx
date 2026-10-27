@@ -29,9 +29,10 @@ function formatPrice(price: number, status: string): string {
 export async function SeoContent() {
   let categories: { name: string; slug: string }[] = [];
   let featured: { id: string; title: string; price: number; status: string }[] = [];
+  let all: { id: string; title: string; price: number; status: string }[] = [];
   let total = 0;
   try {
-    const [cats, props, count] = await Promise.all([
+    const [cats, props, every, count] = await Promise.all([
       db.category.findMany({
         orderBy: { sortOrder: "asc" },
         select: { name: true, slug: true },
@@ -42,10 +43,17 @@ export async function SeoContent() {
         take: 6,
         select: { id: true, title: true, price: true, status: true },
       }),
+      db.property.findMany({
+        where: { published: true },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+        select: { id: true, title: true, price: true, status: true },
+      }),
       db.property.count({ where: { published: true } }),
     ]);
     categories = cats;
     featured = props;
+    all = every;
     total = count;
   } catch {
     // fall through with empty data — static text below still renders
@@ -101,7 +109,7 @@ export async function SeoContent() {
                 <li key={a}>
                   <a
                     className="transition-colors hover:text-primary hover:underline"
-                    href={`#/properties?q=${encodeURIComponent(a)}`}
+                    href={`/properties?q=${encodeURIComponent(a)}`}
                   >
                     Property in {a}
                   </a>
@@ -119,7 +127,7 @@ export async function SeoContent() {
                 <li key={c.slug}>
                   <a
                     className="transition-colors hover:text-primary hover:underline"
-                    href={`#/properties?type=${c.slug}`}
+                    href={`/properties?type=${c.slug}`}
                   >
                     {c.name} in Etihad Town, Lahore
                   </a>
@@ -138,7 +146,7 @@ export async function SeoContent() {
                   <li key={p.id}>
                     <a
                       className="transition-colors hover:text-primary hover:underline"
-                      href={`#/property/${p.id}`}
+                      href={`/property/${p.id}`}
                     >
                       {p.title} — {formatPrice(p.price, p.status)}
                     </a>
@@ -148,6 +156,26 @@ export async function SeoContent() {
             </div>
           )}
         </div>
+
+        {all.length > 0 && (
+          <div className="mt-10">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-primary">
+              All Current Listings
+            </h3>
+            <ul className="mt-3 grid gap-x-8 gap-y-2 text-sm text-muted-foreground sm:grid-cols-2">
+              {all.map((p) => (
+                <li key={p.id}>
+                  <a
+                    className="transition-colors hover:text-primary hover:underline"
+                    href={`/property/${p.id}`}
+                  >
+                    {p.title} — {formatPrice(p.price, p.status)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mt-10">
           <h3 className="text-xs font-bold uppercase tracking-wider text-primary">

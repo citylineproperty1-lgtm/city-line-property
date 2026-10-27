@@ -48,12 +48,7 @@ function filtersToQuery(f: ListingsFilters): string {
 }
 
 /** Parse a properties hash query back into filter values (null if none). */
-export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
-  const qIndex = hash.indexOf("?");
-  if (qIndex === -1) return null;
-  const head = hash.replace(/^#\/?/, "").split("/")[0]?.split("?")[0];
-  if (head !== "properties") return null;
-  const p = new URLSearchParams(hash.slice(qIndex + 1));
+function parseFilterParams(p: URLSearchParams): Partial<ListingsFilters> | null {
   const f: Partial<ListingsFilters> = {};
   const q = p.get("q");
   if (q) f.search = q;
@@ -72,6 +67,21 @@ export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
   const sort = p.get("sort");
   if (sort && /^[a-z-]+$/.test(sort)) f.sort = sort;
   return Object.keys(f).length > 0 ? f : null;
+}
+
+export function filtersFromHash(hash: string): Partial<ListingsFilters> | null {
+  const qIndex = hash.indexOf("?");
+  if (qIndex === -1) return null;
+  const head = hash.replace(/^#\/?/, "").split("/")[0]?.split("?")[0];
+  if (head !== "properties") return null;
+  return parseFilterParams(new URLSearchParams(hash.slice(qIndex + 1)));
+}
+
+/** Parse listing filters from a REAL url query (e.g. /properties?q=…).
+ *  The same keys as the hash query — one parser, two URL shapes. */
+export function filtersFromSearch(search: string): Partial<ListingsFilters> | null {
+  if (!search) return null;
+  return parseFilterParams(new URLSearchParams(search));
 }
 
 export function viewToHash(v: View, filters?: ListingsFilters): string {
@@ -108,6 +118,34 @@ export function hashToView(hash: string): View | null {
     default:
       return null;
   }
+}
+
+/* ---------- Real-URL router support (SEO) ----------
+ * next.config rewrites serve the SPA at real, crawlable paths:
+ *   /property/<id> and /properties. The router prefers the pathname
+ * (real URL) and falls back to the hash — old #/ links keep working. */
+
+/** View from a real path (null when the path is not a routed view). */
+export function viewFromPathname(): View | null {
+  if (typeof window === "undefined") return null;
+  const path = window.location.pathname.replace(/\/+$/, "");
+  const m = /^\/property\/([A-Za-z0-9]+)$/.exec(path);
+  if (m) return { name: "property", id: m[1] };
+  if (path === "/properties") return { name: "properties" };
+  return null;
+}
+
+/** View from wherever the URL currently encodes it — real path first. */
+export function viewFromLocation(): View | null {
+  if (typeof window === "undefined") return null;
+  return viewFromPathname() ?? hashToView(window.location.hash);
+}
+
+/** Real URL path for a view (null → the hash form is the canonical URL). */
+export function pathForView(v: View): string | null {
+  if (v.name === "property") return `/property/${(v as { id: string }).id}`;
+  if (v.name === "properties") return "/properties";
+  return null;
 }
 
 export function sameView(a: View, b: View): boolean {
@@ -151,11 +189,23 @@ export const useAppStore = create<AppState>()(
       navigate: (view) => {
         set({ view });
         if (typeof window !== "undefined") {
-          const target =
-            view.name === "properties"
-              ? viewToHash(view, get().listingsFilters)
-              : viewToHash(view);
-          if (window.location.hash !== target) {
+          // Real, crawlable URL when the view has one (SEO); hash form for
+          // the rest. pushState with a path+hash keeps hashchange/popstate
+          // semantics working for back/forward.
+          const realPath = pathForView(view);
+          let target: string;
+          if (realPath) {
+            target =
+              view.name === "properties"
+                ? realPath + filtersToQuery(get().listingsFilters)
+                : realPath;
+          } else {
+            const hash = viewToHash(view);
+            // Keep the URL rooted at "/" — a path left over from a real-URL
+            // view (e.g. /property/x) must not linger under hash views.
+            target = hash === "#/" ? "/" : `/${hash}`;
+          }
+          if (window.location.pathname + window.location.search + window.location.hash !== target) {
             history.pushState(null, "", target);
           }
           window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });

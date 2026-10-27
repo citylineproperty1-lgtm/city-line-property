@@ -39,6 +39,18 @@ const nextConfig: NextConfig = {
      TTFB from seconds to milliseconds and fixing Core Web Vitals (LCP/TTFB)
      reported in Google Search Console. Admin data is NEVER stale: it flows
      through /api routes, which remain uncached. */
+  /* Real, crawlable URLs for the SPA. The app is hash-routed, so listing
+     deep links like /#/property/<id> are invisible to search engines
+     (everything after "#" is a fragment). These rewrites serve the same
+     single-page app shell at real paths, which the client router reads
+     (see viewFromPathname in src/lib/store.ts) — giving every listing a
+     genuine indexable URL while keeping the old hash links working. */
+  async rewrites() {
+    return [
+      { source: "/property/:id", destination: "/" },
+      { source: "/properties", destination: "/" },
+    ];
+  },
   async headers() {
     return [
       {

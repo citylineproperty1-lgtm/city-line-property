@@ -18,9 +18,11 @@ import { ScrollProgress } from "@/components/site/scroll-progress";
 import { SplashScreen } from "@/components/site/splash-screen";
 import {
   useAppStore,
-  hashToView,
+  viewFromLocation,
   filtersFromHash,
+  filtersFromSearch,
   sameView,
+  pathForView,
   type View,
 } from "@/lib/store";
 
@@ -60,6 +62,25 @@ function setMeta(name: string, content: string) {
   el.setAttribute("content", content);
 }
 
+const SITE = "https://www.citylineproperty.com.pk";
+
+/** Keep <link rel=canonical> and og:url aligned with the current view.
+ *  Server-rendered for real URLs (middleware + generateMetadata); this
+ *  covers client-side navigation between views. Property details set their
+ *  own canonical when the listing data arrives (see property-detail). */
+function setCanonical(path: string) {
+  let el = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement("link");
+    el.setAttribute("rel", "canonical");
+    document.head.appendChild(el);
+  }
+  const href = `${SITE}${path}`;
+  if (el.getAttribute("href") !== href) el.setAttribute("href", href);
+  const og = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+  if (og) og.setAttribute("content", href);
+}
+
 function titleFor(view: View): string {
   switch (view.name) {
     case "property":
@@ -76,6 +97,12 @@ export default function Page() {
     document.title = titleFor(view);
     setMeta("description", DESCRIPTIONS[view.name] ?? DESCRIPTIONS.home);
     setMeta("robots", view.name === "admin" ? "noindex, nofollow" : "index, follow");
+    // Canonical: real URLs for property/properties; every hash view is a
+    // fragment of the homepage — its canonical is "/". The property detail
+    // component overrides the canonical with the listing's own URL once its
+    // data loads.
+    const realPath = pathForView(view);
+    setCanonical(realPath ?? "/");
   }, [view]);
 
   // Deep links + browser back/forward: hydrate view from URL hash once,
@@ -91,15 +118,29 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const initial = hashToView(window.location.hash);
+    // Hydrate from wherever the URL encodes the view — real path first
+    // (/property/<id>, /properties), then the legacy hash form.
+    const initial = viewFromLocation();
     applyHashFilters(window.location.hash);
+    const searchFilters = filtersFromSearch(window.location.search);
+    if (searchFilters) {
+      useAppStore.setState((s) => ({
+        listingsFilters: { ...s.listingsFilters, ...searchFilters },
+      }));
+    }
     if (initial && !sameView(initial, useAppStore.getState().view)) {
       useAppStore.setState({ view: initial });
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
     const onPop = () => {
-      const next = hashToView(window.location.hash);
+      const next = viewFromLocation();
       applyHashFilters(window.location.hash);
+      const popSearch = filtersFromSearch(window.location.search);
+      if (popSearch) {
+        useAppStore.setState((s) => ({
+          listingsFilters: { ...s.listingsFilters, ...popSearch },
+        }));
+      }
       if (next && !sameView(next, useAppStore.getState().view)) {
         useAppStore.setState({ view: next });
         window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
