@@ -2588,3 +2588,22 @@ Stage Summary:
 - Every listing now has a real, indexable URL with server-rendered title/description/canonical/OG (listing photo) + full Product/Offer/Breadcrumb schema; sitemap exposes all of them; AI engines explicitly welcome with an llms.txt summary. Old #/ links keep working.
 - Owner next steps (recommend): Search Console → submit /sitemap.xml once; rich results will build as Google recrawls. WhatsApp share previews now show the listing photo + price.
 - Note: page renders are now dynamic (per-URL metadata); edge cache keeps TTFB healthy — watch CWV in Search Console; can revisit with route-level ISR later if needed.
+
+---
+Task ID: 124-b (close-out)
+Agent: Z.ai Code (main)
+Task: Owner confirmed "done indexing" (sitemap submitted / indexing requested in Search Console). Final live verification + patrol cron recreation.
+
+Work Log:
+- Owner completed their part: indexing requested in Google Search Console.
+- Re-verified live (sha 4eb94cf via /api/health, matches HEAD):
+  - /property/cmvhu12gm0004qb5hkooz25yn (CLP-120) SSR head: title "Pair Plots for Sale Facing Park | 6 Marla + 5.2 Marla Corner Plot", meta description with price/area/location, canonical https://www.citylineproperty.com.pk/property/cmvhu12gm0004qb5hkooz25yn, og:title + og:image = listing photo.
+  - JSON-LD single @graph parsed: [RealEstateAgent, BreadcrumbList(3), Product] — Product sku CLP-120, Offer 130000000 PKR InStock, 4 images. (Initial quick grep showed 1 block — it IS the full @graph; verified by json parsing.)
+  - /sitemap.xml serves 20 URLs (/, /properties, all listings with lastmod).
+  - robots.txt 200 with AI-crawler allowlist + Sitemap directive; llms.txt in place.
+- Cleaned accidental file-mode changes (100644→100755) on public/llms.txt, src/lib/seo-path.ts, src/middleware.ts, public/og-default.png — restored from HEAD, working tree clean.
+- Recreated 15-min webDevReview patrol cron (job 477188, Asia/Karachi) — previous one had expired/emptied; description includes the CRITICAL RULES block (never delete upload/health routes, never touch AdminUser, no build, no git add -A, env -u restarts).
+
+Stage Summary:
+- SEO Task 124 FULLY CLOSED: audit → real URLs → SSR metadata → schema → sitemap → GEO, all live and owner has requested indexing. Remaining is Google-side (crawling takes days–2 weeks). Owner should watch Search Console "Pages" coverage + Performance; rich results (price/availability) build as Product schema is picked up.
+- No code changes this round; no commit needed (tree clean, HEAD = 4eb94cf already live).
