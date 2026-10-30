@@ -2658,3 +2658,16 @@ Work Log:
 Stage Summary:
 - Deploy pipeline UNBLOCKED after 3 days. Favicon fix live. Checklist from Task 125: only Bing Webmaster left (owner action).
 - The patrol batch (agents/posts/insights/newsletter/testimonials) is REVERTED, not lost — commit 8631caa still in history. If owner wants any of those features, they need real Prisma models + admin UI first (product decision).
+
+---
+Task ID: 127
+Agent: Z.ai Code (main)
+Task: Owner screenshot — Bing Webmaster Tools now shows www.citylineproperty.com.pk added, data processing banner (up to 48h), prompt to submit sitemap.
+
+Work Log:
+- Confirmed: Bing Webmaster Tools site added → SEO checklist now 14/14 complete.
+- Owner's one remaining step (told them): Sitemaps → submit https://www.citylineproperty.com.pk/sitemap.xml (verified 200, 20 URLs). Optional: URL Submission for homepage for a faster first crawl.
+- Noted for future: Bing IndexNow could auto-push new/updated listing URLs instantly (needs a site-hosted key file + ping on publish) — good candidate feature if owner wants.
+
+Stage Summary:
+- Full SEO checklist (all 14 items) DONE. Waiting phase: Google + Bing crawl over coming days/weeks. Owner will share Search Console Performance data after ~1 week for copy tuning.
