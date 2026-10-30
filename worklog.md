@@ -2637,3 +2637,24 @@ Stage Summary:
 - 13/14 checklist items DONE and verified live; 1 (Bing Webmaster) needs owner action; favicon.ico fix committed but blocked by Vercel deploy stall.
 - BLOCKER: Vercel not deploying since Oct 27 — owner must open vercel.com → project → Deployments and either read the failed build error (send me screenshot) or click Redeploy on the latest commit. If account is paused (billing/bandwidth banner), that must be resolved first.
 - No code risk from the stall: remote tip is clean and buildable; once deploys resume, favicon + cleanup go live together.
+
+---
+Task ID: 126
+Agent: Z.ai Code (main)
+Task: Owner sent Vercel Deployments screenshot — every build since Oct 27 = Error in 22-35s; last Ready = 4eb94cf. Root-cause and unblock deploys.
+
+Work Log:
+- ROOT CAUSE FOUND: patrol commit 8631caa ("1c0526b2-…", Oct 27 07:59) added a large feature batch (agents/posts/insights/newsletter/testimonials APIs + 10 view components + posts lib) that was never real:
+  - src/app/api/agents/route.ts imports `serializeAgent` from @/lib/serialize — module only exports serializeProperty → Turbopack hard compile error → EVERY build fails in ~22-35s. All later commits inherit it (they contain 8631caa in history), so deploys were blocked 3 days.
+  - Discovered via dev server: all 7 new API routes 500 with "Export serializeAgent doesn't exist in target module" (tsc earlier was misleading — output truncated by head -20; full run shows 52 src errors: db.agent/db.newsletter/db.testimonial models don't exist, Agent type missing, Property.rating missing, etc.)
+  - Even if compiled, routes would 500 at runtime (no such Prisma models) and the views are orphaned (wired into no page).
+- FIX: `git revert 8631caa` (one conflict: .zscripts/dev.pid runtime noise — resolved). Revert commit 3ce0c3c. Kept favicon (4f6cfe3), junk cleanup (14e0143), all worklogs + all real SEO work.
+- Verified post-revert: tsc src errors 52 → 3 (remaining 3 pre-existed in last good deploy: admin-shared.tsx Date compare, areas-view.tsx new-on-void — ignored by ignoreBuildErrors); lint clean; / 200; /api/health 200; /api/properties 200; removed /api/agents → 404.
+- LIVE VERIFIED (sha 3ce0c3c deployed in ~2 min after push — build passes again):
+  - /favicon.ico → 200 image/vnd.microsoft.icon (15.7KB) — was 404 since forever
+  - /property/<id> og:image = listing photo (cleanup held); JSON-LD @graph [RealEstateAgent, BreadcrumbList, Product] intact; sitemap 20 URLs; homepage renders (agent-browser).
+- Lessons: (1) tsc output MUST be filtered to src/ — prisma/scripts noise buried the real errors; (2) patrol feature commits need a compile gate (dev curl of new routes) BEFORE push — add to patrol critical rules.
+
+Stage Summary:
+- Deploy pipeline UNBLOCKED after 3 days. Favicon fix live. Checklist from Task 125: only Bing Webmaster left (owner action).
+- The patrol batch (agents/posts/insights/newsletter/testimonials) is REVERTED, not lost — commit 8631caa still in history. If owner wants any of those features, they need real Prisma models + admin UI first (product decision).
