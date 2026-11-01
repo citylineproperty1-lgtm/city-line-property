@@ -29,9 +29,9 @@ export const dynamic = "force-dynamic";
 const GA4_ID = "G-1JLS4S6NSX";
 
 const TITLE =
-  "Property & Real Estate in Etihad Town, Lahore — City Line Property | 1% Commission";
+  "Property in Etihad Town, Lahore — City Line Property | 1% Commission";
 const DESCRIPTION =
-  "Trusted property dealer in Etihad Town, Lahore — buy, sell or rent plots, houses & apartments in Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block. Only 1% commission.";
+  "Trusted property dealer in Etihad Town, Lahore. Buy, sell & rent plots, houses & apartments — Phase 1 & 2, Royal Enclave & Overseas Block. Only 1% commission.";
 
 const defaultMetadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -111,9 +111,9 @@ const defaultMetadata: Metadata = {
 };
 
 const PROPERTIES_TITLE =
-  "Plots, Houses & Apartments for Sale & Rent in Etihad Town, Lahore — City Line Property";
+  "Plots, Houses & Apartments in Etihad Town, Lahore — City Line Property";
 const PROPERTIES_DESCRIPTION =
-  "Browse all verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block, Lahore. Only 1% commission — call 0309 4499940.";
+  "Browse verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2 & nearby blocks, Lahore. Only 1% commission.";
 
 /**
  * Per-URL metadata, resolved server-side (no JS needed):

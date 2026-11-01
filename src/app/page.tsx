@@ -27,8 +27,8 @@ import {
 } from "@/lib/store";
 
 const TITLES: Record<string, string> = {
-  home: "City Line Property — Real Estate in Etihad Town, Lahore | 1% Commission",
-  properties: "Plots, Houses & Apartments for Sale & Rent in Etihad Town, Lahore — City Line Property",
+  home: "Property in Etihad Town, Lahore — City Line Property | 1% Commission",
+  properties: "Plots, Houses & Apartments in Etihad Town, Lahore — City Line Property",
   property: "Property Details — City Line Property",
   about: "About City Line Property — 1% Commission Real Estate Agency, Lahore",
   contact: "Contact City Line Property — Etihad Town Phase 1, Lahore | 0309 4499940",
@@ -41,8 +41,8 @@ const TITLES: Record<string, string> = {
 // Per-view meta description + robots updates (picked up by crawlers that
 // render JavaScript, e.g. Googlebot).
 const DESCRIPTIONS: Record<string, string> = {
-  home: "City Line Property — real estate agency in Etihad Town Phase 1, Lahore. Buy, sell & rent plots, houses & apartments with only 1% commission. Call 0309 4499940.",
-  properties: "Browse verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave & Overseas Block, Lahore.",
+  home: "Trusted property dealer in Etihad Town, Lahore. Buy, sell & rent plots, houses & apartments — Phase 1 & 2, Royal Enclave & Overseas Block. Only 1% commission.",
+  properties: "Browse verified plots, houses, apartments & commercial property for sale and rent in Etihad Town Phase 1 & 2 & nearby blocks, Lahore. Only 1% commission.",
   property: "Property details — price, area, features & contact for this listing by City Line Property, Etihad Town, Lahore. Only 1% commission.",
   about: "About City Line Property — a trusted property agency at 151-C Etihad Town Phase 1, Lahore, working on a fair 1% commission model with direct dealing.",
   contact: "Contact City Line Property — 151-C Etihad Town Phase 1, Lahore. Call 0309 4499940 or 0321 8422109, or message us on WhatsApp.",

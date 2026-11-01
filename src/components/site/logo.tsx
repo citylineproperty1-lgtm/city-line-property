@@ -24,7 +24,7 @@ export function Monogram({ px }: { px: number }) {
     >
       <Image
         src="/logo-mark.png"
-        alt=""
+        alt="City Line Property logo"
         width={px}
         height={px}
         className="relative h-full w-full object-contain p-[6%]"
