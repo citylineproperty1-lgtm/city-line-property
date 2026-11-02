@@ -2708,3 +2708,21 @@ Work Log:
 Stage Summary:
 - IndexNow is LIVE: from now on every admin create/update of a published listing pings Bing within seconds. Full inventory already seeded (20/20 accepted). Google unaffected (not an IndexNow member) — sitemap flow unchanged.
 - Patrol re-armed with hard guardrails; worktree clean.
+
+---
+Task ID: 130
+Agent: main
+Task: Cookie consent banner + consent-gated GA4 + Privacy Policy page (owner sent a reference screenshot of a consent bar and asked to add it)
+
+Work Log:
+- Owner request: add a "We value your privacy" cookie consent bar (reference screenshot showed dark bottom bar, shield icon, Decline + "Accept all" buttons, Privacy Policy link). Adapted to City Line brand (dark #0B0F0E bar + gradient-hairline top edge + brand teal, matching footer style).
+- NEW src/components/site/cookie-consent.tsx — fixed bottom bar (z-130, above widgets), ShieldCheck badge, heading + copy, "Privacy Policy" button (navigates to the new privacy view), Decline (outline) + "Accept all" (filled teal with check). Choice persisted in localStorage `clp-cookie-consent` (accepted|declined); never shown again until storage cleared. Slides in 2300ms after mount so the 2s splash clears first. Hidden on #/admin. 44px min touch targets + safe-area padding on mobile. setState inside timer callback to satisfy react-hooks/set-state-in-effect.
+- NEW src/components/site/analytics-gate.tsx — consent-gated GA4 loader replacing the always-on <Script> tags in layout.tsx. gtag.js is NOT downloaded at all until the visitor accepts (no cookies, no network requests on Decline). Listens for the `clp:consent` window event the banner dispatches; injects gtag.js + config once. Existing trackEvent() call sites keep working (already no-op while window.gtag is missing).
+- NEW src/components/site/privacy-view.tsx + hash route #/privacy — plain-English privacy page ("Your privacy, kept simple."): what we collect, cookies & local storage keys, Google Analytics section (off by default), how we use info, sharing (never sold), your choices, dark contact strip (address/phones/email/hours), last-updated Nov 2026. Wired into store.ts View union + hashToView, page.tsx TITLES/DESCRIPTIONS/render.
+- Footer bottom bar now links to the Privacy Policy view next to the copyright.
+- FIX during QA: contact strip used gradient-border whose light-mode white padding-box painted over bg-mesh-dark → white-on-white text; switched to gradient-border-dark (dark body in both themes).
+- Verified via agent-browser: pre-consent gtag absent; Accept → localStorage=accepted + gtag injected + dataLayer created + banner hides; reload keeps choice (no banner, GA persists); Decline → localStorage=declined + gtag never loads; banner→privacy link works; #/privacy deep link + title work; footer link works; admin hides banner; mobile (375px) + desktop (1440px) screenshots clean; lint clean; tsc src/ shows only the 3 known pre-existing errors.
+- Live: 23418f1 deployed and verified via /api/health.
+
+Stage Summary:
+- Site now has a professional consent flow: analytics respects visitor choice, privacy policy is one tap away from the banner and the footer. No SEO impact (hash view, canonical stays "/", SSR head untouched).
