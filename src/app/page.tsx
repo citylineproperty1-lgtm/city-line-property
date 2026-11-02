@@ -11,6 +11,7 @@ import { AboutView } from "@/components/site/about-view";
 import { ContactView } from "@/components/site/contact-view";
 import { SavedView } from "@/components/site/saved-view";
 import { AreasIndexView, AreaDetailView } from "@/components/site/areas-view";
+import { PrivacyView } from "@/components/site/privacy-view";
 import { AdminView } from "@/components/site/admin-view";
 import { ContactBubble } from "@/components/site/contact-bubble";
 import { AssistantWidget } from "@/components/site/assistant-widget";
@@ -35,6 +36,7 @@ const TITLES: Record<string, string> = {
   saved: "Saved Properties — City Line Property",
   areas: "Area Guides — Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave, Overseas Block | City Line Property",
   area: "Area Guide — Etihad Town, Lahore | City Line Property",
+  privacy: "Privacy Policy — City Line Property | Etihad Town, Lahore",
   admin: "City Line Property — Admin",
 };
 
@@ -49,6 +51,7 @@ const DESCRIPTIONS: Record<string, string> = {
   saved: "Your saved properties at City Line Property — Etihad Town, Lahore.",
   areas: "Area guides for Etihad Town Phase 1 & 2, Royal Enclave, Premier Enclave and Overseas Block, Lahore — prices, amenities & investment outlook.",
   area: "Area guide — property market, amenities & listings for this Etihad Town, Lahore neighbourhood. City Line Property, 1% commission.",
+  privacy: "How City Line Property handles your data — inquiries, browser-local storage and Google Analytics that only runs after you accept.",
   admin: "City Line Property admin panel.",
 };
 
@@ -179,6 +182,7 @@ export default function Page() {
             {view.name === "saved" && <SavedView />}
             {view.name === "areas" && <AreasIndexView />}
             {view.name === "area" && <AreaDetailView slug={view.slug} />}
+            {view.name === "privacy" && <PrivacyView />}
             {view.name === "admin" && <AdminView />}
           </motion.div>
         </AnimatePresence>

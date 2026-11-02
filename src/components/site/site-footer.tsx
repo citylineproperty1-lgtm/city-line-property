@@ -167,7 +167,16 @@ export function SiteFooter() {
       <div aria-hidden className="gradient-hairline relative opacity-40" />
       <div className="relative">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-[12.5px] text-white/50 sm:flex-row sm:px-6">
-          <span>© {new Date().getFullYear()} City Line Property. All rights reserved.</span>
+          <span>
+            © {new Date().getFullYear()} City Line Property. All rights reserved.
+            <span aria-hidden> · </span>
+            <button
+              onClick={() => navigate({ name: "privacy" })}
+              className="font-medium text-white/70 underline-offset-2 transition-colors hover:text-[#5EB9A9] hover:underline"
+            >
+              Privacy Policy
+            </button>
+          </span>
           <span>Crafted with care in Lahore · Punjab, Pakistan</span>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

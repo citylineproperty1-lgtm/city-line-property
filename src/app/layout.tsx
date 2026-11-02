@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -7,6 +6,8 @@ import { SeoJsonLd } from "@/components/site/seo-jsonld";
 import { SeoContent } from "@/components/site/seo-content";
 import { SeoGate } from "@/components/site/seo-gate";
 import { ThemeProvider } from "@/components/site/theme-provider";
+import { AnalyticsGate } from "@/components/site/analytics-gate";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { originalPath, parseSeoPath, getSeoProperty, priceLabel, marlaLabel, SITE } from "@/lib/seo-path";
 
 const inter = Inter({
@@ -24,9 +25,6 @@ const inter = Inter({
 // data itself always flows through uncached /api routes, so nothing the user
 // sees is ever stale.
 export const dynamic = "force-dynamic";
-
-/** Google Analytics 4 — owner's web stream (Measurement ID). */
-const GA4_ID = "G-1JLS4S6NSX";
 
 const TITLE =
   "Property in Etihad Town, Lahore — City Line Property | 1% Commission";
@@ -213,19 +211,12 @@ export default function RootLayout({
         </SeoGate>
         {/* Structured data: RealEstateAgent + WebSite + featured listings */}
         <SeoJsonLd />
-        {/* Google Analytics 4 (G-1JLS4S6NSX) — afterInteractive keeps Lighthouse green */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="ga4" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA4_ID}');
-          `}
-        </Script>
+        {/* Google Analytics 4 (G-1JLS4S6NSX) — injected ONLY after the
+            visitor accepts the cookie banner (AnalyticsGate listens for the
+            clp:consent event). Decline = no gtag.js download at all. */}
+        <AnalyticsGate />
+        {/* Cookie consent bottom bar (brand-dark, hidden once decided) */}
+        <CookieConsent />
         <Toaster position="top-center" richColors />
       </body>
     </html>

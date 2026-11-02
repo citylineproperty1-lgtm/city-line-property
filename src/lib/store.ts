@@ -17,6 +17,7 @@ export type View =
   | { name: "saved" }
   | { name: "areas" }
   | { name: "area"; slug: string }
+  | { name: "privacy" }
   | { name: "admin" };
 
 interface ListingsFilters {
@@ -109,6 +110,7 @@ export function hashToView(hash: string): View | null {
     case "about":
     case "contact":
     case "saved":
+    case "privacy":
     case "admin":
       return { name: head } as View;
     case "areas":
