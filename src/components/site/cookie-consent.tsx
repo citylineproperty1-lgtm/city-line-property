@@ -82,7 +82,7 @@ export function CookieConsent() {
           aria-modal="false"
           aria-label="Cookie consent"
         >
-          <div className="relative bg-[#0B0F0E]/[0.98] shadow-[0_-24px_60px_-24px_rgba(0,0,0,0.7)] backdrop-blur">
+          <div className="relative bg-[#0B0F0E]/[0.98] shadow-[0_-24px_60px_-24px_rgba(0,0,0,0.7)] ring-1 ring-white/15 backdrop-blur">
             {/* Brand gradient hairline on top — same as the footer */}
             <div aria-hidden className="gradient-hairline absolute inset-x-0 top-0" />
 
