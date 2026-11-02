@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { serializeProperty } from "@/lib/serialize";
 import { guardAdmin } from "@/lib/auth";
+import { pingListingUrls } from "@/lib/indexnow";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +114,9 @@ export async function POST(req: NextRequest) {
         parking: String(body.parking ?? "").trim().slice(0, 80),
       },
     });
+    // New listing — tell Bing & friends instantly (IndexNow). Only for
+    // published rows; never blocks or fails the request.
+    if (row.published) await pingListingUrls(row.id);
     return NextResponse.json({ property: serializeProperty(row) }, { status: 201 });
   } catch (e) {
     console.error("POST /api/admin/properties", e);

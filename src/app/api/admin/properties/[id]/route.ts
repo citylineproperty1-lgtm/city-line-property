@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { serializeProperty } from "@/lib/serialize";
 import { guardAdmin } from "@/lib/auth";
+import { pingListingUrls } from "@/lib/indexnow";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,9 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     if (body.parking !== undefined) data.parking = String(body.parking).trim().slice(0, 80);
 
     const row = await db.property.update({ where: { id }, data });
+    // Listing changed — tell Bing & friends instantly (IndexNow). Only for
+    // published rows; never blocks or fails the request.
+    if (row.published) await pingListingUrls(row.id);
     return NextResponse.json({ property: serializeProperty(row) });
   } catch (e) {
     console.error("PATCH /api/admin/properties/[id]", e);
