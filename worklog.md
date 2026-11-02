@@ -2691,3 +2691,20 @@ Work Log:
 Stage Summary:
 - SEO health: 27/27. Site fully optimized: fast (0.26s TTFB), crawlable real URLs, complete schema, snippet-safe titles/descriptions, alt text, favicon, AI-bot access (9 crawlers), sitemap 20 URLs, llms.txt.
 - Next owner milestone: share Search Console Performance after ~1 week for copy tuning. Bing IndexNow auto-push = candidate feature for instant Bing indexing of new listings.
+
+---
+Task ID: 129
+Agent: Z.ai Code (main)
+Task: Owner "yes" — build IndexNow instant Bing submission.
+
+Work Log:
+- Key generated: 7f507333efe1f10a6e821667d6e7cbd8; key file public/7f507333efe1f10a6e821667d6e7cbd8.txt (verified 200 live with correct content).
+- src/lib/indexnow.ts: pingIndexNow/pingListingUrls — prod-only (VERCEL_ENV check), never throws, per-URL GET to api.indexnow.org/indexnow with 250ms gaps + 5s timeouts. Wired into admin POST /api/admin/properties (create) and PATCH /[id] (update) — pings listing URL + home + /properties for published rows only; never blocks/fails the admin response.
+- Endpoint quirk: shared api.indexnow.org endpoint rejects ALL documented POST body shapes with 400 (tested 5 variants incl. minimal); GET form returns 202/200 — library uses GET per-URL. Bulk seed: ALL 20 URLs (home, /properties, 18 published listings) submitted → 20/20 accepted.
+- PATROL ESCALATION: discovered the webDevReview patrol had re-materialized the ENTIRE reverted feature batch as untracked files (agents/posts/insights/newsletter/testimonials routes + 10 components + --width + opengraph-image.tsx) — would have re-broken the build if ever committed. Deleted junk, deleted old cron job 477188, created hardened job 495614 with explicit ban list (named files/routes), instruction to DELETE such untracked files, prisma-model reality check, dev-curl-before-push rule, and fetch-before-push divergence guard.
+- Local/remote divergence noise continues (gateway snapshot amends worklog commits + dev.pid) — handled via checkout dev.pid + pull --rebase.
+- Live: 0be8586 (IndexNow wired) then b5672f6 (GET method) both deployed and verified via /api/health.
+
+Stage Summary:
+- IndexNow is LIVE: from now on every admin create/update of a published listing pings Bing within seconds. Full inventory already seeded (20/20 accepted). Google unaffected (not an IndexNow member) — sitemap flow unchanged.
+- Patrol re-armed with hard guardrails; worktree clean.
